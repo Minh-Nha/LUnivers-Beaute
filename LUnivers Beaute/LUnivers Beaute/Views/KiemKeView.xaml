@@ -1,0 +1,59 @@
+﻿<UserControl x:Class="LUnivers_Beaute.Views.KiemKeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+    <Grid Margin="28,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Margin="0,0,0,20">
+            <StackPanel>
+                <TextBlock Text="Kiểm kê kho" Style="{StaticResource SectionTitle}"/>
+                <TextBlock Text="So sánh số lượng hệ thống và thực tế để phát hiện chênh lệch" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
+            </StackPanel>
+            <Button Content="＋ Tạo phiếu kiểm kê" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+        </Grid>
+        <Border Grid.Row="1" Style="{StaticResource CardBorder}" Padding="0">
+            <Grid><Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions><DataGrid AutoGenerateColumns="False" x:Name="dgData" Style="{StaticResource ModernDataGrid}" ColumnHeaderStyle="{StaticResource ModernDataGridColumnHeader}"
+                      RowStyle="{StaticResource ModernDataGridRow}" CellStyle="{StaticResource ModernDataGridCell}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="MÃ" Binding="{Binding MaKiemKe}" Width="70"/>
+                    <DataGridTextColumn Header="CỬA HÀNG" Binding="{Binding TenCuaHang}" Width="140"/>
+                    <DataGridTextColumn Header="SẢN PHẨM / LÔ" Binding="{Binding TenSanPham}" Width="*"/>
+                    <DataGridTextColumn Header="SL HỆ THỐNG" Binding="{Binding SoLuongHeThong}" Width="120"/>
+                    <DataGridTextColumn Header="SL THỰC TẾ" Binding="{Binding SoLuongThucTe}" Width="120"/>
+                    <DataGridTextColumn Header="CHÊNH LỆCH" Binding="{Binding SoLuongLech}" Width="120"/>
+                    <DataGridTextColumn Header="NGÀY KIỂM" Binding="{Binding NgayKiem}" Width="140"/>
+                    <DataGridTemplateColumn Header="THAO TÁC" Width="100">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="✏️" Style="{StaticResource IconButton}" Width="30" Height="30"/>
+                                    <Button Content="🗑️" Style="{StaticResource IconButton}" Width="30" Height="30"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,12,0,12">
+            <Button x:Name="btnPrevPage" Content="&lt;" Style="{StaticResource SecondaryButton}" Width="36" Height="36" Padding="0" Click="BtnPrevPage_Click"/>
+            <TextBlock x:Name="txtPageInfo" Text="Trang 1 / 1" VerticalAlignment="Center" Margin="16,0" FontWeight="SemiBold"/>
+            <Button x:Name="btnNextPage" Content="&gt;" Style="{StaticResource SecondaryButton}" Width="36" Height="36" Padding="0" Click="BtnNextPage_Click"/>
+        </StackPanel>
+</Grid>
+        </Border>
+    </Grid>
+</UserControl>
+
+
+
+
+
+
+
+
+
+
+

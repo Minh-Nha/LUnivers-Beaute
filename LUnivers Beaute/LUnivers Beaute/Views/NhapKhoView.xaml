@@ -1,0 +1,95 @@
+<UserControl x:Class="LUnivers_Beaute.Views.NhapKhoView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+    <Grid Margin="28,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Margin="0,0,0,20">
+            <StackPanel>
+                <TextBlock Text="Nhập kho" Style="{StaticResource SectionTitle}"/>
+                <TextBlock Text="Quản lý phiếu nhập kho và chi tiết nhập" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
+            </StackPanel>
+            <Button Content="＋ Tạo phiếu nhập" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <!-- Phiếu nhập -->
+            <Border Style="{StaticResource CardBorder}" Padding="0" Margin="0,0,0,16">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="📥 Danh sách phiếu nhập kho" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="20,16,0,12"/>
+                    <Grid><Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions><DataGrid AutoGenerateColumns="False" x:Name="dgData" Grid.Row="0" Style="{StaticResource ModernDataGrid}" ColumnHeaderStyle="{StaticResource ModernDataGridColumnHeader}"
+                              RowStyle="{StaticResource ModernDataGridRow}" CellStyle="{StaticResource ModernDataGridCell}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="MÃ PHIẾU" Binding="{Binding MaPhieuNhap}" Width="120"/>
+                            <DataGridTextColumn Header="CỬA HÀNG" Binding="{Binding TenCuaHang}" Width="150"/>
+                            <DataGridTextColumn Header="NHÂN VIÊN" Binding="{Binding NhanVienNhap}" Width="150"/>
+                            <DataGridTextColumn Header="NGÀY NHẬP" Binding="{Binding NgayNhap}" Width="150"/>
+                            <DataGridTextColumn Header="TỔNG TIỀN NHẬP" Binding="{Binding TongTienNhap}" Width="*"/>
+                            <DataGridTemplateColumn Header="THAO TÁC" Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Content="👁️" Style="{StaticResource IconButton}" Width="30" Height="30"/>
+                                            <Button Content="🗑️" Style="{StaticResource IconButton}" Width="30" Height="30"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,12,0,12">
+            <Button x:Name="btnPrevPage" Content="&lt;" Style="{StaticResource SecondaryButton}" Width="36" Height="36" Padding="0" Click="BtnPrevPage_Click"/>
+            <TextBlock x:Name="txtPageInfo" Text="Trang 1 / 1" VerticalAlignment="Center" Margin="16,0" FontWeight="SemiBold"/>
+            <Button x:Name="btnNextPage" Content="&gt;" Style="{StaticResource SecondaryButton}" Width="36" Height="36" Padding="0" Click="BtnNextPage_Click"/>
+        </StackPanel>
+</Grid>
+                </Grid>
+            </Border>
+            <!-- Chi tiết nhập -->
+            <Border Grid.Row="1" Style="{StaticResource CardBorder}" Padding="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="📋 Chi tiết phiếu nhập" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="20,16,0,12"/>
+                    <DataGrid AutoGenerateColumns="False" x:Name="dgChiTiet" Grid.Row="1" Style="{StaticResource ModernDataGrid}" ColumnHeaderStyle="{StaticResource ModernDataGridColumnHeader}"
+                              RowStyle="{StaticResource ModernDataGridRow}" CellStyle="{StaticResource ModernDataGridCell}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="SẢN PHẨM" Binding="{Binding TenSanPham}" Width="*"/>
+                            <DataGridTextColumn Header="SỐ LÔ" Binding="{Binding SoLo}" Width="100"/>
+                            <DataGridTextColumn Header="NGÀY SX" Binding="{Binding NgaySanXuat}" Width="110"/>
+                            <DataGridTextColumn Header="HẠN SD" Binding="{Binding HanSuDung}" Width="110"/>
+                            <DataGridTextColumn Header="SỐ LƯỢNG" Binding="{Binding SoLuong}" Width="100"/>
+                            <DataGridTextColumn Header="GIÁ NHẬP" Binding="{Binding GiaNhap}" Width="130"/>
+                            <DataGridTextColumn Header="THÀNH TIỀN" Binding="{Binding ThanhTien}" Width="130"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
+
+
+
+
+
+
+
+
+
+
+
+
+
