@@ -394,11 +394,110 @@ GO
 -- =========================================================================
 -- PHẦN 3: TẠO CHỈ MỤC INDEX CHO PERFOMANCE (OPTIMIZATION)
 -- =========================================================================
-CREATE NONCLUSTERED INDEX IX_TonKho_SoLuong ON TonKho(SoLuongTon);
-CREATE NONCLUSTERED INDEX IX_LienHe_KhachHang ON KhachHang(SoDienThoai);
+
+-- -----------------------------------------------------------------------
+-- A. BẢNG SẢN PHẨM (SanPham) - Tra cứu theo danh mục, thương hiệu, NCC
+-- -----------------------------------------------------------------------
 CREATE NONCLUSTERED INDEX IX_SanPham_DanhMuc ON SanPham(MaDanhMuc);
-CREATE NONCLUSTERED INDEX IX_Lo_HanSuDung ON LoSanXuat(HanSuDung);
-CREATE NONCLUSTERED INDEX IX_LienHe_NhanVien ON NhanVien(SoDienThoai);
+CREATE NONCLUSTERED INDEX IX_SanPham_ThuongHieu ON SanPham(MaThuongHieu);
+CREATE NONCLUSTERED INDEX IX_SanPham_NhaCungCap ON SanPham(MaNhaCungCap);
+CREATE NONCLUSTERED INDEX IX_SanPham_TrangThai ON SanPham(TrangThai);
+
+-- -----------------------------------------------------------------------
+-- B. BẢNG LÔ SẢN XUẤT (LoSanXuat) - Kiểm tra hạn sử dụng & tra cứu SP
+-- -----------------------------------------------------------------------
+CREATE NONCLUSTERED INDEX IX_LoSanXuat_MaSanPham ON LoSanXuat(MaSanPham);
+CREATE NONCLUSTERED INDEX IX_LoSanXuat_HanSuDung ON LoSanXuat(HanSuDung);
+
+-- -----------------------------------------------------------------------
+-- C. BẢNG NHÂN VIÊN (NhanVien) - Tra cứu theo cửa hàng, SĐT, đăng nhập
+-- -----------------------------------------------------------------------
+CREATE NONCLUSTERED INDEX IX_NhanVien_MaCuaHang ON NhanVien(MaCuaHang);
+CREATE NONCLUSTERED INDEX IX_NhanVien_SoDienThoai ON NhanVien(SoDienThoai);
+CREATE NONCLUSTERED INDEX IX_NhanVien_TrangThai ON NhanVien(TrangThai);
+
+-- -----------------------------------------------------------------------
+-- D. BẢNG KHÁCH HÀNG (KhachHang) - Tra cứu theo SĐT, trạng thái
+-- -----------------------------------------------------------------------
+CREATE NONCLUSTERED INDEX IX_KhachHang_SoDienThoai ON KhachHang(SoDienThoai);
+CREATE NONCLUSTERED INDEX IX_KhachHang_TrangThai ON KhachHang(TrangThai);
+
+-- -----------------------------------------------------------------------
+-- E. BẢNG TỒN KHO (TonKho) - Cảnh báo tồn kho thấp, lọc theo cửa hàng
+-- -----------------------------------------------------------------------
+CREATE NONCLUSTERED INDEX IX_TonKho_SoLuongTon ON TonKho(SoLuongTon);
+CREATE NONCLUSTERED INDEX IX_TonKho_MaLo ON TonKho(MaLo);
+
+-- -----------------------------------------------------------------------
+-- F. BẢNG PHIẾU NHẬP KHO (PhieuNhapKho) - Lọc theo cửa hàng, ngày nhập
+-- -----------------------------------------------------------------------
+CREATE NONCLUSTERED INDEX IX_PhieuNhapKho_MaCuaHang ON PhieuNhapKho(MaCuaHang);
+CREATE NONCLUSTERED INDEX IX_PhieuNhapKho_MaNhanVien ON PhieuNhapKho(MaNhanVien);
+CREATE NONCLUSTERED INDEX IX_PhieuNhapKho_NgayNhap ON PhieuNhapKho(NgayNhap DESC);
+
+-- -----------------------------------------------------------------------
+-- G. BẢNG CHI TIẾT NHẬP KHO (ChiTietNhapKho) - Tra cứu theo lô
+-- -----------------------------------------------------------------------
+CREATE NONCLUSTERED INDEX IX_ChiTietNhapKho_MaLo ON ChiTietNhapKho(MaLo);
+
+-- -----------------------------------------------------------------------
+-- H. BẢNG HÓA ĐƠN (HoaDon) - Lọc cửa hàng, ngày, nhân viên, khách hàng
+-- -----------------------------------------------------------------------
+CREATE NONCLUSTERED INDEX IX_HoaDon_MaCuaHang ON HoaDon(MaCuaHang);
+CREATE NONCLUSTERED INDEX IX_HoaDon_MaNhanVien ON HoaDon(MaNhanVien);
+CREATE NONCLUSTERED INDEX IX_HoaDon_MaKhachHang ON HoaDon(MaKhachHang);
+CREATE NONCLUSTERED INDEX IX_HoaDon_MaKhuyenMai ON HoaDon(MaKhuyenMai);
+CREATE NONCLUSTERED INDEX IX_HoaDon_NgayLap ON HoaDon(NgayLap DESC);
+-- Index tổng hợp cho báo cáo doanh thu: lọc theo cửa hàng + ngày
+CREATE NONCLUSTERED INDEX IX_HoaDon_CuaHang_NgayLap ON HoaDon(MaCuaHang, NgayLap DESC)
+    INCLUDE (KhachCanTra, TongTien);
+
+-- -----------------------------------------------------------------------
+-- I. BẢNG CHI TIẾT HÓA ĐƠN (ChiTietHoaDon) - Tra cứu theo lô, thống kê
+-- -----------------------------------------------------------------------
+CREATE NONCLUSTERED INDEX IX_ChiTietHoaDon_MaLo ON ChiTietHoaDon(MaLo);
+
+-- -----------------------------------------------------------------------
+-- J. BẢNG PHIẾU TRẢ HÀNG (PhieuTraHang) - Tra cứu theo hóa đơn, ngày
+-- -----------------------------------------------------------------------
+CREATE NONCLUSTERED INDEX IX_PhieuTraHang_MaHoaDon ON PhieuTraHang(MaHoaDon);
+CREATE NONCLUSTERED INDEX IX_PhieuTraHang_NgayTra ON PhieuTraHang(NgayTra DESC);
+
+-- -----------------------------------------------------------------------
+-- K. BẢNG CHI TIẾT PHIẾU TRẢ HÀNG (ChiTietPhieuTraHang) - Tra cứu lô
+-- -----------------------------------------------------------------------
+CREATE NONCLUSTERED INDEX IX_ChiTietPhieuTraHang_MaLo ON ChiTietPhieuTraHang(MaLo);
+
+-- -----------------------------------------------------------------------
+-- L. BẢNG KIỂM KÊ (KiemKe) - Lọc theo cửa hàng, ngày kiểm
+-- -----------------------------------------------------------------------
+CREATE NONCLUSTERED INDEX IX_KiemKe_MaCuaHang ON KiemKe(MaCuaHang);
+CREATE NONCLUSTERED INDEX IX_KiemKe_MaLo ON KiemKe(MaLo);
+CREATE NONCLUSTERED INDEX IX_KiemKe_NgayKiem ON KiemKe(NgayKiem DESC);
+
+-- -----------------------------------------------------------------------
+-- M. BẢNG CHẤM CÔNG (ChamCong) - Lọc theo nhân viên, ngày làm
+-- -----------------------------------------------------------------------
+CREATE NONCLUSTERED INDEX IX_ChamCong_MaNhanVien ON ChamCong(MaNhanVien);
+CREATE NONCLUSTERED INDEX IX_ChamCong_NgayLam ON ChamCong(NgayLam DESC);
+-- Index tổng hợp cho truy vấn chấm công: lọc NV + khoảng ngày
+CREATE NONCLUSTERED INDEX IX_ChamCong_NhanVien_NgayLam ON ChamCong(MaNhanVien, NgayLam DESC);
+
+-- -----------------------------------------------------------------------
+-- N. BẢNG HỦY SẢN PHẨM (HuySanPham) - Lọc theo cửa hàng, ngày hủy
+-- -----------------------------------------------------------------------
+CREATE NONCLUSTERED INDEX IX_HuySanPham_MaCuaHang ON HuySanPham(MaCuaHang);
+CREATE NONCLUSTERED INDEX IX_HuySanPham_MaNhanVien ON HuySanPham(MaNhanVien);
+CREATE NONCLUSTERED INDEX IX_HuySanPham_MaLo ON HuySanPham(MaLo);
+CREATE NONCLUSTERED INDEX IX_HuySanPham_NgayHuy ON HuySanPham(NgayHuy DESC);
+
+-- -----------------------------------------------------------------------
+-- O. BẢNG KHUYẾN MÃI (KhuyenMai) - Lọc theo danh mục, sản phẩm, ngày
+-- -----------------------------------------------------------------------
+CREATE NONCLUSTERED INDEX IX_KhuyenMai_MaDanhMuc ON KhuyenMai(MaDanhMuc);
+CREATE NONCLUSTERED INDEX IX_KhuyenMai_MaSanPham ON KhuyenMai(MaSanPham);
+CREATE NONCLUSTERED INDEX IX_KhuyenMai_NgayKetThuc ON KhuyenMai(NgayKetThuc DESC);
+CREATE NONCLUSTERED INDEX IX_KhuyenMai_TrangThai ON KhuyenMai(TrangThai);
 GO
 
-PRINT 'DATABASE MEDICARE FINAL UPDATED VERSION ĐÃ SẴN SÀNG!';
+PRINT 'DATABASE L UNIVERS BEAUTE FINAL UPDATED VERSION ĐÃ SẴN SÀNG!';
