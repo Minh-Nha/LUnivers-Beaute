@@ -7,7 +7,7 @@ namespace DAL
     public class DatabaseHelpers
     {
         private static readonly string connectionString =
-            @"Data Source=pyrex.myvnc.com,14330;Initial Catalog=LUnivers_Beaute;Persist Security Info=True;User ID=user;Password=123;TrustServerCertificate=True;";
+            @"Data Source=PC-QUYS\SQLEXPRESS;Initial Catalog=LUnivers_Beaute;Integrated Security=True;Trust Server Certificate=True";
 
         public static DataTable GetData(string storeProcedureName, params SqlParameter[] parameters)
         {

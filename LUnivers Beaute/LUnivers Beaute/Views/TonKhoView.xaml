@@ -1,0 +1,191 @@
+<UserControl x:Class="LUnivers_Beaute.Views.TonKhoView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+    <Grid Margin="28,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Margin="0,0,0,20">
+            <StackPanel>
+                <TextBlock Text="Tồn kho" Style="{StaticResource SectionTitle}"/>
+                <TextBlock Text="Theo dõi số lượng tồn kho theo cửa hàng và lô sản xuất" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
+            </StackPanel>
+            <Button Content="📥 Xuất báo cáo" Style="{StaticResource SecondaryButton}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+        </Grid>
+
+        <UniformGrid Grid.Row="1" Rows="1" Columns="3" Margin="0,0,0,16">
+            <Border Style="{StaticResource StatCard}" Margin="0,0,8,0">
+                <StackPanel>
+                    <Border Width="36" Height="36" CornerRadius="18" Background="#E8F5E9" Margin="0,0,0,10" HorizontalAlignment="Left">
+                        <TextBlock Text="📦" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="Tổng SP trong kho" FontSize="11" Foreground="#7A7A7A" Margin="0,0,0,4"/>
+                    <TextBlock x:Name="txtTongSP" Text="0" FontSize="20" FontWeight="Bold" Foreground="#2D2D2D"/>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource StatCard}" Margin="4,0,4,0">
+                <StackPanel>
+                    <Border Width="36" Height="36" CornerRadius="18" Background="#FFF3E0" Margin="0,0,0,10" HorizontalAlignment="Left">
+                        <TextBlock Text="⚠️" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="Sắp hết hàng" FontSize="11" Foreground="#7A7A7A" Margin="0,0,0,4"/>
+                    <TextBlock x:Name="txtSapHetHang" Text="0" FontSize="20" FontWeight="Bold" Foreground="#F5A623"/>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource StatCard}" Margin="8,0,0,0">
+                <StackPanel>
+                    <Border Width="36" Height="36" CornerRadius="18" Background="#FFEBEE" Margin="0,0,0,10" HorizontalAlignment="Left">
+                        <TextBlock Text="📅" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="Sắp hết hạn" FontSize="11" Foreground="#7A7A7A" Margin="0,0,0,4"/>
+                    <TextBlock x:Name="txtSapHetHan" Text="0" FontSize="20" FontWeight="Bold" Foreground="#E74C3C"/>
+                </StackPanel>
+            </Border>
+        </UniformGrid>
+
+        <Grid Grid.Row="2" Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Border Background="White" CornerRadius="8" Padding="12,0" HorizontalAlignment="Left" Width="300" BorderBrush="#E0E0E0" BorderThickness="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="🔍" VerticalAlignment="Center" Foreground="#7A7A7A" Margin="0,0,8,0"/>
+                    <TextBox x:Name="txtSearch" Grid.Column="1" Background="Transparent" BorderThickness="0" VerticalAlignment="Center" TextChanged="TxtSearch_TextChanged" Margin="0,6"/>
+                    <TextBlock Text="Tìm kiếm sản phẩm..." Foreground="#B0B0B0" VerticalAlignment="Center" Grid.Column="1" IsHitTestVisible="False">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=txtSearch}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </Border>
+            
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <TextBlock Text="Trạng thái:" VerticalAlignment="Center" Margin="0,0,8,0" Foreground="#7A7A7A" FontWeight="SemiBold"/>
+                <ComboBox x:Name="cmbTrangThai" Width="150" SelectedIndex="0" SelectionChanged="CmbTrangThai_SelectionChanged" Padding="8,6">
+                    <ComboBoxItem Content="Tất cả"/>
+                    <ComboBoxItem Content="Còn hàng"/>
+                    <ComboBoxItem Content="Sắp hết hàng"/>
+                    <ComboBoxItem Content="Sắp hết hạn"/>
+                    <ComboBoxItem Content="Đã hết hạn"/>
+                    <ComboBoxItem Content="Hết hàng"/>
+                </ComboBox>
+            </StackPanel>
+        </Grid>
+
+        <Border Grid.Row="3" Style="{StaticResource CardBorder}" Padding="0">
+            <Grid><Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions><DataGrid AutoGenerateColumns="False" x:Name="dgData" Style="{StaticResource ModernDataGrid}" ColumnHeaderStyle="{StaticResource ModernDataGridColumnHeader}"
+                      RowStyle="{StaticResource ModernDataGridRow}" CellStyle="{StaticResource ModernDataGridCell}"
+                      Sorting="dgData_Sorting">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="CỬA HÀNG" Binding="{Binding TenCuaHang}" Width="150"/>
+                    <DataGridTextColumn Header="SẢN PHẨM" Binding="{Binding TenSanPham}" Width="*"/>
+                    <DataGridTextColumn Header="SỐ LÔ" Binding="{Binding SoLo}" Width="100"/>
+                    <DataGridTextColumn Header="NGÀY SX" Binding="{Binding NgaySanXuat}" Width="110"/>
+                    <DataGridTextColumn Header="HẠN SD" Binding="{Binding HanSuDung}" Width="110"/>
+                    <DataGridTemplateColumn Header="SỐ LƯỢNG TỒN" Width="120">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding SoLuongTon}" FontWeight="SemiBold" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="#2D2D2D"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding TinhTrangKho}" Value="Hết hàng">
+                                                    <Setter Property="Foreground" Value="#E74C3C"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding TinhTrangKho}" Value="Sắp hết hàng">
+                                                    <Setter Property="Foreground" Value="#F5A623"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="TRẠNG THÁI" Width="130">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border CornerRadius="4" Padding="8,4" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="#E8F5E9"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding TinhTrangKho}" Value="Hết hàng">
+                                                    <Setter Property="Background" Value="#FFEBEE"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding TinhTrangKho}" Value="Sắp hết hàng">
+                                                    <Setter Property="Background" Value="#FFF3E0"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding TinhTrangKho}" Value="Đã hết hạn">
+                                                    <Setter Property="Background" Value="#FFEBEE"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding TinhTrangKho}" Value="Sắp hết hạn">
+                                                    <Setter Property="Background" Value="#FFF3E0"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="{Binding TinhTrangKho}" FontSize="12" FontWeight="SemiBold">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="#2E7D32"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding TinhTrangKho}" Value="Hết hàng">
+                                                        <Setter Property="Foreground" Value="#C62828"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding TinhTrangKho}" Value="Sắp hết hàng">
+                                                        <Setter Property="Foreground" Value="#EF6C00"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding TinhTrangKho}" Value="Đã hết hạn">
+                                                        <Setter Property="Foreground" Value="#C62828"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding TinhTrangKho}" Value="Sắp hết hạn">
+                                                        <Setter Property="Foreground" Value="#EF6C00"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Border>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,12,0,12">
+            <Button x:Name="btnPrevPage" Content="&lt;" Style="{StaticResource SecondaryButton}" Width="36" Height="36" Padding="0" Click="BtnPrevPage_Click"/>
+            <TextBlock x:Name="txtPageInfo" Text="Trang 1 / 1" VerticalAlignment="Center" Margin="16,0" FontWeight="SemiBold"/>
+            <Button x:Name="btnNextPage" Content="&gt;" Style="{StaticResource SecondaryButton}" Width="36" Height="36" Padding="0" Click="BtnNextPage_Click"/>
+        </StackPanel>
+</Grid>
+        </Border>
+    </Grid>
+</UserControl>
+
+
+
+
+
+
+
+
+
+
+

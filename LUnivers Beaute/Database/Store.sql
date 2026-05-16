@@ -1,4 +1,4 @@
-﻿USE LUnivers_Beaute;
+USE LUnivers_Beaute;
 GO
 
 -- =========================================================================
@@ -205,7 +205,9 @@ BEGIN
         tk.SoLuongTon,
         CASE 
             WHEN tk.SoLuongTon = 0 THEN N'Hết hàng'
-            WHEN tk.SoLuongTon <= 10 THEN N'Sắp hết'
+            WHEN DATEDIFF(day, GETDATE(), lsx.HanSuDung) < 0 THEN N'Đã hết hạn'
+            WHEN DATEDIFF(day, GETDATE(), lsx.HanSuDung) <= 30 THEN N'Sắp hết hạn'
+            WHEN tk.SoLuongTon <= 30 THEN N'Sắp hết hàng'
             ELSE N'Còn hàng' END AS TinhTrangKho
     FROM TonKho tk
     LEFT JOIN CuaHang ch ON tk.MaCuaHang = ch.MaCuaHang

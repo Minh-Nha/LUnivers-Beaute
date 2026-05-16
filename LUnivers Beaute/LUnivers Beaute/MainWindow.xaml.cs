@@ -25,7 +25,7 @@ namespace LUnivers_Beaute
                     "SanPham" => new SanPhamView(),
                     "DanhMuc" => new DanhMucView(),
                     "ThuongHieu" => new ThuongHieuView(),
-                    "KhoHang" => new KhoHangView(),
+                    "KhoHang" => new TonKhoView(),
                     "NhapKho" => new NhapKhoView(),
                     "KiemKe" => new KiemKeView(),
                     "HuySanPham" => new HuySanPhamView(),

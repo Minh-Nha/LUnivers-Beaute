@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using DAL;
 
 namespace BUS
@@ -10,6 +10,11 @@ namespace BUS
         public DataTable GetAll()
         {
             return _dal.GetAll();
+        }
+
+        public DataTable SearchAndSort(string keyword, string status, string sortColumn, string sortOrder)
+        {
+            return _dal.SearchAndSort(keyword, status, sortColumn, sortOrder);
         }
     }
 }
