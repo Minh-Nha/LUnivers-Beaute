@@ -47,46 +47,89 @@
             </Border>
         </UniformGrid>
 
-        <Grid Grid.Row="2" Margin="0,0,0,12">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <Border Background="White" CornerRadius="8" Padding="12,0" HorizontalAlignment="Left" Width="300" BorderBrush="#E0E0E0" BorderThickness="1">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="🔍" VerticalAlignment="Center" Foreground="#7A7A7A" Margin="0,0,8,0"/>
-                    <TextBox x:Name="txtSearch" Grid.Column="1" Background="Transparent" BorderThickness="0" VerticalAlignment="Center" TextChanged="TxtSearch_TextChanged" Margin="0,6"/>
-                    <TextBlock Text="Tìm kiếm sản phẩm..." Foreground="#B0B0B0" VerticalAlignment="Center" Grid.Column="1" IsHitTestVisible="False">
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Text, ElementName=txtSearch}" Value="">
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-                </Grid>
-            </Border>
-            
-            <StackPanel Grid.Column="1" Orientation="Horizontal">
-                <TextBlock Text="Trạng thái:" VerticalAlignment="Center" Margin="0,0,8,0" Foreground="#7A7A7A" FontWeight="SemiBold"/>
-                <ComboBox x:Name="cmbTrangThai" Width="150" SelectedIndex="0" SelectionChanged="CmbTrangThai_SelectionChanged" Padding="8,6">
-                    <ComboBoxItem Content="Tất cả"/>
+        <Border Grid.Row="2" Style="{StaticResource CardBorder}" Padding="16" Margin="0,0,0,16">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1.2*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Row="0" Grid.Column="0" Background="White" CornerRadius="6" Padding="12,0" Margin="0,0,10,0" BorderBrush="#E0E0E0" BorderThickness="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="🔍" VerticalAlignment="Center" Foreground="#7A7A7A" Margin="0,0,8,0"/>
+                        <TextBox x:Name="txtSearch" Grid.Column="1" Background="Transparent" BorderThickness="0" VerticalAlignment="Center" Margin="0,6"/>
+                        <TextBlock Text="Tìm kiếm sản phẩm, cửa hàng..." Foreground="#B0B0B0" VerticalAlignment="Center" Grid.Column="1" IsHitTestVisible="False">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Text, ElementName=txtSearch}" Value="">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Text, ElementName=txtSearch}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+                </Border>
+                
+                <ComboBox x:Name="cboSearchCuaHang" Grid.Row="0" Grid.Column="1" Style="{StaticResource ModernComboBox}" Margin="0,0,10,0" SelectedValuePath="MaCuaHang">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding TenCuaHang}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <ComboBox x:Name="cboSearchDanhMuc" Grid.Row="0" Grid.Column="2" Style="{StaticResource ModernComboBox}" Margin="0,0,10,0" SelectedValuePath="MaDanhMuc">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding TenDanhMuc}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                
+                <ComboBox x:Name="cmbTrangThai" Grid.Row="0" Grid.Column="3" Style="{StaticResource ModernComboBox}">
+                    <ComboBoxItem Content="Tất cả trạng thái" IsSelected="True"/>
                     <ComboBoxItem Content="Còn hàng"/>
                     <ComboBoxItem Content="Sắp hết hàng"/>
                     <ComboBoxItem Content="Sắp hết hạn"/>
                     <ComboBoxItem Content="Đã hết hạn"/>
                     <ComboBoxItem Content="Hết hàng"/>
                 </ComboBox>
-            </StackPanel>
-        </Grid>
+
+                <Grid Grid.Row="2" Grid.ColumnSpan="4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" Grid.Column="0">
+                        <TextBlock Text="Từ SL tồn:" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBox x:Name="txtTuSoLuong" Style="{StaticResource ModernTextBox}" Width="150" Tag="Từ"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Grid.Column="1">
+                        <TextBlock Text="Đến SL tồn:" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBox x:Name="txtDenSoLuong" Style="{StaticResource ModernTextBox}" Width="150" Tag="Đến"/>
+                    </StackPanel>
+                    <Button x:Name="btnSearch" Grid.Column="2" Content="🔍 Tìm kiếm" Style="{StaticResource PrimaryButton}" Padding="24,10" Click="BtnSearch_Click"/>
+                </Grid>
+            </Grid>
+        </Border>
 
         <Border Grid.Row="3" Style="{StaticResource CardBorder}" Padding="0">
             <Grid><Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions><DataGrid AutoGenerateColumns="False" x:Name="dgData" Style="{StaticResource ModernDataGrid}" ColumnHeaderStyle="{StaticResource ModernDataGridColumnHeader}"
@@ -178,14 +221,3 @@
         </Border>
     </Grid>
 </UserControl>
-
-
-
-
-
-
-
-
-
-
-

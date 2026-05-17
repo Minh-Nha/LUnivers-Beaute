@@ -7,7 +7,7 @@ namespace DAL
     public class DatabaseHelpers
     {
         private static readonly string connectionString =
-            @"Data Source=PC-QUYS\SQLEXPRESS;Initial Catalog=LUnivers_Beaute;Integrated Security=True;Trust Server Certificate=True";
+            @"Data Source=pyrex.myvnc.com,14330;Initial Catalog=LUnivers_Beaute;Persist Security Info=True;User ID=user;Password = 123;Trust Server Certificate=True";
 
         public static DataTable GetData(string storeProcedureName, params SqlParameter[] parameters)
         {
@@ -36,6 +36,31 @@ namespace DAL
                 throw new Exception("Database error: " + ex.Message);
             }
             return dt;
+        }
+
+        public static int ExecuteNonQuery(string storeProcedureName, params SqlParameter[] parameters)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand(storeProcedureName, conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        if (parameters != null && parameters.Length > 0)
+                        {
+                            cmd.Parameters.AddRange(parameters);
+                        }
+
+                        conn.Open();
+                        return cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Database error: " + ex.Message);
+            }
         }
     }
 }

@@ -28,6 +28,26 @@ namespace LUnivers_Beaute.Views
                 TonKhoBUS bus = new TonKhoBUS();
                 _allData = bus.GetAll();
                 UpdateStatistics();
+                
+                // Load filters
+                CuaHangBUS chBus = new CuaHangBUS();
+                var dtCH = chBus.GetAll().Copy();
+                var rowCH = dtCH.NewRow();
+                rowCH["MaCuaHang"] = "";
+                rowCH["TenCuaHang"] = "Tất cả cửa hàng";
+                dtCH.Rows.InsertAt(rowCH, 0);
+                cboSearchCuaHang.ItemsSource = dtCH.DefaultView;
+                cboSearchCuaHang.SelectedIndex = 0;
+
+                DanhMucBUS dmBus = new DanhMucBUS();
+                var dtDM = dmBus.GetAll().Copy();
+                var rowDM = dtDM.NewRow();
+                rowDM["MaDanhMuc"] = 0;
+                rowDM["TenDanhMuc"] = "Tất cả danh mục";
+                dtDM.Rows.InsertAt(rowDM, 0);
+                cboSearchDanhMuc.ItemsSource = dtDM.DefaultView;
+                cboSearchDanhMuc.SelectedIndex = 0;
+
                 FilterData();
             }
             catch (System.Exception ex)
@@ -56,8 +76,21 @@ namespace LUnivers_Beaute.Views
                 TonKhoBUS bus = new TonKhoBUS();
                 string searchText = txtSearch?.Text?.Trim() ?? "";
                 string selectedStatus = (cmbTrangThai?.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Tất cả";
+                if (selectedStatus == "Tất cả trạng thái") selectedStatus = "Tất cả";
 
-                DataTable filteredData = bus.SearchAndSort(searchText, selectedStatus, _currentSortColumn, _currentSortOrder);
+                string maCuaHang = cboSearchCuaHang?.SelectedValue?.ToString();
+                if (string.IsNullOrEmpty(maCuaHang)) maCuaHang = null;
+
+                int? maDanhMuc = cboSearchDanhMuc?.SelectedValue as int?;
+                if (maDanhMuc == 0) maDanhMuc = null;
+
+                int? tuSoLuong = null;
+                if (int.TryParse(txtTuSoLuong?.Text, out int minVal)) tuSoLuong = minVal;
+
+                int? denSoLuong = null;
+                if (int.TryParse(txtDenSoLuong?.Text, out int maxVal)) denSoLuong = maxVal;
+
+                DataTable filteredData = bus.SearchAndSort(searchText, selectedStatus, _currentSortColumn, _currentSortOrder, maCuaHang, maDanhMuc, tuSoLuong, denSoLuong);
                 
                 if (dgData != null)
                 {
@@ -68,6 +101,11 @@ namespace LUnivers_Beaute.Views
             {
                 MessageBox.Show("Lỗi khi tải dữ liệu: " + ex.Message);
             }
+        }
+
+        private void BtnSearch_Click(object sender, RoutedEventArgs e)
+        {
+            FilterData();
         }
 
         private void dgData_Sorting(object sender, DataGridSortingEventArgs e)
@@ -105,16 +143,6 @@ namespace LUnivers_Beaute.Views
             FilterData();
         }
 
-        private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            FilterData();
-        }
-
-        private void CmbTrangThai_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            FilterData();
-        }
-
         private void BtnPrevPage_Click(object sender, RoutedEventArgs e)
         {
             _pager?.PreviousPage();
@@ -126,4 +154,3 @@ namespace LUnivers_Beaute.Views
         }
     }
 }
-

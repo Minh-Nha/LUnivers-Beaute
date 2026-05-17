@@ -563,3 +563,198 @@ PRINT N'EXEC sp_CanhBaoTonKhoThap @NguongCanhBao = 10, @MaCuaHang = NULL';
 GO
 
 
+
+-- =========================================================================
+-- TÍNH NĂNG MỚI THÊM 
+-- =========================================================================
+
+
+-- FILE: sp_HuySanPham_CRUD.sql
+USE LUnivers_Beaute;
+GO
+
+-- 1. Láº¥y danh sÃ¡ch Há»§y Sáº£n Pháº©m
+CREATE OR ALTER PROCEDURE sp_GetAllHuySanPham
+AS
+BEGIN
+    SELECT h.MaHuy, 
+           c.TenCuaHang, 
+           n.HoTen AS NhanVienHuy, 
+           sp.TenSanPham + ' - LÃ´: ' + CAST(l.MaLo AS VARCHAR) AS TenSanPham, 
+           h.SoLuong, 
+           h.NgayHuy, 
+           h.LyDo
+    FROM HuySanPham h
+    JOIN CuaHang c ON h.MaCuaHang = c.MaCuaHang
+    JOIN NhanVien n ON h.MaNhanVien = n.MaNhanVien
+    JOIN LoSanXuat l ON h.MaLo = l.MaLo
+    JOIN SanPham sp ON l.MaSanPham = sp.MaSanPham
+    ORDER BY h.NgayHuy DESC;
+END
+GO
+
+-- 2. ThÃªm phiáº¿u há»§y sáº£n pháº©m
+CREATE OR ALTER PROCEDURE sp_InsertHuySanPham
+    @MaCuaHang VARCHAR(20),
+    @MaNhanVien VARCHAR(20),
+    @MaLo INT,
+    @SoLuong INT,
+    @NgayHuy DATETIME,
+    @LyDo NVARCHAR(255)
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        -- ThÃªm phiáº¿u há»§y
+        INSERT INTO HuySanPham (MaCuaHang, MaNhanVien, MaLo, SoLuong, NgayHuy, LyDo)
+        VALUES (@MaCuaHang, @MaNhanVien, @MaLo, @SoLuong, @NgayHuy, @LyDo);
+
+        -- Trá»« sá»‘ lÆ°á»£ng tá»“n kho
+        IF EXISTS (SELECT 1 FROM TonKho WHERE MaCuaHang = @MaCuaHang AND MaLo = @MaLo)
+        BEGIN
+            UPDATE TonKho
+            SET SoLuongTon = SoLuongTon - @SoLuong
+            WHERE MaCuaHang = @MaCuaHang AND MaLo = @MaLo;
+        END
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END
+GO
+
+-- 3. Láº¥y danh sÃ¡ch sáº£n pháº©m chá» há»§y (Sáº£n pháº©m Ä‘Ã£ quÃ¡ háº¡n nhÆ°ng váº«n cÃ²n tá»“n kho)
+CREATE OR ALTER PROCEDURE sp_GetSanPhamChoHuy
+    @MaCuaHang VARCHAR(20)
+AS
+BEGIN
+    SELECT tk.MaLo, 
+           tk.MaCuaHang,
+           sp.TenSanPham, 
+           l.SoLo, 
+           tk.SoLuongTon, 
+           l.HanSuDung
+    FROM TonKho tk
+    JOIN LoSanXuat l ON tk.MaLo = l.MaLo
+    JOIN SanPham sp ON l.MaSanPham = sp.MaSanPham
+    WHERE tk.MaCuaHang = @MaCuaHang 
+      AND tk.SoLuongTon > 0 
+      AND l.HanSuDung < GETDATE()
+    ORDER BY l.HanSuDung ASC;
+END
+GO
+
+
+-- FILE: sp_PhieuTraHang_CRUD.sql
+USE LUnivers_Beaute;
+GO
+
+-- 1. Láº¥y danh sÃ¡ch Phiáº¿u Tráº£ HÃ ng
+CREATE OR ALTER PROCEDURE sp_GetAllPhieuTraHang
+AS
+BEGIN
+    SELECT MaPhieuTra, MaHoaDon, NgayTra, LyDo
+    FROM PhieuTraHang
+    ORDER BY NgayTra DESC;
+END
+GO
+
+-- 2. Láº¥y danh sÃ¡ch Chi Tiáº¿t Phiáº¿u Tráº£ theo mÃ£
+CREATE OR ALTER PROCEDURE sp_GetChiTietPhieuTra
+    @MaPhieuTra VARCHAR(20)
+AS
+BEGIN
+    SELECT 
+        sp.TenSanPham, 
+        c.MaLo AS SoLo, 
+        c.SoLuongTra, 
+        c.SoTienHoan
+    FROM ChiTietPhieuTraHang c
+    JOIN LoSanXuat l ON c.MaLo = l.MaLo
+    JOIN SanPham sp ON l.MaSanPham = sp.MaSanPham
+    WHERE c.MaPhieuTra = @MaPhieuTra;
+END
+GO
+
+-- 3. Táº¡o má»›i Phiáº¿u Tráº£ HÃ ng & Chi tiáº¿t
+-- Sá»­ dá»¥ng JSON Ä‘á»ƒ truyá»n danh sÃ¡ch chi tiáº¿t (TÆ°Æ¡ng tá»± nhÆ° Nháº­p Kho vÃ  BÃ¡n HÃ ng)
+CREATE OR ALTER PROCEDURE sp_InsertPhieuTraHang
+    @MaPhieuTra VARCHAR(20),
+    @MaHoaDon VARCHAR(20),
+    @NgayTra DATETIME,
+    @LyDo NVARCHAR(255),
+    @JsonChiTiet NVARCHAR(MAX)
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        -- 1. Insert Phiáº¿u Tráº£
+        INSERT INTO PhieuTraHang (MaPhieuTra, MaHoaDon, NgayTra, LyDo)
+        VALUES (@MaPhieuTra, @MaHoaDon, @NgayTra, @LyDo);
+
+        -- 2. Insert Chi tiáº¿t phiáº¿u tráº£ tá»« JSON
+        INSERT INTO ChiTietPhieuTraHang (MaPhieuTra, MaLo, SoLuongTra, SoTienHoan)
+        SELECT 
+            @MaPhieuTra,
+            JSON_VALUE(value, '$.MaLo'),
+            JSON_VALUE(value, '$.SoLuongTra'),
+            JSON_VALUE(value, '$.SoTienHoan')
+        FROM OPENJSON(@JsonChiTiet);
+
+        -- 3. Cáº­p nháº­t láº¡i sá»‘ lÆ°á»£ng Tá»“n Kho (VÃ¬ khÃ¡ch tráº£ hÃ ng thÃ¬ nháº­p láº¡i vÃ o kho)
+        -- ChÃº Ã½: á»ž Ä‘Ã¢y ta cáº§n biáº¿t cá»­a hÃ ng nÃ o xuáº¥t hÃ³a Ä‘Æ¡n nÃ y Ä‘á»ƒ cá»™ng láº¡i tá»“n kho cho Ä‘Ãºng cá»­a hÃ ng Ä‘Ã³.
+        DECLARE @MaCuaHang VARCHAR(20);
+        SELECT @MaCuaHang = MaCuaHang FROM HoaDon WHERE MaHoaDon = @MaHoaDon;
+
+        -- TÄƒng sá»‘ lÆ°á»£ng tá»“n kho cho tá»«ng lÃ´
+        UPDATE tk
+        SET tk.SoLuongTon = tk.SoLuongTon + c.SoLuongTra
+        FROM TonKho tk
+        INNER JOIN (
+            SELECT 
+                CAST(JSON_VALUE(value, '$.MaLo') AS INT) AS MaLo,
+                CAST(JSON_VALUE(value, '$.SoLuongTra') AS INT) AS SoLuongTra
+            FROM OPENJSON(@JsonChiTiet)
+        ) c ON tk.MaLo = c.MaLo
+        WHERE tk.MaCuaHang = @MaCuaHang;
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END
+GO
+
+
+-- FILE: sp_Login.sql
+USE LUnivers_Beaute;
+GO
+
+-- =========================================================================
+-- Há»† THá»NG & PHÃ‚N QUYá»€N - ÄÄƒng nháº­p tÃ i khoáº£n nhÃ¢n viÃªn
+-- =========================================================================
+CREATE OR ALTER PROCEDURE sp_Login
+    @TenDangNhap VARCHAR(50),
+    @MatKhau VARCHAR(255)
+AS
+BEGIN
+    SELECT n.MaNhanVien, 
+           n.HoTen, 
+           n.VaiTro, 
+           n.MaCuaHang, 
+           c.TenCuaHang
+    FROM NhanVien n
+    JOIN CuaHang c ON n.MaCuaHang = c.MaCuaHang
+    WHERE n.TenDangNhap = @TenDangNhap 
+      AND n.MatKhau = @MatKhau 
+      AND n.TrangThai = 1;
+END;
+GO
+

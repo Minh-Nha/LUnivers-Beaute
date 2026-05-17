@@ -1,9 +1,10 @@
-﻿<UserControl x:Class="LUnivers_Beaute.Views.TraHangView"
+<UserControl x:Class="LUnivers_Beaute.Views.TraHangView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="Transparent">
-    <Grid Margin="28,24">
-        <Grid.RowDefinitions>
+    <Grid>
+        <Grid Margin="28,24" x:Name="mainContent">
+            <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -12,60 +13,153 @@
                 <TextBlock Text="Trả hàng" Style="{StaticResource SectionTitle}"/>
                 <TextBlock Text="Quản lý phiếu trả hàng và hoàn tiền" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
             </StackPanel>
-            <Button Content="＋ Tạo phiếu trả" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            <Button x:Name="btnAdd" Content="＋ Tạo phiếu trả" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Right" VerticalAlignment="Center" Click="BtnAdd_Click"/>
         </Grid>
         <Grid Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Border Style="{StaticResource CardBorder}" Padding="0" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="55*"/>
+                <ColumnDefinition Width="45*"/>
+            </Grid.ColumnDefinitions>
+            
+            <Border Style="{StaticResource CardBorder}" Padding="0" Margin="0,0,16,0">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Text="↩️ Phiếu trả hàng" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="20,16,0,12"/>
-                    <Grid><Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions><DataGrid AutoGenerateColumns="False" x:Name="dgData" Grid.Row="0" Style="{StaticResource ModernDataGrid}" ColumnHeaderStyle="{StaticResource ModernDataGridColumnHeader}"
+                    <TextBlock Text="↩️ Phiếu trả hàng" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="20,16,0,12"/>
+                    
+                    <DataGrid AutoGenerateColumns="False" x:Name="dgData" Grid.Row="1" Style="{StaticResource ModernDataGrid}" ColumnHeaderStyle="{StaticResource ModernDataGridColumnHeader}"
                               RowStyle="{StaticResource ModernDataGridRow}" CellStyle="{StaticResource ModernDataGridCell}">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="MÃ PHIẾU TRẢ" Binding="{Binding MaPhieuTra}" Width="130"/>
-                            <DataGridTextColumn Header="MÃ HÓA ĐƠN" Binding="{Binding MaHoaDon}" Width="130"/>
-                            <DataGridTextColumn Header="NGÀY TRẢ" Binding="{Binding NgayTra}" Width="150"/>
+                            <DataGridTextColumn Header="MÃ PHIẾU" Binding="{Binding MaPhieuTra}" Width="100"/>
+                            <DataGridTextColumn Header="HÓA ĐƠN" Binding="{Binding MaHoaDon}" Width="100"/>
+                            <DataGridTextColumn Header="NGÀY TRẢ" Binding="{Binding NgayTra}" Width="110"/>
                             <DataGridTextColumn Header="LÝ DO" Binding="{Binding LyDo}" Width="*"/>
-                            <DataGridTemplateColumn Header="" Width="80">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Button Content="👁️" Style="{StaticResource IconButton}" Width="30" Height="30"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,12,0,12">
-            <Button x:Name="btnPrevPage" Content="&lt;" Style="{StaticResource SecondaryButton}" Width="36" Height="36" Padding="0" Click="BtnPrevPage_Click"/>
-            <TextBlock x:Name="txtPageInfo" Text="Trang 1 / 1" VerticalAlignment="Center" Margin="16,0" FontWeight="SemiBold"/>
-            <Button x:Name="btnNextPage" Content="&gt;" Style="{StaticResource SecondaryButton}" Width="36" Height="36" Padding="0" Click="BtnNextPage_Click"/>
-        </StackPanel>
-</Grid>
+                    
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,12,0,12">
+                        <Button x:Name="btnPrevPage" Content="&lt;" Style="{StaticResource SecondaryButton}" Width="36" Height="36" Padding="0" Click="BtnPrevPage_Click"/>
+                        <TextBlock x:Name="txtPageInfo" Text="Trang 1 / 1" VerticalAlignment="Center" Margin="16,0" FontWeight="SemiBold"/>
+                        <Button x:Name="btnNextPage" Content="&gt;" Style="{StaticResource SecondaryButton}" Width="36" Height="36" Padding="0" Click="BtnNextPage_Click"/>
+                    </StackPanel>
                 </Grid>
             </Border>
-            <Border Grid.Row="1" Style="{StaticResource CardBorder}" Padding="0">
+            
+            <Border Grid.Column="1" Style="{StaticResource CardBorder}" Padding="0">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Text="📋 Chi tiết phiếu trả" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="20,16,0,12"/>
+                    <TextBlock Text="📋 Chi tiết phiếu trả" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="20,16,0,12"/>
                     <DataGrid AutoGenerateColumns="False" x:Name="dgChiTiet" Grid.Row="1" Style="{StaticResource ModernDataGrid}" ColumnHeaderStyle="{StaticResource ModernDataGridColumnHeader}"
                               RowStyle="{StaticResource ModernDataGridRow}" CellStyle="{StaticResource ModernDataGridCell}">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="SẢN PHẨM" Binding="{Binding TenSanPham}" Width="*"/>
-                            <DataGridTextColumn Header="SỐ LÔ" Binding="{Binding SoLo}" Width="100"/>
-                            <DataGridTextColumn Header="SỐ LƯỢNG TRẢ" Binding="{Binding SoLuongTra}" Width="120"/>
-                            <DataGridTextColumn Header="SỐ TIỀN HOÀN" Binding="{Binding SoTienHoan}" Width="130"/>
+                            <DataGridTextColumn Header="LÔ" Binding="{Binding SoLo}" Width="80"/>
+                            <DataGridTextColumn Header="SL" Binding="{Binding SoLuongTra}" Width="50"/>
+                            <DataGridTextColumn Header="TIỀN HOÀN" Binding="{Binding SoTienHoan}" Width="100"/>
                         </DataGrid.Columns>
                     </DataGrid>
+                </Grid>
+            </Border>
+        </Grid>
+        </Grid>
+
+        <!-- Overlay Modal Dialog -->
+        <Grid x:Name="crudPanel" Visibility="Collapsed">
+            <Border Background="#66000000" MouseDown="Overlay_MouseDown"/>
+            
+            <Border HorizontalAlignment="Center" VerticalAlignment="Center" Width="700" MaxHeight="750" 
+                    Style="{StaticResource CardBorder}" Padding="32" Background="White">
+                <Border.Effect>
+                    <DropShadowEffect Color="Black" Direction="270" ShadowDepth="4" BlurRadius="20" Opacity="0.2"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock x:Name="txtPanelTitle" Text="✨ Tạo Phiếu Trả Hàng" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,24"/>
+                    
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,24">
+                        <StackPanel Margin="0,0,12,0">
+                            <Grid Margin="0,0,0,20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="16"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="Mã Hóa Đơn *" Foreground="{StaticResource TextSecondaryBrush}" FontSize="13" Margin="0,0,0,6"/>
+                                    <ComboBox x:Name="cboHoaDon" Style="{StaticResource ModernComboBox}" Height="38"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="Ngày trả *" Foreground="{StaticResource TextSecondaryBrush}" FontSize="13" Margin="0,0,0,6"/>
+                                    <DatePicker x:Name="dpNgayTra" Style="{StaticResource ModernDatePicker}" Height="38"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <TextBlock Text="Lý do *" Foreground="{StaticResource TextSecondaryBrush}" FontSize="13" Margin="0,0,0,6"/>
+                            <TextBox x:Name="txtLyDo" Style="{StaticResource ModernTextBox}" Height="50" TextWrapping="Wrap" AcceptsReturn="True" Margin="0,0,0,24"/>
+
+                            <TextBlock Text="Chi tiết trả hàng" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,12"/>
+                            
+                            <!-- A mini panel to add details -->
+                            <Border Style="{StaticResource CardBorder}" Padding="16" Background="#F8F9FA" Margin="0,0,0,16">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Lô Sản Phẩm" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,12,6"/>
+                                    <TextBlock Grid.Column="1" Text="Số Lượng" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,12,6"/>
+                                    <TextBlock Grid.Column="2" Text="Tiền Hoàn" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,12,6"/>
+                                    
+                                    <ComboBox x:Name="cboChiTietLo" Grid.Row="1" Style="{StaticResource ModernComboBox}" Margin="0,0,12,0" Height="36"/>
+                                    <TextBox x:Name="txtChiTietSoLuong" Grid.Row="1" Grid.Column="1" Style="{StaticResource ModernTextBox}" Margin="0,0,12,0" Height="36"/>
+                                    <TextBox x:Name="txtChiTietTienHoan" Grid.Row="1" Grid.Column="2" Style="{StaticResource ModernTextBox}" Margin="0,0,12,0" Height="36"/>
+                                    <Button x:Name="btnAddDetail" Grid.Row="1" Grid.Column="3" Content="Thêm" Style="{StaticResource PrimaryButton}" Padding="16,0" Height="36" Click="BtnAddDetail_Click"/>
+                                </Grid>
+                            </Border>
+
+                            <DataGrid AutoGenerateColumns="False" x:Name="dgChiTietPhieuTra_Temp" Height="150" Style="{StaticResource ModernDataGrid}" ColumnHeaderStyle="{StaticResource ModernDataGridColumnHeader}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="LÔ" Binding="{Binding MaLo}" Width="*"/>
+                                    <DataGridTextColumn Header="SỐ LƯỢNG" Binding="{Binding SoLuongTra}" Width="80"/>
+                                    <DataGridTextColumn Header="SỐ TIỀN HOÀN" Binding="{Binding SoTienHoan}" Width="100"/>
+                                    <DataGridTemplateColumn Header="" Width="40">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="X" Foreground="Red" Background="Transparent" BorderThickness="0" FontWeight="Bold" Click="BtnRemoveDetail_Click"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Content="Hủy" Style="{StaticResource SecondaryButton}" Click="BtnCancel_Click"/>
+                        <Button Grid.Column="2" Content="💾 Lưu lại" Style="{StaticResource PrimaryButton}" Click="BtnSave_Click"/>
+                    </Grid>
                 </Grid>
             </Border>
         </Grid>

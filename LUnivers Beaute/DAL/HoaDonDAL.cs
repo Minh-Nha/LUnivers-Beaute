@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using Microsoft.Data.SqlClient;
 
 namespace DAL
@@ -18,6 +18,26 @@ namespace DAL
         public DataTable GetDonHangGanDay(int topN = 5)
         {
             return DatabaseHelpers.GetData("sp_GetDonHangGanDay", new SqlParameter("@TopN", topN));
+        }
+
+        public DataTable GetSanPhamBanHang(string maCuaHang, string searchTerm = null, int? maDanhMuc = null)
+        {
+            var prmCuaHang = new SqlParameter("@MaCuaHang", (object)maCuaHang ?? DBNull.Value);
+            var prmSearch = new SqlParameter("@SearchTerm", (object)searchTerm ?? DBNull.Value);
+            var prmDanhMuc = new SqlParameter("@MaDanhMuc", (object)maDanhMuc ?? DBNull.Value);
+            return DatabaseHelpers.GetData("sp_GetSanPhamBanHang", prmCuaHang, prmSearch, prmDanhMuc);
+        }
+
+        public int TaoHoaDon(string maHoaDon, string maCuaHang, string maNhanVien, int? maKhachHang, int? maKhuyenMai, string phuongThucThanhToan, string chiTietJSON)
+        {
+            return DatabaseHelpers.ExecuteNonQuery("sp_TaoHoaDon",
+                new SqlParameter("@MaHoaDon", maHoaDon),
+                new SqlParameter("@MaCuaHang", maCuaHang),
+                new SqlParameter("@MaNhanVien", maNhanVien),
+                new SqlParameter("@MaKhachHang", (object)maKhachHang ?? DBNull.Value),
+                new SqlParameter("@MaKhuyenMai", (object)maKhuyenMai ?? DBNull.Value),
+                new SqlParameter("@PhuongThucThanhToan", phuongThucThanhToan),
+                new SqlParameter("@ChiTietJSON", chiTietJSON));
         }
     }
 }

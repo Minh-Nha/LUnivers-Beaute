@@ -1,15 +1,27 @@
-﻿using LUnivers_Beaute.Helpers;
+using LUnivers_Beaute.Helpers;
+using System;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
+using System.Collections.ObjectModel;
+using System.Text.Json;
 using BUS;
 
 namespace LUnivers_Beaute.Views
 {
+    public class ChiTietPhieuTraModel
+    {
+        public int MaLo { get; set; }
+        public string TenSanPham { get; set; } = "";
+        public int SoLuongTra { get; set; }
+        public decimal SoTienHoan { get; set; }
+    }
+
     public partial class TraHangView : UserControl
     {
         private PhieuTraHangBUS _bus = new PhieuTraHangBUS();
         private PagingHelper _pager;
+        private ObservableCollection<ChiTietPhieuTraModel> _chiTietTemp = new ObservableCollection<ChiTietPhieuTraModel>();
 
         public TraHangView()
         {
@@ -26,7 +38,20 @@ namespace LUnivers_Beaute.Views
         {
             try
             {
-                if (dgData != null) _pager.SetData(_bus.GetAll());
+                if (dgData != null) _pager.SetData(_bus.GetAllPhieuTraHang());
+                
+                // Binding temp list to dgChiTietPhieuTra_Temp
+                if (dgChiTietPhieuTra_Temp != null) dgChiTietPhieuTra_Temp.ItemsSource = _chiTietTemp;
+
+                // Load HoaDon for ComboBox
+                cboHoaDon.ItemsSource = new HoaDonBUS().GetAll().DefaultView;
+                cboHoaDon.DisplayMemberPath = "MaHoaDon";
+                cboHoaDon.SelectedValuePath = "MaHoaDon";
+
+                // Load Lô Sản Phẩm
+                cboChiTietLo.ItemsSource = new TonKhoBUS().GetAll().DefaultView;
+                cboChiTietLo.DisplayMemberPath = "TenSanPham"; // In TonKho view
+                cboChiTietLo.SelectedValuePath = "MaLo";
             }
             catch (System.Exception ex)
             {
@@ -42,7 +67,7 @@ namespace LUnivers_Beaute.Views
                 try
                 {
                     if (dgChiTiet != null && !string.IsNullOrEmpty(maPhieuTra))
-                        dgChiTiet.ItemsSource = _bus.GetChiTiet(maPhieuTra).DefaultView;
+                        dgChiTiet.ItemsSource = _bus.GetChiTietPhieuTra(maPhieuTra).DefaultView;
                 }
                 catch (System.Exception ex)
                 {
@@ -50,7 +75,96 @@ namespace LUnivers_Beaute.Views
                 }
             }
         }
-            private void BtnPrevPage_Click(object sender, RoutedEventArgs e)
+        
+        private void BtnAdd_Click(object sender, RoutedEventArgs e)
+        {
+            crudPanel.Visibility = Visibility.Visible;
+        }
+
+        private void BtnSave_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (cboHoaDon.SelectedValue == null || string.IsNullOrWhiteSpace(txtLyDo.Text) || _chiTietTemp.Count == 0)
+                {
+                    MessageBox.Show("Vui lòng nhập đầy đủ thông tin (Hóa đơn, Lý do) và ít nhất 1 chi tiết trả hàng!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                string maHoaDon = cboHoaDon.SelectedValue.ToString();
+                string lyDo = txtLyDo.Text;
+                DateTime ngayTra = dpNgayTra.SelectedDate ?? DateTime.Now;
+                string maPhieuTra = "PT" + DateTime.Now.ToString("yyMMddHHmmss");
+
+                string jsonChiTiet = JsonSerializer.Serialize(_chiTietTemp);
+
+                if (_bus.InsertPhieuTraHang(maPhieuTra, maHoaDon, ngayTra, lyDo, jsonChiTiet))
+                {
+                    MessageBox.Show("Tạo phiếu trả hàng thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+                    crudPanel.Visibility = Visibility.Collapsed;
+                    _chiTietTemp.Clear();
+                    LoadData();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi lưu phiếu trả: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void BtnAddDetail_Click(object sender, RoutedEventArgs e)
+        {
+            if (cboChiTietLo.SelectedValue == null || string.IsNullOrWhiteSpace(txtChiTietSoLuong.Text) || string.IsNullOrWhiteSpace(txtChiTietTienHoan.Text))
+            {
+                MessageBox.Show("Vui lòng nhập đầy đủ thông tin chi tiết!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                int maLo = Convert.ToInt32(cboChiTietLo.SelectedValue);
+                int soLuong = Convert.ToInt32(txtChiTietSoLuong.Text);
+                decimal tienHoan = Convert.ToDecimal(txtChiTietTienHoan.Text);
+                
+                DataRowView row = (DataRowView)cboChiTietLo.SelectedItem;
+                string tenSanPham = row["TenSanPham"].ToString() ?? "";
+
+                _chiTietTemp.Add(new ChiTietPhieuTraModel
+                {
+                    MaLo = maLo,
+                    TenSanPham = tenSanPham,
+                    SoLuongTra = soLuong,
+                    SoTienHoan = tienHoan
+                });
+
+                txtChiTietSoLuong.Clear();
+                txtChiTietTienHoan.Clear();
+            }
+            catch
+            {
+                MessageBox.Show("Vui lòng nhập số liệu hợp lệ!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void BtnRemoveDetail_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is ChiTietPhieuTraModel item)
+            {
+                _chiTietTemp.Remove(item);
+            }
+        }
+
+        private void BtnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            crudPanel.Visibility = Visibility.Collapsed;
+        }
+
+        private void Overlay_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            crudPanel.Visibility = Visibility.Collapsed;
+        }
+
+        private void BtnPrevPage_Click(object sender, RoutedEventArgs e)
         {
             _pager?.PreviousPage();
         }

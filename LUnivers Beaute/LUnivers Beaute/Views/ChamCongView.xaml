@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="LUnivers_Beaute.Views.ChamCongView"
+<UserControl x:Class="LUnivers_Beaute.Views.ChamCongView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="Transparent">
@@ -116,7 +116,7 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Button Content="Hủy" Style="{StaticResource SecondaryButton}" Click="BtnCancel_Click"/>
-                        <Button Grid.Column="2" Content="💾 Cập nhật" Style="{StaticResource PrimaryButton}"/>
+                        <Button Grid.Column="2" Content="💾 Cập nhật" Style="{StaticResource PrimaryButton}" Click="BtnSave_Click"/>
                     </Grid>
                 </Grid>
             </Border>

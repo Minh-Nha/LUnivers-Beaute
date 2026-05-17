@@ -84,6 +84,12 @@
                                     <TextBlock Text="Hóa đơn" VerticalAlignment="Center" FontWeight="SemiBold"/>
                                 </StackPanel>
                             </RadioButton>
+                            <RadioButton Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="TraHang" GroupName="MainNav">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="↩️" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Trả hàng" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </RadioButton>
                             <RadioButton Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="KhuyenMai" GroupName="MainNav">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="🎁" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
@@ -138,6 +144,12 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="📋" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Kiểm kê" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </RadioButton>
+                            <RadioButton Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="HuySanPham" GroupName="MainNav">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="🗑️" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Hủy sản phẩm" VerticalAlignment="Center" FontWeight="SemiBold"/>
                                 </StackPanel>
                             </RadioButton>
 

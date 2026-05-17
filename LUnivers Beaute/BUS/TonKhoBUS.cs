@@ -12,9 +12,9 @@ namespace BUS
             return _dal.GetAll();
         }
 
-        public DataTable SearchAndSort(string keyword, string status, string sortColumn, string sortOrder)
+        public DataTable SearchAndSort(string keyword, string status, string sortColumn, string sortOrder, string maCuaHang = null, int? maDanhMuc = null, int? tuSoLuong = null, int? denSoLuong = null)
         {
-            return _dal.SearchAndSort(keyword, status, sortColumn, sortOrder);
+            return _dal.SearchAndSort(keyword, status, sortColumn, sortOrder, maCuaHang, maDanhMuc, tuSoLuong, denSoLuong);
         }
     }
 }

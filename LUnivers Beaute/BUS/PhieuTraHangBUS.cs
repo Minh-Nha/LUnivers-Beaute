@@ -1,20 +1,26 @@
-﻿using System.Data;
+using System;
+using System.Data;
 using DAL;
 
 namespace BUS
 {
     public class PhieuTraHangBUS
     {
-        private PhieuTraHangDAL _dal = new PhieuTraHangDAL();
+        private PhieuTraHangDAL dal = new PhieuTraHangDAL();
 
-        public DataTable GetAll()
+        public DataTable GetAllPhieuTraHang()
         {
-            return _dal.GetAll();
+            return dal.GetAllPhieuTraHang();
         }
-        
-        public DataTable GetChiTiet(string maPhieuTra)
+
+        public DataTable GetChiTietPhieuTra(string maPhieuTra)
         {
-            return _dal.GetChiTiet(maPhieuTra);
+            return dal.GetChiTietPhieuTra(maPhieuTra);
+        }
+
+        public bool InsertPhieuTraHang(string maPhieuTra, string maHoaDon, DateTime ngayTra, string lyDo, string jsonChiTiet)
+        {
+            return dal.InsertPhieuTraHang(maPhieuTra, maHoaDon, ngayTra, lyDo, jsonChiTiet);
         }
     }
 }

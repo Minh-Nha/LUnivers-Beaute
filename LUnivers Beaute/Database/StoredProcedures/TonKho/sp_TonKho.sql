@@ -1,13 +1,13 @@
-USE LUnivers_Beaute;
+﻿USE LUnivers_Beaute;
 GO
 
--- =========================================================================
--- TỒN KHO - Xử lý tìm kiếm, lọc và sắp xếp tồn kho
--- =========================================================================
 CREATE OR ALTER PROCEDURE sp_GetTonKho
     @MaCuaHang VARCHAR(20) = NULL,
     @SearchKeyword NVARCHAR(100) = NULL,
     @TrangThai NVARCHAR(50) = NULL,
+    @MaDanhMuc INT = NULL,
+    @TuSoLuong INT = NULL,
+    @DenSoLuong INT = NULL,
     @SortColumn VARCHAR(50) = 'SoLuongTon',
     @SortOrder VARCHAR(4) = 'ASC'
 AS
@@ -35,7 +35,10 @@ BEGIN
         LEFT JOIN SanPham sp ON lsx.MaSanPham = sp.MaSanPham
         LEFT JOIN DanhMuc dm ON sp.MaDanhMuc = dm.MaDanhMuc
         LEFT JOIN ThuongHieu th ON sp.MaThuongHieu = th.MaThuongHieu
-        WHERE (@MaCuaHang IS NULL OR tk.MaCuaHang = @MaCuaHang)
+        WHERE (@MaCuaHang IS NULL OR @MaCuaHang = '' OR tk.MaCuaHang = @MaCuaHang)
+          AND (@MaDanhMuc IS NULL OR @MaDanhMuc = 0 OR sp.MaDanhMuc = @MaDanhMuc)
+          AND (@TuSoLuong IS NULL OR tk.SoLuongTon >= @TuSoLuong)
+          AND (@DenSoLuong IS NULL OR tk.SoLuongTon <= @DenSoLuong)
     )
     SELECT * FROM TonKhoCTE
     WHERE 

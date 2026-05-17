@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="LUnivers_Beaute.Views.KhuyenMaiView"
+<UserControl x:Class="LUnivers_Beaute.Views.KhuyenMaiView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="Transparent">
@@ -21,16 +21,57 @@
             </Grid>
             <Border Grid.Row="1" Style="{StaticResource CardBorder}" Padding="16" Margin="0,0,0,16">
                 <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="160"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1.5*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Style="{StaticResource ModernTextBox}" Margin="0,0,10,0"/>
-                    <ComboBox Grid.Column="1" Style="{StaticResource ModernComboBox}" Margin="0,0,10,0">
-                        <ComboBoxItem Content="Trạng thái" IsSelected="True"/>
+
+                    <TextBox x:Name="txtSearch" Grid.Row="0" Grid.Column="0" Style="{StaticResource ModernTextBox}" Margin="0,0,10,0" Tag="Tìm kiếm tên chương trình..."/>
+                    
+                    <ComboBox x:Name="cboSearchDanhMuc" Grid.Row="0" Grid.Column="1" Style="{StaticResource ModernComboBox}" Margin="0,0,10,0" SelectedValuePath="MaDanhMuc">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding TenDanhMuc}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <Button Grid.Column="2" Content="🔍 Tìm kiếm" Style="{StaticResource PrimaryButton}" Padding="16,10"/>
+
+                    <ComboBox x:Name="cboSearchLoaiGiam" Grid.Row="0" Grid.Column="2" Style="{StaticResource ModernComboBox}" Margin="0,0,10,0">
+                        <ComboBoxItem Content="Tất cả loại giảm" IsSelected="True"/>
+                        <ComboBoxItem Content="%"/>
+                        <ComboBoxItem Content="VND"/>
+                    </ComboBox>
+                    
+                    <ComboBox x:Name="cboSearchTrangThai" Grid.Row="0" Grid.Column="3" Style="{StaticResource ModernComboBox}">
+                        <ComboBoxItem Content="Tất cả trạng thái" IsSelected="True"/>
+                        <ComboBoxItem Content="Đang diễn ra"/>
+                        <ComboBoxItem Content="Chưa bắt đầu"/>
+                        <ComboBoxItem Content="Đã kết thúc"/>
+                    </ComboBox>
+
+                    <Grid Grid.Row="2" Grid.ColumnSpan="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal" Grid.Column="0">
+                            <TextBlock Text="Từ ngày:" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="{StaticResource TextSecondaryBrush}"/>
+                            <DatePicker x:Name="dpSearchTuNgay" Style="{StaticResource ModernDatePicker}" Width="150"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <TextBlock Text="Đến ngày:" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="{StaticResource TextSecondaryBrush}"/>
+                            <DatePicker x:Name="dpSearchDenNgay" Style="{StaticResource ModernDatePicker}" Width="150"/>
+                        </StackPanel>
+                        <Button x:Name="btnSearch" Grid.Column="2" Content="🔍 Tìm kiếm" Style="{StaticResource PrimaryButton}" Padding="24,10" Click="BtnSearch_Click"/>
+                    </Grid>
                 </Grid>
             </Border>
             <Border Grid.Row="2" Style="{StaticResource CardBorder}" Padding="0">
@@ -44,7 +85,7 @@
                         <DataGridTextColumn Header="TÊN CHƯƠNG TRÌNH" Binding="{Binding TenChuongTrinh}" Width="*"/>
                         <DataGridTextColumn Header="GIÁ TRỊ GIẢM" Binding="{Binding MucGiam}" Width="110"/>
                         <DataGridTextColumn Header="LOẠI GIẢM" Binding="{Binding LoaiGiam}" Width="90"/>
-                        <DataGridTextColumn Header="ÁP DỤNG" Binding="{Binding ApDungTheo}" Width="100"/>
+                        <DataGridTextColumn Header="ÁP DỤNG" Binding="{Binding ApDungTheoHienThi}" Width="100"/>
                         <DataGridTextColumn Header="BẮT ĐẦU" Binding="{Binding NgayBatDau}" Width="110"/>
                         <DataGridTextColumn Header="KẾT THÚC" Binding="{Binding NgayKetThuc}" Width="110"/>
                         <DataGridTextColumn Header="TRẠNG THÁI" Binding="{Binding TinhTrang}" Width="100"/>
@@ -53,7 +94,7 @@
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
                                         <Button Content="✏️" Style="{StaticResource IconButton}" Width="30" Height="30" Click="BtnEdit_Click"/>
-                                        <Button Content="🗑️" Style="{StaticResource IconButton}" Width="30" Height="30"/>
+                                        <Button Content="🗑️" Style="{StaticResource IconButton}" Width="30" Height="30" Click="BtnDelete_Click"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
@@ -107,7 +148,7 @@
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
                                     <TextBlock Text="Loại giảm *" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,4"/>
-                                    <ComboBox x:Name="cboLoaiGiam" Style="{StaticResource ModernComboBox}" IsEditable="True">
+                                    <ComboBox x:Name="cboLoaiGiam" Style="{StaticResource ModernComboBox}">
                                         <ComboBoxItem Content="%" IsSelected="True"/>
                                         <ComboBoxItem Content="VND"/>
                                     </ComboBox>
@@ -115,7 +156,39 @@
                             </Grid>
 
                             <TextBlock Text="Áp dụng theo" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,4"/>
-                            <ComboBox x:Name="cboApDung" Style="{StaticResource ModernComboBox}" Margin="0,0,0,16" IsEditable="True"/>
+                            <ComboBox x:Name="cboApDung" Style="{StaticResource ModernComboBox}" Margin="0,0,0,16">
+                                <ComboBoxItem Content="Hóa đơn" IsSelected="True"/>
+                                <ComboBoxItem Content="Danh mục"/>
+                                <ComboBoxItem Content="Sản phẩm"/>
+                            </ComboBox>
+
+                            <Grid Margin="0,0,0,16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="10"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="Danh mục (nếu có)" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,4"/>
+                                    <ComboBox x:Name="cboDanhMuc" Style="{StaticResource ModernComboBox}" SelectedValuePath="MaDanhMuc">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding TenDanhMuc}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="Sản phẩm (nếu có)" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,4"/>
+                                    <ComboBox x:Name="cboSanPham" Style="{StaticResource ModernComboBox}" SelectedValuePath="MaSanPham">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding TenSanPham}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </StackPanel>
+                            </Grid>
 
                             <Grid Margin="0,0,0,16">
                                 <Grid.ColumnDefinitions>
@@ -132,6 +205,13 @@
                                     <DatePicker x:Name="dpNgayKetThuc" Style="{StaticResource ModernDatePicker}"/>
                                 </StackPanel>
                             </Grid>
+
+                            <TextBlock Text="Trạng thái" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,4"/>
+                            <ComboBox x:Name="cboTrangThai" Style="{StaticResource ModernComboBox}">
+                                <ComboBoxItem Content="Đang diễn ra" IsSelected="True"/>
+                                <ComboBoxItem Content="Chưa bắt đầu"/>
+                                <ComboBoxItem Content="Đã kết thúc"/>
+                            </ComboBox>
                         </StackPanel>
                     </ScrollViewer>
 
@@ -142,11 +222,10 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Button Content="Hủy" Style="{StaticResource SecondaryButton}" Click="BtnCancel_Click"/>
-                        <Button Grid.Column="2" Content="💾 Lưu lại" Style="{StaticResource PrimaryButton}"/>
+                        <Button Grid.Column="2" Content="💾 Lưu lại" Style="{StaticResource PrimaryButton}" Click="BtnSave_Click"/>
                     </Grid>
                 </Grid>
             </Border>
         </Grid>
     </Grid>
 </UserControl>
-

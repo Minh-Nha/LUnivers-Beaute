@@ -1,4 +1,4 @@
-﻿using LUnivers_Beaute.Helpers;
+using LUnivers_Beaute.Helpers;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
@@ -62,7 +62,9 @@ namespace LUnivers_Beaute.Views
                 txtTenCuaHang.Text = row["TenCuaHang"].ToString();
                 txtDiaChi.Text = row["DiaChi"].ToString();
                 txtSoDienThoai.Text = row["SoDienThoai"].ToString();
-                cboTrangThai.Text = row["TrangThai"].ToString();
+                
+                string status = row["TrangThai"].ToString();
+                cboTrangThai.SelectedIndex = (status == "Hoạt động") ? 0 : 1;
                 
                 crudPanel.Visibility = Visibility.Visible;
             }
@@ -75,6 +77,60 @@ namespace LUnivers_Beaute.Views
             txtDiaChi.Text = "";
             txtSoDienThoai.Text = "";
             cboTrangThai.SelectedIndex = 0;
+        }
+        
+        private void BtnSave_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string ten = txtTenCuaHang.Text.Trim();
+                string diaChi = txtDiaChi.Text.Trim();
+                string sdt = txtSoDienThoai.Text.Trim();
+                bool trangThai = cboTrangThai.SelectedIndex == 0;
+
+                if (string.IsNullOrEmpty(ten) || string.IsNullOrEmpty(diaChi) || string.IsNullOrEmpty(sdt))
+                {
+                    MessageBox.Show("Vui lòng nhập đầy đủ thông tin bắt buộc!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(txtMaCuaHang.Text))
+                {
+                    _bus.Insert(ten, diaChi, sdt, trangThai);
+                    MessageBox.Show("Thêm mới thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    _bus.Update(txtMaCuaHang.Text, ten, diaChi, sdt, trangThai);
+                    MessageBox.Show("Cập nhật thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                crudPanel.Visibility = Visibility.Collapsed;
+                LoadData();
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void BtnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            if (dgData.SelectedItem is DataRowView row)
+            {
+                if (MessageBox.Show("Bạn có chắc chắn muốn xóa cửa hàng này?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                {
+                    try
+                    {
+                        _bus.Delete(row["MaCuaHang"].ToString() ?? "");
+                        MessageBox.Show("Xóa thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                        LoadData();
+                    }
+                    catch (System.Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
         }
             private void BtnPrevPage_Click(object sender, RoutedEventArgs e)
         {
