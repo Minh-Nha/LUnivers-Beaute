@@ -13,6 +13,13 @@ namespace DAL
                 new SqlParameter("@TrangThai", (object?)trangThai ?? System.DBNull.Value));
         }
 
+        public DataTable Login(string tenDangNhap, string matKhau)
+        {
+            return DatabaseHelpers.GetData("sp_Login",
+                new SqlParameter("@TenDangNhap", tenDangNhap),
+                new SqlParameter("@MatKhau", matKhau));
+        }
+
         public int Insert(string hoTen, string soDienThoai, string vaiTro, string tenDangNhap, string matKhau, string maCuaHang, bool trangThai)
         {
             return DatabaseHelpers.ExecuteNonQuery("sp_InsertNhanVien",

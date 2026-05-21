@@ -9,6 +9,7 @@ AS
 BEGIN
     SELECT 
         pnk.MaPhieuNhap,
+        pnk.MaCuaHang,
         ch.TenCuaHang,
         nv.HoTen AS NhanVienNhap,
         FORMAT(pnk.NgayNhap, 'dd/MM/yyyy HH:mm') AS NgayNhap,

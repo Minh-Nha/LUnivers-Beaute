@@ -245,6 +245,7 @@
                                         <ComboBoxItem Content="Nhân viên bán hàng" IsSelected="True"/>
                                         <ComboBoxItem Content="Nhân viên kho"/>
                                         <ComboBoxItem Content="Quản lý"/>
+                                        <ComboBoxItem x:Name="cboItemAdmin" Content="Admin"/>
                                     </ComboBox>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">

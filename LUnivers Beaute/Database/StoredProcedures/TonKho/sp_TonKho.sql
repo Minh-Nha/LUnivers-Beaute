@@ -1,4 +1,4 @@
-﻿USE LUnivers_Beaute;
+USE LUnivers_Beaute;
 GO
 
 CREATE OR ALTER PROCEDURE sp_GetTonKho
@@ -14,6 +14,7 @@ AS
 BEGIN
     WITH TonKhoCTE AS (
         SELECT 
+            tk.MaCuaHang,
             ch.TenCuaHang,
             sp.MaSanPham,
             sp.TenSanPham,

@@ -15,9 +15,16 @@ namespace LUnivers_Beaute.Views
         private PagingHelper _pager;
         private System.Collections.ObjectModel.ObservableCollection<ImportItem> _importCart = new System.Collections.ObjectModel.ObservableCollection<ImportItem>();
 
-        public NhapKhoView()
+        private string _userRole = "";
+        private string _userMaCuaHang = "";
+        private string _userMaNhanVien = "";
+
+        public NhapKhoView(string userRole = "", string userMaCuaHang = "", string userMaNhanVien = "")
         {
             InitializeComponent();
+            _userRole = userRole;
+            _userMaCuaHang = userMaCuaHang;
+            _userMaNhanVien = userMaNhanVien;
             _pager = new PagingHelper(dgData, txtPageInfo, 10);
             dgImportCart.ItemsSource = _importCart;
             _importCart.CollectionChanged += (s, e) => UpdateTongTienMoi();
@@ -38,10 +45,34 @@ namespace LUnivers_Beaute.Views
             try
             {
                 cboSanPham.ItemsSource = _spBus.GetAll().DefaultView;
-                cboCuaHang.ItemsSource = _chBus.GetAll().DefaultView;
-                cboNhanVien.ItemsSource = _nvBus.GetAll().DefaultView;
                 
+                var dtCH = _chBus.GetAll().Copy();
+                string role = (_userRole ?? "").Trim().ToLower();
+                if (role != "admin" && !string.IsNullOrEmpty(_userMaCuaHang))
+                {
+                    for (int i = dtCH.Rows.Count - 1; i >= 0; i--)
+                    {
+                        if (dtCH.Rows[i]["MaCuaHang"]?.ToString() != _userMaCuaHang)
+                        {
+                            dtCH.Rows.RemoveAt(i);
+                        }
+                    }
+                }
+                cboCuaHang.ItemsSource = dtCH.DefaultView;
                 if (cboCuaHang.Items.Count > 0) cboCuaHang.SelectedIndex = 0;
+
+                var dtNV = _nvBus.GetAll().Copy();
+                if (role != "admin" && !string.IsNullOrEmpty(_userMaNhanVien))
+                {
+                    for (int i = dtNV.Rows.Count - 1; i >= 0; i--)
+                    {
+                        if (dtNV.Rows[i]["MaNhanVien"]?.ToString() != _userMaNhanVien)
+                        {
+                            dtNV.Rows.RemoveAt(i);
+                        }
+                    }
+                }
+                cboNhanVien.ItemsSource = dtNV.DefaultView;
                 if (cboNhanVien.Items.Count > 0) cboNhanVien.SelectedIndex = 0;
                 
                 dpNgaySX.SelectedDate = System.DateTime.Now;
@@ -66,7 +97,19 @@ namespace LUnivers_Beaute.Views
             {
                 if (dgData != null) 
                 {
-                    _pager.SetData(_bus.GetAll());
+                    DataTable dt = _bus.GetAll();
+                    string role = (_userRole ?? "").Trim().ToLower();
+                    if (role != "admin" && !string.IsNullOrEmpty(_userMaCuaHang))
+                    {
+                        if (dt != null)
+                        {
+                            var filteredRows = dt.AsEnumerable()
+                                .Where(row => row.Field<string>("MaCuaHang") == _userMaCuaHang);
+                            dt = filteredRows.Any() ? filteredRows.CopyToDataTable() : dt.Clone();
+                        }
+                    }
+
+                    _pager.SetData(dt);
                     if (dgData.Items.Count > 0)
                     {
                         dgData.SelectedIndex = 0;

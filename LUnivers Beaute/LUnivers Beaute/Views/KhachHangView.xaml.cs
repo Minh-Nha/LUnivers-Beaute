@@ -11,12 +11,39 @@ namespace LUnivers_Beaute.Views
     {
         private KhachHangBUS _bus = new KhachHangBUS();
         private PagingHelper _pager;
+        private string _userRole = "";
 
-        public KhachHangView()
+        public static readonly DependencyProperty DeleteButtonVisibilityProperty =
+            DependencyProperty.Register("DeleteButtonVisibility", typeof(Visibility), typeof(KhachHangView), new PropertyMetadata(Visibility.Visible));
+
+        public Visibility DeleteButtonVisibility
+        {
+            get { return (Visibility)GetValue(DeleteButtonVisibilityProperty); }
+            set { SetValue(DeleteButtonVisibilityProperty, value); }
+        }
+
+        public KhachHangView(string userRole = "")
         {
             InitializeComponent();
+            _userRole = userRole;
             _pager = new PagingHelper(dgData, txtPageInfo, 10);
-            this.Loaded += (s, e) => LoadData();
+            this.Loaded += (s, e) => {
+                LoadData();
+                ApplyRoleAccess();
+            };
+        }
+
+        private void ApplyRoleAccess()
+        {
+            string role = (_userRole ?? "").Trim().ToLower();
+            if (role == "nhanvien" || role == "nhân viên" || role == "nhân viên bán hàng" || role == "sales")
+            {
+                DeleteButtonVisibility = Visibility.Collapsed;
+            }
+            else
+            {
+                DeleteButtonVisibility = Visibility.Visible;
+            }
         }
 
         // ===== DATA LOADING =====
@@ -153,6 +180,13 @@ namespace LUnivers_Beaute.Views
 
         private void BtnDelete_Click(object sender, RoutedEventArgs e)
         {
+            string role = (_userRole ?? "").Trim().ToLower();
+            if (role == "nhanvien" || role == "nhân viên" || role == "nhân viên bán hàng" || role == "sales")
+            {
+                MessageBox.Show("Bạn không có quyền thực hiện chức năng này!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             if (dgData.SelectedItem is DataRowView row)
             {
                 string hoTen = row["HoTen"]?.ToString() ?? "";

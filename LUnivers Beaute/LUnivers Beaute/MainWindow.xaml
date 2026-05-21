@@ -70,27 +70,27 @@
                             </RadioButton>
 
                             <!-- ── BÁN HÀNG ── -->
-                            <TextBlock Text="BÁN HÀNG" FontSize="10" FontWeight="Bold" Foreground="#B0B0B0" Margin="24,14,0,6" FontFamily="Segoe UI"/>
+                            <TextBlock x:Name="grpBanHangHeader" Text="BÁN HÀNG" FontSize="10" FontWeight="Bold" Foreground="#B0B0B0" Margin="24,14,0,6" FontFamily="Segoe UI"/>
 
-                            <RadioButton Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="BanHang" GroupName="MainNav">
+                            <RadioButton x:Name="navBanHang" Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="BanHang" GroupName="MainNav">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="🛒" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Bán hàng" VerticalAlignment="Center" FontWeight="SemiBold"/>
                                 </StackPanel>
                             </RadioButton>
-                            <RadioButton Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="HoaDon" GroupName="MainNav">
+                            <RadioButton x:Name="navHoaDon" Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="HoaDon" GroupName="MainNav">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="🧾" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Hóa đơn" VerticalAlignment="Center" FontWeight="SemiBold"/>
                                 </StackPanel>
                             </RadioButton>
-                            <RadioButton Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="TraHang" GroupName="MainNav">
+                            <RadioButton x:Name="navTraHang" Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="TraHang" GroupName="MainNav">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="↩️" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Trả hàng" VerticalAlignment="Center" FontWeight="SemiBold"/>
                                 </StackPanel>
                             </RadioButton>
-                            <RadioButton Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="KhuyenMai" GroupName="MainNav">
+                            <RadioButton x:Name="navKhuyenMai" Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="KhuyenMai" GroupName="MainNav">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="🎁" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Khuyến mãi" VerticalAlignment="Center" FontWeight="SemiBold"/>
@@ -98,27 +98,27 @@
                             </RadioButton>
 
                             <!-- ── SẢN PHẨM ── -->
-                            <TextBlock Text="SẢN PHẨM" FontSize="10" FontWeight="Bold" Foreground="#B0B0B0" Margin="24,14,0,6" FontFamily="Segoe UI"/>
+                            <TextBlock x:Name="grpSanPhamHeader" Text="SẢN PHẨM" FontSize="10" FontWeight="Bold" Foreground="#B0B0B0" Margin="24,14,0,6" FontFamily="Segoe UI"/>
 
-                            <RadioButton Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="SanPham" GroupName="MainNav">
+                            <RadioButton x:Name="navSanPham" Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="SanPham" GroupName="MainNav">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="💄" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Sản phẩm" VerticalAlignment="Center" FontWeight="SemiBold"/>
                                 </StackPanel>
                             </RadioButton>
-                            <RadioButton Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="DanhMuc" GroupName="MainNav">
+                            <RadioButton x:Name="navDanhMuc" Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="DanhMuc" GroupName="MainNav">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="📂" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Danh mục" VerticalAlignment="Center" FontWeight="SemiBold"/>
                                 </StackPanel>
                             </RadioButton>
-                            <RadioButton Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="ThuongHieu" GroupName="MainNav">
+                            <RadioButton x:Name="navThuongHieu" Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="ThuongHieu" GroupName="MainNav">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="🏷️" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Thương hiệu" VerticalAlignment="Center" FontWeight="SemiBold"/>
                                 </StackPanel>
                             </RadioButton>
-                            <RadioButton Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="NhaCungCap" GroupName="MainNav">
+                            <RadioButton x:Name="navNhaCungCap" Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="NhaCungCap" GroupName="MainNav">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="🏭" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Nhà cung cấp" VerticalAlignment="Center" FontWeight="SemiBold"/>
@@ -126,27 +126,27 @@
                             </RadioButton>
 
                             <!-- ── KHO HÀNG ── -->
-                            <TextBlock Text="KHO HÀNG" FontSize="10" FontWeight="Bold" Foreground="#B0B0B0" Margin="24,14,0,6" FontFamily="Segoe UI"/>
+                            <TextBlock x:Name="grpKhoHangHeader" Text="KHO HÀNG" FontSize="10" FontWeight="Bold" Foreground="#B0B0B0" Margin="24,14,0,6" FontFamily="Segoe UI"/>
 
-                            <RadioButton Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="KhoHang" GroupName="MainNav">
+                            <RadioButton x:Name="navKhoHang" Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="KhoHang" GroupName="MainNav">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="📦" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Tồn kho" VerticalAlignment="Center" FontWeight="SemiBold"/>
                                 </StackPanel>
                             </RadioButton>
-                            <RadioButton Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="NhapKho" GroupName="MainNav">
+                            <RadioButton x:Name="navNhapKho" Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="NhapKho" GroupName="MainNav">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="📥" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Nhập kho" VerticalAlignment="Center" FontWeight="SemiBold"/>
                                 </StackPanel>
                             </RadioButton>
-                            <RadioButton Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="KiemKe" GroupName="MainNav">
+                            <RadioButton x:Name="navKiemKe" Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="KiemKe" GroupName="MainNav">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="📋" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Kiểm kê" VerticalAlignment="Center" FontWeight="SemiBold"/>
                                 </StackPanel>
                             </RadioButton>
-                            <RadioButton Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="HuySanPham" GroupName="MainNav">
+                            <RadioButton x:Name="navHuySanPham" Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="HuySanPham" GroupName="MainNav">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="🗑️" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Hủy sản phẩm" VerticalAlignment="Center" FontWeight="SemiBold"/>
@@ -154,27 +154,27 @@
                             </RadioButton>
 
                             <!-- ── HỆ THỐNG ── -->
-                            <TextBlock Text="HỆ THỐNG" FontSize="10" FontWeight="Bold" Foreground="#B0B0B0" Margin="24,14,0,6" FontFamily="Segoe UI"/>
+                            <TextBlock x:Name="grpHeThongHeader" Text="HỆ THỐNG" FontSize="10" FontWeight="Bold" Foreground="#B0B0B0" Margin="24,14,0,6" FontFamily="Segoe UI"/>
 
-                            <RadioButton Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="KhachHang" GroupName="MainNav">
+                            <RadioButton x:Name="navKhachHang" Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="KhachHang" GroupName="MainNav">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="👤" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Khách hàng" VerticalAlignment="Center" FontWeight="SemiBold"/>
                                 </StackPanel>
                             </RadioButton>
-                            <RadioButton Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="NhanVien" GroupName="MainNav">
+                            <RadioButton x:Name="navNhanVien" Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="NhanVien" GroupName="MainNav">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="👥" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Nhân viên" VerticalAlignment="Center" FontWeight="SemiBold"/>
                                 </StackPanel>
                             </RadioButton>
-                            <RadioButton Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="ChamCong" GroupName="MainNav">
+                            <RadioButton x:Name="navChamCong" Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="ChamCong" GroupName="MainNav">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="⏰" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Chấm công" VerticalAlignment="Center" FontWeight="SemiBold"/>
                                 </StackPanel>
                             </RadioButton>
-                            <RadioButton Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="CuaHang" GroupName="MainNav">
+                            <RadioButton x:Name="navCuaHang" Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="CuaHang" GroupName="MainNav">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="🏪" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Cửa hàng" VerticalAlignment="Center" FontWeight="SemiBold"/>
@@ -263,15 +263,15 @@
                                             <GradientStop Color="#D4A574" Offset="1"/>
                                         </LinearGradientBrush>
                                     </Border.Background>
-                                    <TextBlock Text="LH" FontSize="14" Foreground="White" FontWeight="Bold"
+                                    <TextBlock x:Name="txtUserAvatar" Text="LH" FontSize="14" Foreground="White" FontWeight="Bold"
                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     <Border.Effect>
                                         <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.2" Color="#E8956D"/>
                                     </Border.Effect>
                                 </Border>
                                 <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
-                                    <TextBlock Text="Linh Hoa" FontSize="14" FontWeight="Bold" Foreground="#2D2D2D"/>
-                                    <TextBlock Text="Quản lý trưởng" FontSize="11" Foreground="{StaticResource AccentPeachBrush}" FontWeight="SemiBold"/>
+                                    <TextBlock x:Name="txtUserName" Text="Linh Hoa" FontSize="14" FontWeight="Bold" Foreground="#2D2D2D"/>
+                                    <TextBlock x:Name="txtUserRole" Text="Quản lý trưởng" FontSize="11" Foreground="{StaticResource AccentPeachBrush}" FontWeight="SemiBold"/>
                                 </StackPanel>
                             </StackPanel>
 

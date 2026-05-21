@@ -14,9 +14,14 @@ namespace LUnivers_Beaute.Views
         private string _currentSortColumn = "SoLuongTon";
         private string _currentSortOrder = "ASC";
         
-        public TonKhoView()
+        private string _userRole = "";
+        private string _userMaCuaHang = "";
+
+        public TonKhoView(string userRole = "", string userMaCuaHang = "")
         {
             InitializeComponent();
+            _userRole = userRole;
+            _userMaCuaHang = userMaCuaHang;
             _pager = new PagingHelper(dgData, txtPageInfo, 10);
             this.Loaded += (s, e) => LoadData();
         }
@@ -27,17 +32,45 @@ namespace LUnivers_Beaute.Views
             {
                 TonKhoBUS bus = new TonKhoBUS();
                 _allData = bus.GetAll();
+
+                string role = (_userRole ?? "").Trim().ToLower();
+                if (role != "admin" && !string.IsNullOrEmpty(_userMaCuaHang))
+                {
+                    if (_allData != null)
+                    {
+                        var filteredRows = _allData.AsEnumerable()
+                            .Where(row => row.Field<string>("MaCuaHang") == _userMaCuaHang);
+                        _allData = filteredRows.Any() ? filteredRows.CopyToDataTable() : _allData.Clone();
+                    }
+                }
+
                 UpdateStatistics();
                 
                 // Load filters
                 CuaHangBUS chBus = new CuaHangBUS();
                 var dtCH = chBus.GetAll().Copy();
-                var rowCH = dtCH.NewRow();
-                rowCH["MaCuaHang"] = "";
-                rowCH["TenCuaHang"] = "Tất cả cửa hàng";
-                dtCH.Rows.InsertAt(rowCH, 0);
-                cboSearchCuaHang.ItemsSource = dtCH.DefaultView;
-                cboSearchCuaHang.SelectedIndex = 0;
+
+                if (role != "admin" && !string.IsNullOrEmpty(_userMaCuaHang))
+                {
+                    for (int i = dtCH.Rows.Count - 1; i >= 0; i--)
+                    {
+                        if (dtCH.Rows[i]["MaCuaHang"]?.ToString() != _userMaCuaHang)
+                        {
+                            dtCH.Rows.RemoveAt(i);
+                        }
+                    }
+                    cboSearchCuaHang.ItemsSource = dtCH.DefaultView;
+                    cboSearchCuaHang.SelectedIndex = 0;
+                }
+                else
+                {
+                    var rowCH = dtCH.NewRow();
+                    rowCH["MaCuaHang"] = "";
+                    rowCH["TenCuaHang"] = "Tất cả cửa hàng";
+                    dtCH.Rows.InsertAt(rowCH, 0);
+                    cboSearchCuaHang.ItemsSource = dtCH.DefaultView;
+                    cboSearchCuaHang.SelectedIndex = 0;
+                }
 
                 DanhMucBUS dmBus = new DanhMucBUS();
                 var dtDM = dmBus.GetAll().Copy();

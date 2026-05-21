@@ -29,9 +29,11 @@ namespace LUnivers_Beaute.Views
         private string _promoLoaiGiam = "";
         private double _promoGiaTriGiam = 0;
 
-        public BanHangView()
+        public BanHangView(string maNhanVien = "", string maCuaHang = "")
         {
             InitializeComponent();
+            _currentNhanVien = maNhanVien;
+            _currentCuaHang = maCuaHang;
 
             icProducts.ItemsSource = _products;
             icCart.ItemsSource = _cart;
@@ -55,6 +57,15 @@ namespace LUnivers_Beaute.Views
             try
             {
                 var dt = _cuaHangBus.GetAll();
+                if (!string.IsNullOrEmpty(_currentCuaHang))
+                {
+                    var rows = dt.Select($"MaCuaHang = '{_currentCuaHang}'");
+                    if (rows.Length > 0)
+                        dt = rows.CopyToDataTable();
+                    else
+                        dt.Rows.Clear();
+                }
+
                 cboCuaHang.ItemsSource = dt.DefaultView;
                 cboCuaHang.SelectedValuePath = "MaCuaHang";
                 if (dt.Rows.Count > 0)
@@ -81,11 +92,31 @@ namespace LUnivers_Beaute.Views
                     r["DisplayText"] = r["MaNhanVien"]?.ToString() + " - " + r["HoTen"]?.ToString();
                 }
 
+                if (!string.IsNullOrEmpty(_currentCuaHang))
+                {
+                    var rows = dt.Select($"MaCuaHang = '{_currentCuaHang}'");
+                    if (rows.Length > 0)
+                        dt = rows.CopyToDataTable();
+                    else
+                        dt.Rows.Clear();
+                }
+
                 cboNhanVien.ItemsSource = dt.DefaultView;
                 if (dt.Rows.Count > 0)
                 {
-                    cboNhanVien.SelectedIndex = 0;
-                    _currentNhanVien = dt.Rows[0]["MaNhanVien"]?.ToString() ?? "";
+                    if (!string.IsNullOrEmpty(_currentNhanVien))
+                    {
+                        var rowView = dt.DefaultView.Cast<DataRowView>().FirstOrDefault(r => r["MaNhanVien"].ToString() == _currentNhanVien);
+                        if (rowView != null)
+                            cboNhanVien.SelectedItem = rowView;
+                        else
+                            cboNhanVien.SelectedIndex = 0;
+                    }
+                    else
+                    {
+                        cboNhanVien.SelectedIndex = 0;
+                        _currentNhanVien = dt.Rows[0]["MaNhanVien"]?.ToString() ?? "";
+                    }
                 }
             }
             catch (Exception ex)

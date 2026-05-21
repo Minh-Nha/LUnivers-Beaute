@@ -173,7 +173,8 @@
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
                                             <Button Content="✏️" Style="{StaticResource IconButton}" Width="30" Height="30" Click="BtnEdit_Click" ToolTip="Sửa"/>
-                                            <Button Content="🗑️" Style="{StaticResource IconButton}" Width="30" Height="30" Click="BtnDelete_Click" ToolTip="Xóa"/>
+                                            <Button Content="🗑️" Style="{StaticResource IconButton}" Width="30" Height="30" Click="BtnDelete_Click" ToolTip="Xóa"
+                                                    Visibility="{Binding DeleteButtonVisibility, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                                         </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>

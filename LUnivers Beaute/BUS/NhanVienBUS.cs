@@ -12,6 +12,11 @@ namespace BUS
             return _dal.GetAll(timKiem, maCuaHang, trangThai);
         }
 
+        public DataTable Login(string tenDangNhap, string matKhau)
+        {
+            return _dal.Login(tenDangNhap, matKhau);
+        }
+
         public int Insert(string hoTen, string soDienThoai, string vaiTro, string tenDangNhap, string matKhau, string maCuaHang, bool trangThai)
         {
             return _dal.Insert(hoTen, soDienThoai, vaiTro, tenDangNhap, matKhau, maCuaHang, trangThai);

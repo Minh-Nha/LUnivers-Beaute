@@ -16,11 +16,41 @@ namespace LUnivers_Beaute.Views
         private CuaHangBUS _chBus = new CuaHangBUS();
         private ObservableCollection<AuditItem> _auditItems = new ObservableCollection<AuditItem>();
 
-        public KiemKeView()
+        private string _userRole = "";
+        private string _userMaCuaHang = "";
+
+        public static readonly DependencyProperty DeleteButtonVisibilityProperty =
+            DependencyProperty.Register("DeleteButtonVisibility", typeof(Visibility), typeof(KiemKeView), new PropertyMetadata(Visibility.Visible));
+
+        public Visibility DeleteButtonVisibility
+        {
+            get { return (Visibility)GetValue(DeleteButtonVisibilityProperty); }
+            set { SetValue(DeleteButtonVisibilityProperty, value); }
+        }
+
+        public KiemKeView(string userRole = "", string userMaCuaHang = "")
         {
             InitializeComponent();
+            _userRole = userRole;
+            _userMaCuaHang = userMaCuaHang;
             _pager = new PagingHelper(dgData, txtPageInfo, 10);
-            this.Loaded += (s, e) => LoadData();
+            this.Loaded += (s, e) => {
+                LoadData();
+                ApplyRoleAccess();
+            };
+        }
+
+        private void ApplyRoleAccess()
+        {
+            string role = (_userRole ?? "").Trim().ToLower();
+            if (role == "admin" || role == "quanly" || role == "quản lý")
+            {
+                DeleteButtonVisibility = Visibility.Visible;
+            }
+            else
+            {
+                DeleteButtonVisibility = Visibility.Collapsed;
+            }
         }
 
         private void LoadData()
@@ -28,6 +58,17 @@ namespace LUnivers_Beaute.Views
             try
             {
                 DataTable dt = _bus.GetAll();
+                string role = (_userRole ?? "").Trim().ToLower();
+                if (role != "admin" && !string.IsNullOrEmpty(_userMaCuaHang))
+                {
+                    if (dt != null)
+                    {
+                        var filteredRows = dt.AsEnumerable()
+                            .Where(row => row.Field<string>("MaCuaHang") == _userMaCuaHang);
+                        dt = filteredRows.Any() ? filteredRows.CopyToDataTable() : dt.Clone();
+                    }
+                }
+
                 if (dgData != null)
                 {
                     _pager.SetData(dt);
@@ -69,6 +110,17 @@ namespace LUnivers_Beaute.Views
             try
             {
                 DataTable dt = _bus.GetAll();
+                string role = (_userRole ?? "").Trim().ToLower();
+                if (role != "admin" && !string.IsNullOrEmpty(_userMaCuaHang))
+                {
+                    if (dt != null)
+                    {
+                        var filteredRows = dt.AsEnumerable()
+                            .Where(row => row.Field<string>("MaCuaHang") == _userMaCuaHang);
+                        dt = filteredRows.Any() ? filteredRows.CopyToDataTable() : dt.Clone();
+                    }
+                }
+
                 string keyword = txtSearch?.Text?.Trim()?.ToLower() ?? "";
                 string tinhTrang = (cmbTinhTrang?.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Tất cả tình trạng";
 
@@ -103,7 +155,19 @@ namespace LUnivers_Beaute.Views
         {
             try
             {
-                cboCuaHangKiemKe.ItemsSource = _chBus.GetAll().DefaultView;
+                var dtCH = _chBus.GetAll().Copy();
+                string role = (_userRole ?? "").Trim().ToLower();
+                if (role != "admin" && !string.IsNullOrEmpty(_userMaCuaHang))
+                {
+                    for (int i = dtCH.Rows.Count - 1; i >= 0; i--)
+                    {
+                        if (dtCH.Rows[i]["MaCuaHang"]?.ToString() != _userMaCuaHang)
+                        {
+                            dtCH.Rows.RemoveAt(i);
+                        }
+                    }
+                }
+                cboCuaHangKiemKe.ItemsSource = dtCH.DefaultView;
                 if (cboCuaHangKiemKe.Items.Count > 0) cboCuaHangKiemKe.SelectedIndex = 0;
             }
             catch { }
@@ -214,6 +278,13 @@ namespace LUnivers_Beaute.Views
 
         private void BtnDelete_Click(object sender, RoutedEventArgs e)
         {
+            string role = (_userRole ?? "").Trim().ToLower();
+            if (role != "admin" && role != "quanly" && role != "quản lý")
+            {
+                MessageBox.Show("Bạn không có quyền thực hiện chức năng này!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             if (dgData.SelectedItem is DataRowView row)
             {
                 int maKiemKe = System.Convert.ToInt32(row["MaKiemKe"]);

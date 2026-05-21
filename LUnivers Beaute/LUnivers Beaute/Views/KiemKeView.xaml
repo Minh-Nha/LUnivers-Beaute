@@ -193,7 +193,8 @@
                         <DataGridTemplateColumn Header="" Width="44">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Content="✕" Style="{StaticResource IconButton}" Foreground="Red" Click="BtnDelete_Click" VerticalAlignment="Center" ToolTip="Xóa"/>
+                                    <Button Content="✕" Style="{StaticResource IconButton}" Foreground="Red" Click="BtnDelete_Click" VerticalAlignment="Center" ToolTip="Xóa"
+                                            Visibility="{Binding DeleteButtonVisibility, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

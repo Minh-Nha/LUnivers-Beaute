@@ -14,15 +14,31 @@ namespace LUnivers_Beaute.Views
         private PagingHelper _pager;
         private bool _isEditMode = false;
 
-        public NhanVienView()
+        private string _currentRole = "";
+
+        public NhanVienView(string currentRole = "")
         {
             InitializeComponent();
+            _currentRole = currentRole;
             _pager = new PagingHelper(dgData, txtPageInfo, 10);
             this.Loaded += (s, e) =>
             {
                 LoadFilters();
                 LoadData();
+                SetupRoleComboBox();
             };
+        }
+
+        private void SetupRoleComboBox()
+        {
+            try
+            {
+                if (_currentRole.Trim().ToLower() != "admin" && cboVaiTro != null && cboItemAdmin != null)
+                {
+                    cboVaiTro.Items.Remove(cboItemAdmin);
+                }
+            }
+            catch { }
         }
 
         // ===== DATA LOADING =====

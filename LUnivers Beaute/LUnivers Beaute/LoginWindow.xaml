@@ -98,13 +98,6 @@
                         <TextBlock Text="MẬT KHẨU" Style="{StaticResource FieldLabel}"/>
                         <PasswordBox x:Name="txtPassword" Style="{StaticResource ModernPasswordBox}" Margin="0,0,0,18"/>
 
-                        <TextBlock Text="CỬA HÀNG" Style="{StaticResource FieldLabel}"/>
-                        <ComboBox x:Name="cmbCuaHang" Style="{StaticResource ModernComboBox}" Margin="0,0,0,28">
-                            <ComboBoxItem Content="Chi nhánh Quận 1" IsSelected="True"/>
-                            <ComboBoxItem Content="Chi nhánh Quận 3"/>
-                            <ComboBoxItem Content="Chi nhánh Quận 7"/>
-                        </ComboBox>
-
                         <Button Content="ĐĂNG NHẬP" Style="{StaticResource PrimaryButton}" Height="46" FontSize="14" Click="BtnLogin_Click"/>
 
                         <TextBlock Text="Quên mật khẩu?" FontSize="12" Margin="0,18,0,0"

@@ -9,6 +9,7 @@ AS
 BEGIN
     SELECT 
         kk.MaKiemKe,
+        kk.MaCuaHang,
         ch.TenCuaHang,
         sp.TenSanPham,
         lsx.SoLo,
