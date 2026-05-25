@@ -1,6 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <Content Include="LUniversBeaute.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\BUS\BUS.csproj" />
     <ProjectReference Include="..\DTO\DTO.csproj" />
   </ItemGroup>
@@ -26,6 +30,7 @@
     <UseWPF>true</UseWPF>
     <StartupObject>LUnivers_Beaute.App</StartupObject>
     <AssemblyName>LUniversBeaute</AssemblyName>
+    <ApplicationIcon>LUniversBeaute.ico</ApplicationIcon>
   </PropertyGroup>
 
 </Project>
