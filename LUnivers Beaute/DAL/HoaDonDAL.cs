@@ -28,6 +28,31 @@ namespace DAL
             return DatabaseHelpers.GetData("sp_GetSanPhamBanHang", prmCuaHang, prmSearch, prmDanhMuc);
         }
 
+        public DataTable GetSanPhamBanHangPaged(string maCuaHang, string searchTerm, int? maDanhMuc, int pageNumber, int pageSize, out int totalRecords)
+        {
+            var prmCuaHang = new SqlParameter("@MaCuaHang", (object)maCuaHang ?? DBNull.Value);
+            var prmSearch = new SqlParameter("@SearchTerm", (object)searchTerm ?? DBNull.Value);
+            var prmDanhMuc = new SqlParameter("@MaDanhMuc", (object)maDanhMuc ?? DBNull.Value);
+            var prmPageNumber = new SqlParameter("@PageNumber", pageNumber);
+            var prmPageSize = new SqlParameter("@PageSize", pageSize);
+            
+            var prmTotalRecords = new SqlParameter("@TotalRecords", SqlDbType.Int);
+            prmTotalRecords.Direction = ParameterDirection.Output;
+
+            DataTable dt = DatabaseHelpers.GetData("sp_GetSanPhamBanHang_Paged", prmCuaHang, prmSearch, prmDanhMuc, prmPageNumber, prmPageSize, prmTotalRecords);
+            
+            if (prmTotalRecords.Value != DBNull.Value && prmTotalRecords.Value != null)
+            {
+                totalRecords = Convert.ToInt32(prmTotalRecords.Value);
+            }
+            else
+            {
+                totalRecords = 0;
+            }
+
+            return dt;
+        }
+
         public int TaoHoaDon(string maHoaDon, string maCuaHang, string maNhanVien, int? maKhachHang, int? maKhuyenMai, string phuongThucThanhToan, string chiTietJSON)
         {
             return DatabaseHelpers.ExecuteNonQuery("sp_TaoHoaDon",

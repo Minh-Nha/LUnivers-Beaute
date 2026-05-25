@@ -4,8 +4,8 @@
              Background="Transparent">
     <Grid Margin="24">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2.5*"/>
-            <ColumnDefinition Width="1*" MinWidth="400"/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="1.2*" MinWidth="430"/>
         </Grid.ColumnDefinitions>
 
         <!-- LEFT PANEL: Invoices List -->
@@ -56,9 +56,9 @@
                               SelectionChanged="DgData_SelectionChanged">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="MÃ HĐ" Binding="{Binding MaHoaDon}" Width="90"/>
-                            <DataGridTextColumn Header="KHÁCH HÀNG" Binding="{Binding KhachHang}" Width="130"/>
-                            <DataGridTextColumn Header="NGÀY LẬP" Binding="{Binding NgayLap}" Width="140"/>
-                            <DataGridTextColumn Header="TỔNG TIỀN" Binding="{Binding TongTien, StringFormat={}{0:#,##0} đ}" Width="*"/>
+                            <DataGridTextColumn Header="KHÁCH HÀNG" Binding="{Binding KhachHang}" Width="1.5*"/>
+                            <DataGridTextColumn Header="NGÀY LẬP" Binding="{Binding NgayLap}" Width="150"/>
+                            <DataGridTextColumn Header="TỔNG TIỀN" Binding="{Binding TongTien}" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>
                     <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,12,0,12">
@@ -132,8 +132,21 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="SL" Binding="{Binding SoLuong}" Width="40"/>
-                            <DataGridTextColumn Header="THÀNH TIỀN" Binding="{Binding ThanhTien, StringFormat={}{0:#,##0}}" Width="90"/>
+                            <DataGridTextColumn Header="SL" Binding="{Binding SoLuong}" Width="50">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="THÀNH TIỀN" Binding="{Binding ThanhTien, StringFormat={}{0:#,##0}}" Width="110">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextAlignment" Value="Right"/>
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Border>

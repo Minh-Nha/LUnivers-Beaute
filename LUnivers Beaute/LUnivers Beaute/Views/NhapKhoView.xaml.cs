@@ -132,7 +132,6 @@ namespace LUnivers_Beaute.Views
             {
                 string? maPhieuNhap = row["MaPhieuNhap"].ToString();
                 
-                lblMaPhieuTieuDe.Text = maPhieuNhap;
                 lblMaPhieu.Text = maPhieuNhap;
                 lblNgayNhap.Text = row["NgayNhap"].ToString();
                 lblNhanVien.Text = row["NhanVienNhap"].ToString();
@@ -178,6 +177,43 @@ namespace LUnivers_Beaute.Views
             createPanel.Visibility = Visibility.Collapsed;
         }
 
+        private void cboSanPham_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cboSanPham.SelectedItem is DataRowView row)
+            {
+                if (row["GiaNiemYet"] != DBNull.Value)
+                {
+                    if (decimal.TryParse(row["GiaNiemYet"].ToString(), out decimal gia))
+                    {
+                        txtGiaNiemYet.Text = gia.ToString("N0");
+                    }
+                    else
+                    {
+                        txtGiaNiemYet.Text = row["GiaNiemYet"].ToString();
+                    }
+                }
+                else
+                {
+                    txtGiaNiemYet.Text = "0";
+                }
+            }
+            else
+            {
+                txtGiaNiemYet.Clear();
+            }
+        }
+
+        private void cboNhanVien_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cboNhanVien.SelectedItem is DataRowView row)
+            {
+                if (row.Row.Table.Columns.Contains("MaCuaHang") && row["MaCuaHang"] != DBNull.Value)
+                {
+                    cboCuaHang.SelectedValue = row["MaCuaHang"].ToString();
+                }
+            }
+        }
+
         private void BtnAddImportItem_Click(object sender, RoutedEventArgs e)
         {
             if (cboSanPham.SelectedItem == null)
@@ -186,29 +222,75 @@ namespace LUnivers_Beaute.Views
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(txtSoLo.Text) || !int.TryParse(txtSoLuong.Text, out int sl) || !double.TryParse(txtGiaNhap.Text, out double gia))
+            string cleanGiaNhap = txtGiaNhap.Text.Replace(",", "").Replace(".", "").Trim();
+            if (!int.TryParse(txtSoLuong.Text, out int sl) || !double.TryParse(cleanGiaNhap, out double gia))
             {
                 MessageBox.Show("Vui lòng nhập đầy đủ thông tin hợp lệ (Số lượng, Giá nhập)!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
+            double giaNiemYet = 0;
+            if (!string.IsNullOrWhiteSpace(txtGiaNiemYet.Text))
+            {
+                string cleanGiaNiemYet = txtGiaNiemYet.Text.Replace(",", "").Replace(".", "").Trim();
+                if (!double.TryParse(cleanGiaNiemYet, out giaNiemYet))
+                {
+                    MessageBox.Show("Giá bán niêm yết không hợp lệ!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+            }
+
             DataRowView row = (DataRowView)cboSanPham.SelectedItem;
+            string maSp = row["MaSanPham"].ToString();
+            
+            // Auto-generate SoLo if empty
+            string soLo = txtSoLo.Text.Trim();
+            if (string.IsNullOrWhiteSpace(soLo))
+            {
+                soLo = "LO" + System.DateTime.Now.ToString("yyMMddHHmmss");
+            }
             
             _importCart.Add(new ImportItem
             {
-                MaSanPham = row["MaSanPham"].ToString(),
+                MaSanPham = maSp,
                 TenSanPham = row["TenSanPham"].ToString(),
-                SoLo = txtSoLo.Text,
+                SoLo = soLo,
                 NgaySX = dpNgaySX.SelectedDate ?? System.DateTime.Now,
                 HanSD = dpHanSD.SelectedDate ?? System.DateTime.Now.AddYears(1),
                 SoLuong = sl,
-                GiaNhap = gia
+                GiaNhap = gia,
+                GiaNiemYet = giaNiemYet
             });
 
             txtSoLo.Clear();
             txtSoLuong.Text = "1";
             txtGiaNhap.Clear();
+            txtGiaNiemYet.Clear();
             cboSanPham.SelectedIndex = -1;
+        }
+
+        private void BtnAddAllItems_Click(object sender, RoutedEventArgs e)
+        {
+            if (cboSanPham.Items.Count == 0) return;
+
+            string soLo = "LOTEST" + System.DateTime.Now.ToString("MMddHHmmss");
+            
+            foreach (System.Data.DataRowView row in cboSanPham.Items)
+            {
+                string maSp = row["MaSanPham"].ToString();
+                
+                _importCart.Add(new ImportItem
+                {
+                    MaSanPham = maSp,
+                    TenSanPham = row["TenSanPham"].ToString(),
+                    SoLo = soLo,
+                    NgaySX = System.DateTime.Now.AddMonths(-1),
+                    HanSD = System.DateTime.Now.AddYears(2),
+                    SoLuong = 500, // Số lượng test
+                    GiaNhap = 150000, // Giá nhập test
+                    GiaNiemYet = 350000 // Giá bán test
+                });
+            }
         }
 
         private void BtnRemoveImportItem_Click(object sender, RoutedEventArgs e)
@@ -249,6 +331,7 @@ namespace LUnivers_Beaute.Views
                         MaSanPham = item.MaSanPham,
                         SoLuong = item.SoLuong,
                         GiaNhap = item.GiaNhap,
+                        GiaNiemYet = item.GiaNiemYet,
                         SoLo = item.SoLo,
                         NgaySanXuat = item.NgaySX.ToString("yyyy-MM-dd"),
                         HanSuDung = item.HanSD.ToString("yyyy-MM-dd")
@@ -276,6 +359,90 @@ namespace LUnivers_Beaute.Views
                 MessageBox.Show("Lỗi: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        private void TxtCurrency_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (sender is TextBox textBox)
+            {
+                // Remove existing commas, dots and non-digit characters (except maybe dot for decimal)
+                string value = new string(textBox.Text.Where(char.IsDigit).ToArray());
+                
+                if (!string.IsNullOrEmpty(value))
+                {
+                    if (decimal.TryParse(value, out decimal amount))
+                    {
+                        // Format the number with commas
+                        textBox.TextChanged -= TxtCurrency_TextChanged;
+                        textBox.Text = amount.ToString("N0");
+                        textBox.CaretIndex = textBox.Text.Length;
+                        textBox.TextChanged += TxtCurrency_TextChanged;
+                    }
+                }
+            }
+        }
+
+        private void BtnPrint_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(lblMaPhieu.Text)) return;
+
+            try
+            {
+                var dialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    FileName = $"PhieuNhapKho_{lblMaPhieu.Text}.pdf",
+                    DefaultExt = ".pdf",
+                    Filter = "PDF documents (.pdf)|*.pdf"
+                };
+
+                if (dialog.ShowDialog() == true)
+                {
+                    string ttStr = new string(lblTongTien.Text.Where(c => char.IsDigit(c)).ToArray());
+                    var model = new LUnivers_Beaute.Services.ImportReceiptModel
+                    {
+                        MaPhieuNhap = lblMaPhieu.Text,
+                        TenNhanVien = lblNhanVien.Text,
+                        TenCuaHang = lblCuaHang.Text,
+                        NgayNhap = DateTime.TryParse(lblNgayNhap.Text, out DateTime dt) ? dt : DateTime.Now,
+                        TongTienNhap = decimal.TryParse(ttStr, out decimal tt) ? tt : 0
+                    };
+
+                    if (dgChiTiet.ItemsSource is System.Data.DataView dataView)
+                    {
+                        foreach (System.Data.DataRowView row in dataView)
+                        {
+                            string hsdStr = row["HanSuDung"].ToString();
+                            if (DateTime.TryParse(hsdStr, out DateTime hsdDate))
+                                hsdStr = hsdDate.ToString("dd/MM/yyyy");
+
+                            string gnStr = new string(row["GiaNhap"].ToString().Where(c => char.IsDigit(c)).ToArray());
+
+                            model.Items.Add(new LUnivers_Beaute.Services.ImportReceiptItem
+                            {
+                                TenSanPham = row["TenSanPham"].ToString(),
+                                SoLo = row["SoLo"].ToString(),
+                                HanSuDung = hsdStr,
+                                SoLuong = int.TryParse(row["SoLuong"].ToString(), out int sl) ? sl : 0,
+                                GiaNhap = decimal.TryParse(gnStr, out decimal gn) ? gn : 0
+                            });
+                        }
+                    }
+
+                    var pdfService = new LUnivers_Beaute.Services.PdfImportReceiptService();
+                    pdfService.GenerateReceipt(model, dialog.FileName);
+
+                    // Mở file PDF sau khi tạo thành công
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = dialog.FileName,
+                        UseShellExecute = true
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi in phiếu nhập: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
     }
 
     public class ImportItem : System.ComponentModel.INotifyPropertyChanged
@@ -298,6 +465,13 @@ namespace LUnivers_Beaute.Views
         {
             get => _giaNhap;
             set { _giaNhap = value; OnPropertyChanged(nameof(GiaNhap)); OnPropertyChanged(nameof(ThanhTien)); }
+        }
+
+        private double _giaNiemYet;
+        public double GiaNiemYet
+        {
+            get => _giaNiemYet;
+            set { _giaNiemYet = value; OnPropertyChanged(nameof(GiaNiemYet)); }
         }
 
         public double ThanhTien => SoLuong * GiaNhap;

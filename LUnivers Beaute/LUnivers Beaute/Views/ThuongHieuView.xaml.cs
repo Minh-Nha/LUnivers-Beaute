@@ -44,8 +44,14 @@ namespace LUnivers_Beaute.Views
 
         private void BtnEdit_Click(object sender, RoutedEventArgs e)
         {
-            txtPanelTitle.Text = "✏️ Cập nhật Thương hiệu";
-            crudPanel.Visibility = Visibility.Visible;
+            if (sender is Button btn && btn.DataContext is DataRowView row)
+            {
+                txtPanelTitle.Text = "✏️ Cập nhật Thương hiệu";
+                txtMaThuongHieu.Text = row["MaThuongHieu"].ToString();
+                txtTenThuongHieu.Text = row["TenThuongHieu"].ToString();
+                txtQuocGia.Text = row["QuocGia"].ToString();
+                crudPanel.Visibility = Visibility.Visible;
+            }
         }
 
         private void BtnCancel_Click(object sender, RoutedEventArgs e)
@@ -126,7 +132,7 @@ namespace LUnivers_Beaute.Views
 
         private void BtnDelete_Click(object sender, RoutedEventArgs e)
         {
-            if (dgData.SelectedItem is DataRowView row)
+            if (sender is Button btn && btn.DataContext is DataRowView row)
             {
                 if (MessageBox.Show("Bạn có chắc chắn muốn xóa thương hiệu này?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {

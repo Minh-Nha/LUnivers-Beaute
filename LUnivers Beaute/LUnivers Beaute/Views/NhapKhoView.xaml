@@ -80,13 +80,14 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 
                 <!-- Header -->
                 <Grid Grid.Row="0" Margin="0,0,0,20">
                     <StackPanel HorizontalAlignment="Center">
-                        <TextBlock Text="PHIẾU NHẬP KHO" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" HorizontalAlignment="Center" Margin="0,0,0,4"/>
-                        <TextBlock x:Name="lblMaPhieuTieuDe" Text="PN001" FontSize="14" FontWeight="Bold" Foreground="{StaticResource AccentGreenBrush}" HorizontalAlignment="Center"/>
+                        <TextBlock Text="✦ L'UNIVERS BEAUTÉ ✦" FontSize="14" FontWeight="Bold" Foreground="{StaticResource AccentPeachBrush}" HorizontalAlignment="Center" Margin="0,0,0,4"/>
+                        <TextBlock Text="CHI TIẾT PHIẾU NHẬP" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" HorizontalAlignment="Center"/>
                     </StackPanel>
                 </Grid>
 
@@ -127,20 +128,36 @@
                             </DataGridTextColumn>
                             <DataGridTextColumn Header="LÔ" Binding="{Binding SoLo}" Width="60"/>
                             <DataGridTextColumn Header="HSD" Binding="{Binding HanSuDung}" Width="80"/>
-                            <DataGridTextColumn Header="SL" Binding="{Binding SoLuong}" Width="40"/>
-                            <DataGridTextColumn Header="THÀNH TIỀN" Binding="{Binding ThanhTien}" Width="90"/>
+                            <DataGridTextColumn Header="SL" Binding="{Binding SoLuong}" Width="40">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="THÀNH TIỀN" Binding="{Binding ThanhTien, StringFormat={}{0:#,##0} đ}" Width="110">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextAlignment" Value="Right"/>
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Border>
 
                 <!-- Summary -->
-                <StackPanel Grid.Row="3" Margin="0,0,0,10">
+                <StackPanel Grid.Row="3" Margin="0,0,0,20">
                     <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0" Margin="0,0,0,12"/>
                     <Grid>
                         <TextBlock Text="TỔNG TIỀN NHẬP:" FontWeight="Bold" FontSize="14" Foreground="{StaticResource TextPrimaryBrush}"/>
-                        <TextBlock x:Name="lblTongTien" Text="0 đ" HorizontalAlignment="Right" FontWeight="Bold" FontSize="16" Foreground="{StaticResource AccentGreenBrush}"/>
+                        <TextBlock x:Name="lblTongTien" Text="0 đ" HorizontalAlignment="Right" FontWeight="Bold" FontSize="16" Foreground="{StaticResource AccentPeachBrush}"/>
                     </Grid>
                 </StackPanel>
+
+                <!-- Actions -->
+                <Button Grid.Row="4" Content="🖨️ IN PHIẾU NHẬP" Style="{StaticResource PrimaryButton}" Height="40" FontSize="13" Click="BtnPrint_Click"/>
             </Grid>
         </Border>
 
@@ -189,7 +206,7 @@
                                         <!-- Sản phẩm -->
                                         <StackPanel Margin="0,0,0,16">
                                             <TextBlock Text="Sản phẩm" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,6"/>
-                                            <ComboBox x:Name="cboSanPham" Style="{StaticResource ModernComboBox}" SelectedValuePath="MaSanPham">
+                                            <ComboBox x:Name="cboSanPham" Style="{StaticResource ModernComboBox}" SelectedValuePath="MaSanPham" SelectionChanged="cboSanPham_SelectionChanged">
                                                 <ComboBox.ItemTemplate>
                                                     <DataTemplate>
                                                         <TextBlock Text="{Binding TenSanPham}"/>
@@ -201,7 +218,21 @@
                                         <!-- Số lô -->
                                         <StackPanel Margin="0,0,0,16">
                                             <TextBlock Text="Số lô" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,6"/>
-                                            <TextBox x:Name="txtSoLo" Style="{StaticResource ModernTextBox}"/>
+                                            <Grid>
+                                                <TextBox x:Name="txtSoLo" Style="{StaticResource ModernTextBox}"/>
+                                                <TextBlock Text="(Bỏ trống để tự tạo)" IsHitTestVisible="False" VerticalAlignment="Center" Margin="12,0" Foreground="#AAA" FontSize="12">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Text, ElementName=txtSoLo}" Value="">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Grid>
                                         </StackPanel>
                                         
                                         <!-- Ngày SX & Hạn SD -->
@@ -222,7 +253,7 @@
                                         </Grid>
                                         
                                         <!-- Số lượng & Giá nhập -->
-                                        <Grid Margin="0,0,0,8">
+                                        <Grid Margin="0,0,0,16">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="1.2*"/>
                                                 <ColumnDefinition Width="12"/>
@@ -234,13 +265,27 @@
                                             </StackPanel>
                                             <StackPanel Grid.Column="2">
                                                 <TextBlock Text="Giá nhập (đ)" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,6"/>
-                                                <TextBox x:Name="txtGiaNhap" Style="{StaticResource ModernTextBox}"/>
+                                                <TextBox x:Name="txtGiaNhap" Style="{StaticResource ModernTextBox}" TextChanged="TxtCurrency_TextChanged"/>
                                             </StackPanel>
                                         </Grid>
+
+                                        <!-- Giá bán (Niêm yết) -->
+                                        <StackPanel Margin="0,0,0,8">
+                                            <TextBlock Text="Giá bán niêm yết (đ)" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,6"/>
+                                            <TextBox x:Name="txtGiaNiemYet" Style="{StaticResource ModernTextBox}" TextChanged="TxtCurrency_TextChanged"/>
+                                        </StackPanel>
                                     </StackPanel>
                                 </ScrollViewer>
                                 
-                                <Button Grid.Row="1" Content="＋ Thêm vào danh sách" Style="{StaticResource PrimaryButton}" Height="42" FontSize="13" Click="BtnAddImportItem_Click"/>
+                                <Grid Grid.Row="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="8"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" Content="＋ Thêm vào danh sách" Style="{StaticResource PrimaryButton}" Height="42" FontSize="13" Click="BtnAddImportItem_Click"/>
+                                    <Button Grid.Column="2" Content="Tất cả (Test)" Height="42" FontSize="13" Padding="12,0" Background="#E9ECEF" BorderThickness="0" Foreground="#495057" Click="BtnAddAllItems_Click" ToolTip="Thêm tất cả sản phẩm vào danh sách để test"/>
+                                </Grid>
                             </Grid>
                         </Border>
                         
@@ -345,7 +390,7 @@
                                     
                                     <StackPanel>
                                         <TextBlock Text="Nhân viên" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,6"/>
-                                        <ComboBox x:Name="cboNhanVien" Style="{StaticResource ModernComboBox}" Width="160" SelectedValuePath="MaNhanVien">
+                                        <ComboBox x:Name="cboNhanVien" Style="{StaticResource ModernComboBox}" Width="160" SelectedValuePath="MaNhanVien" SelectionChanged="cboNhanVien_SelectionChanged">
                                             <ComboBox.ItemTemplate>
                                                 <DataTemplate>
                                                     <TextBlock Text="{Binding HoTen}"/>
@@ -355,12 +400,12 @@
                                     </StackPanel>
                                 </StackPanel>
                                 
-                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom">
-                                    <StackPanel VerticalAlignment="Center" Margin="0,0,24,0">
-                                        <TextBlock Text="TỔNG TIỀN NHẬP" FontSize="11" FontWeight="Bold" Foreground="{StaticResource TextSecondaryBrush}" HorizontalAlignment="Right" Margin="0,0,0,4"/>
-                                        <TextBlock x:Name="lblTongTienMoi" Text="0 đ" FontSize="22" FontWeight="Bold" Foreground="{StaticResource AccentGreenBrush}" HorizontalAlignment="Right"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                                    <StackPanel Margin="0,0,0,12" HorizontalAlignment="Right">
+                                        <TextBlock Text="TỔNG TIỀN NHẬP:" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextSecondaryBrush}" HorizontalAlignment="Right" Margin="0,0,0,2"/>
+                                        <TextBlock x:Name="lblTongTienMoi" Text="0 đ" FontSize="26" FontWeight="Bold" Foreground="{StaticResource AccentGreenBrush}" HorizontalAlignment="Right"/>
                                     </StackPanel>
-                                    <Button Content="XÁC NHẬN NHẬP KHO" Style="{StaticResource PrimaryButton}" Height="46" FontSize="13" FontWeight="Bold" Padding="24,0" Click="BtnXacNhanNhap_Click"/>
+                                    <Button Content="XÁC NHẬN NHẬP KHO" Style="{StaticResource PrimaryButton}" Height="46" FontSize="14" FontWeight="Bold" HorizontalAlignment="Stretch" Click="BtnXacNhanNhap_Click"/>
                                 </StackPanel>
                             </Grid>
                         </Grid>

@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -21,6 +22,11 @@ namespace LUnivers_Beaute.Views
         private NhanVienBUS _nhanVienBus = new NhanVienBUS();
         private ObservableCollection<SanPhamDTO> _products = new ObservableCollection<SanPhamDTO>();
         private ObservableCollection<CartItem> _cart = new ObservableCollection<CartItem>();
+        private DataTable _dtKhachHang;
+
+        private int _currentPage = 1;
+        private int _pageSize = 8;
+        private int _totalPages = 1;
 
         private string _currentCuaHang = "";
         private string _currentNhanVien = "";
@@ -42,7 +48,6 @@ namespace LUnivers_Beaute.Views
             this.Loaded += (s, e) =>
             {
                 LoadCuaHang();
-                LoadNhanVien();
                 LoadDanhMuc();
                 LoadKhachHang();
                 LoadKhuyenMai();
@@ -72,57 +77,9 @@ namespace LUnivers_Beaute.Views
                 {
                     cboCuaHang.SelectedIndex = 0;
                     _currentCuaHang = dt.Rows[0]["MaCuaHang"]?.ToString() ?? "CH01";
-                    runCuaHang.Text = dt.Rows[0]["TenCuaHang"]?.ToString() ?? _currentCuaHang;
                 }
             }
             catch { }
-        }
-
-        private void LoadNhanVien()
-        {
-            try
-            {
-                var dt = _nhanVienBus.GetAll();
-
-                if (!dt.Columns.Contains("DisplayText"))
-                    dt.Columns.Add("DisplayText", typeof(string));
-
-                foreach (DataRow r in dt.Rows)
-                {
-                    r["DisplayText"] = r["MaNhanVien"]?.ToString() + " - " + r["HoTen"]?.ToString();
-                }
-
-                if (!string.IsNullOrEmpty(_currentCuaHang))
-                {
-                    var rows = dt.Select($"MaCuaHang = '{_currentCuaHang}'");
-                    if (rows.Length > 0)
-                        dt = rows.CopyToDataTable();
-                    else
-                        dt.Rows.Clear();
-                }
-
-                cboNhanVien.ItemsSource = dt.DefaultView;
-                if (dt.Rows.Count > 0)
-                {
-                    if (!string.IsNullOrEmpty(_currentNhanVien))
-                    {
-                        var rowView = dt.DefaultView.Cast<DataRowView>().FirstOrDefault(r => r["MaNhanVien"].ToString() == _currentNhanVien);
-                        if (rowView != null)
-                            cboNhanVien.SelectedItem = rowView;
-                        else
-                            cboNhanVien.SelectedIndex = 0;
-                    }
-                    else
-                    {
-                        cboNhanVien.SelectedIndex = 0;
-                        _currentNhanVien = dt.Rows[0]["MaNhanVien"]?.ToString() ?? "";
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine("LoadNhanVien error: " + ex.Message);
-            }
         }
 
         private void LoadDanhMuc()
@@ -146,28 +103,7 @@ namespace LUnivers_Beaute.Views
         {
             try
             {
-                var dt = _khachHangBus.GetAll(null, 1); // Only active customers
-
-                // Add DisplayText column for ComboBox
-                if (!dt.Columns.Contains("DisplayText"))
-                    dt.Columns.Add("DisplayText", typeof(string));
-
-                foreach (DataRow r in dt.Rows)
-                {
-                    string sdt = r["SoDienThoai"]?.ToString() ?? "";
-                    r["DisplayText"] = r["HoTen"]?.ToString() + (string.IsNullOrEmpty(sdt) ? "" : " - " + sdt);
-                }
-
-                DataRow dr = dt.NewRow();
-                dr["MaKhachHang"] = 0;
-                dr["HoTen"] = "Khách vãng lai";
-                dr["SoDienThoai"] = "";
-                dr["DiemTichLuy"] = 0;
-                dr["DisplayText"] = "Khách vãng lai";
-                dt.Rows.InsertAt(dr, 0);
-
-                cboKhachHang.ItemsSource = dt.DefaultView;
-                cboKhachHang.SelectedIndex = 0;
+                _dtKhachHang = _khachHangBus.GetAll(null, 1); // Only active customers
             }
             catch (Exception ex)
             {
@@ -215,7 +151,19 @@ namespace LUnivers_Beaute.Views
                     maDanhMuc = dm;
                 }
 
-                var dt = _hoaDonBus.GetSanPhamBanHang(_currentCuaHang, searchTerm, maDanhMuc);
+                int totalRecords = 0;
+                var dt = _hoaDonBus.GetSanPhamBanHangPaged(_currentCuaHang, searchTerm, maDanhMuc, _currentPage, _pageSize, out totalRecords);
+                
+                _totalPages = (int)Math.Ceiling((double)totalRecords / _pageSize);
+                if (_totalPages < 1) _totalPages = 1;
+
+                if (txtPageInfo != null)
+                {
+                    txtPageInfo.Text = $"Trang {_currentPage} / {_totalPages}";
+                    btnPrevPage.IsEnabled = _currentPage > 1;
+                    btnNextPage.IsEnabled = _currentPage < _totalPages;
+                }
+
                 _products.Clear();
                 foreach (DataRow row in dt.Rows)
                 {
@@ -225,7 +173,8 @@ namespace LUnivers_Beaute.Views
                         TenSanPham = row["TenSanPham"]?.ToString() ?? "",
                         TenThuongHieu = row["TenThuongHieu"]?.ToString() ?? "",
                         GiaNiemYet = Convert.ToDecimal(row["GiaNiemYet"]),
-                        SoLuongTon = Convert.ToInt32(row["SoLuongTon"])
+                        SoLuongTon = Convert.ToInt32(row["SoLuongTon"]),
+                        HinhAnh = row["HinhAnh"]?.ToString() ?? ""
                     });
                 }
             }
@@ -237,43 +186,60 @@ namespace LUnivers_Beaute.Views
 
         // ===== EVENT HANDLERS =====
 
-        private void CboNhanVien_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (cboNhanVien.SelectedItem is DataRowView row)
-            {
-                _currentNhanVien = row["MaNhanVien"]?.ToString() ?? "";
-            }
-        }
-
         private void CboCuaHang_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cboCuaHang.SelectedItem is DataRowView row)
             {
                 _currentCuaHang = row["MaCuaHang"]?.ToString() ?? "CH01";
-                runCuaHang.Text = row["TenCuaHang"]?.ToString() ?? _currentCuaHang;
                 _cart.Clear();
+                _currentPage = 1;
                 LoadProducts();
             }
         }
 
         private void CboDanhMuc_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            _currentPage = 1;
             LoadProducts();
         }
 
         private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
+            _currentPage = 1;
             LoadProducts();
         }
 
-        private void CboKhachHang_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void TxtSoDienThoai_TextChanged(object sender, TextChangedEventArgs e)
         {
             UpdateCartTotal();
         }
 
         private void BtnClearKhachHang_Click(object sender, RoutedEventArgs e)
         {
-            cboKhachHang.SelectedIndex = 0; // Reset to "Khách vãng lai"
+            txtSoDienThoai.Text = "";
+            UpdateCartTotal();
+        }
+
+        private void NumberOnly_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = new Regex("[^0-9]+").IsMatch(e.Text);
+        }
+
+        private void TxtTienKhachDua_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            // Format currency while typing
+            TextBox textBox = sender as TextBox;
+            if (textBox != null && textBox.Text.Length > 0)
+            {
+                string valueStr = textBox.Text.Replace(",", "").Replace(".", "");
+                if (decimal.TryParse(valueStr, out decimal value))
+                {
+                    textBox.TextChanged -= TxtTienKhachDua_TextChanged;
+                    textBox.Text = string.Format("{0:N0}", value);
+                    textBox.SelectionStart = textBox.Text.Length;
+                    textBox.TextChanged += TxtTienKhachDua_TextChanged;
+                }
+            }
             UpdateCartTotal();
         }
 
@@ -296,6 +262,29 @@ namespace LUnivers_Beaute.Views
                 }
             }
             UpdateCartTotal();
+        }
+
+        private void CboThanhToan_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateCartTotal();
+        }
+
+        private void BtnPrevPage_Click(object sender, RoutedEventArgs e)
+        {
+            if (_currentPage > 1)
+            {
+                _currentPage--;
+                LoadProducts();
+            }
+        }
+
+        private void BtnNextPage_Click(object sender, RoutedEventArgs e)
+        {
+            if (_currentPage < _totalPages)
+            {
+                _currentPage++;
+                LoadProducts();
+            }
         }
 
         // ===== CART OPERATIONS =====
@@ -330,6 +319,10 @@ namespace LUnivers_Beaute.Views
                         };
                         newItem.PropertyChanged += (s, ev) => { if (ev.PropertyName == "ThanhTien") UpdateCartTotal(); };
                         _cart.Add(newItem);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Sản phẩm đã hết hàng!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                 }
             }
@@ -379,6 +372,8 @@ namespace LUnivers_Beaute.Views
 
         private void UpdateCartTotal()
         {
+            if (txtTamTinh == null) return;
+
             decimal subtotal = _cart.Sum(c => c.ThanhTien);
             decimal discount = 0;
 
@@ -401,16 +396,69 @@ namespace LUnivers_Beaute.Views
             txtCartCount.Text = _cart.Count.ToString();
 
             // Show loyalty points for selected customer
-            if (cboKhachHang?.SelectedItem is DataRowView row)
+            int diem = 0;
+            string sdt = txtSoDienThoai.Text.Trim();
+            if (_dtKhachHang != null && !string.IsNullOrEmpty(sdt))
             {
-                int diem = 0;
-                int.TryParse(row["DiemTichLuy"]?.ToString(), out diem);
-                int maKH = 0;
-                int.TryParse(row["MaKhachHang"]?.ToString(), out maKH);
-                txtDiemTichLuy.Text = maKH > 0 ? $"⭐ {diem:N0}" : "⭐ 0";
+                var row = _dtKhachHang.AsEnumerable().FirstOrDefault(r => r["SoDienThoai"]?.ToString() == sdt);
+                if (row != null)
+                {
+                    int.TryParse(row["DiemTichLuy"]?.ToString(), out diem);
+                    txtDiemTichLuy.Text = $"⭐ {diem:N0}";
+                    txtTenKhachHang.Text = row["HoTen"]?.ToString();
+                    txtTenKhachHang.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(76, 175, 80)); // #4CAF50
+                }
+                else
+                {
+                    txtDiemTichLuy.Text = "⭐ 0";
+                    txtTenKhachHang.Text = "Không tìm thấy KH";
+                    txtTenKhachHang.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(244, 67, 54)); // #F44336
+                }
+            }
+            else
+            {
+                txtDiemTichLuy.Text = "⭐ 0";
+                txtTenKhachHang.Text = "Khách vãng lai";
+                txtTenKhachHang.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(76, 175, 80));
             }
 
             btnThanhToan.IsEnabled = _cart.Count > 0;
+
+            // Calculate Tiền thối
+            string tienKhachDuaStr = txtTienKhachDua.Text.Replace(",", "").Replace(".", "");
+
+            // Auto fill for non-cash
+            if (cboThanhToan?.SelectedItem is ComboBoxItem item)
+            {
+                string method = item.Content?.ToString();
+                if (method == "Chuyển khoản" || method == "Thẻ tín dụng")
+                {
+                    txtTienKhachDua.TextChanged -= TxtTienKhachDua_TextChanged;
+                    txtTienKhachDua.Text = total > 0 ? string.Format("{0:N0}", total) : "";
+                    txtTienKhachDua.TextChanged += TxtTienKhachDua_TextChanged;
+                    tienKhachDuaStr = total > 0 ? total.ToString() : "";
+                }
+            }
+
+            if (decimal.TryParse(tienKhachDuaStr, out decimal tienKhachDua))
+            {
+                decimal tienThoi = tienKhachDua - total;
+                if (tienThoi < 0)
+                {
+                    txtTienThoi.Text = $"Thiếu: {Math.Abs(tienThoi):N0} ₫";
+                    txtTienThoi.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 0, 0));
+                }
+                else
+                {
+                    txtTienThoi.Text = $"{tienThoi:N0} ₫";
+                    txtTienThoi.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(45, 45, 45));
+                }
+            }
+            else
+            {
+                txtTienThoi.Text = "0 ₫";
+                txtTienThoi.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(45, 45, 45));
+            }
         }
 
         // ===== CHECKOUT =====
@@ -419,6 +467,23 @@ namespace LUnivers_Beaute.Views
         {
             if (_cart.Count == 0) return;
 
+            string tienKhachDuaStr = txtTienKhachDua.Text.Replace(",", "").Replace(".", "");
+            if (string.IsNullOrEmpty(tienKhachDuaStr) || !decimal.TryParse(tienKhachDuaStr, out decimal tienKhachDua))
+            {
+                MessageBox.Show("Vui lòng nhập tiền khách đưa!", "Lỗi thanh toán", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            string tongCongStr = txtTongCong.Text.Replace(" ₫", "").Replace(",", "").Replace(".", "");
+            if (decimal.TryParse(tongCongStr, out decimal tongCong))
+            {
+                if (tienKhachDua < tongCong)
+                {
+                    MessageBox.Show("Khách chưa đưa đủ tiền để thanh toán!", "Lỗi thanh toán", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+            }
+
             try
             {
                 string maHoaDon = "HD" + DateTime.Now.ToString("yyyyMMddHHmmss");
@@ -426,11 +491,16 @@ namespace LUnivers_Beaute.Views
 
                 // Get selected customer
                 int? maKhachHang = null;
-                if (cboKhachHang.SelectedItem is DataRowView khRow)
+                string sdt = txtSoDienThoai.Text.Trim();
+                if (_dtKhachHang != null && !string.IsNullOrEmpty(sdt))
                 {
-                    int maKH = 0;
-                    int.TryParse(khRow["MaKhachHang"]?.ToString(), out maKH);
-                    if (maKH > 0) maKhachHang = maKH;
+                    var khRow = _dtKhachHang.AsEnumerable().FirstOrDefault(r => r["SoDienThoai"]?.ToString() == sdt);
+                    if (khRow != null)
+                    {
+                        int maKH = 0;
+                        int.TryParse(khRow["MaKhachHang"]?.ToString(), out maKH);
+                        if (maKH > 0) maKhachHang = maKH;
+                    }
                 }
 
                 // Get selected promotion
@@ -447,9 +517,92 @@ namespace LUnivers_Beaute.Views
 
                 _hoaDonBus.TaoHoaDon(maHoaDon, _currentCuaHang, _currentNhanVien, maKhachHang, maKhuyenMai, phuongThuc, json);
 
+                // --- GENERATE PDF ---
+                try
+                {
+                    string tenCuaHang = _currentCuaHang;
+                    string diaChiCuaHang = "";
+                    string sdtCuaHang = "";
+                    if (cboCuaHang.ItemsSource is DataView dvCuaHang)
+                    {
+                        var chRow = dvCuaHang.Table.AsEnumerable().FirstOrDefault(r => r["MaCuaHang"]?.ToString() == _currentCuaHang);
+                        if (chRow != null)
+                        {
+                            tenCuaHang = chRow["TenCuaHang"]?.ToString() ?? _currentCuaHang;
+                            if (dvCuaHang.Table.Columns.Contains("DiaChi")) diaChiCuaHang = chRow["DiaChi"]?.ToString();
+                            if (dvCuaHang.Table.Columns.Contains("SoDienThoai")) sdtCuaHang = chRow["SoDienThoai"]?.ToString();
+                        }
+                    }
+
+                    string tenNhanVien = _currentNhanVien;
+                    try
+                    {
+                        var dtNV = _nhanVienBus.GetAll();
+                        var nvRow = dtNV.AsEnumerable().FirstOrDefault(r => r["MaNhanVien"]?.ToString() == _currentNhanVien);
+                        if (nvRow != null) tenNhanVien = nvRow["HoTen"]?.ToString() ?? _currentNhanVien;
+                    } catch { }
+
+                    decimal tamTinh = _cart.Sum(c => c.ThanhTien);
+                    decimal tongCongVal = 0;
+                    decimal.TryParse(txtTongCong.Text.Replace(" ₫", "").Replace(",", "").Replace(".", ""), out tongCongVal);
+                    decimal giamGiaVal = tamTinh - tongCongVal;
+                    if (giamGiaVal < 0) giamGiaVal = 0;
+
+                    var invoiceModel = new LUnivers_Beaute.Services.InvoiceModel
+                    {
+                        MaHoaDon = maHoaDon,
+                        NgayTao = DateTime.Now,
+                        TenNhanVien = tenNhanVien,
+                        TenCuaHang = tenCuaHang,
+                        DiaChiCuaHang = diaChiCuaHang,
+                        SdtCuaHang = sdtCuaHang,
+                        TenKhachHang = txtTenKhachHang.Text,
+                        SdtKhachHang = txtSoDienThoai.Text.Trim(),
+                        TamTinh = tamTinh,
+                        GiamGia = giamGiaVal,
+                        TongCong = tongCongVal,
+                        TienKhachDua = tienKhachDua,
+                        TienThoi = tienKhachDua - tongCongVal,
+                        PhuongThucThanhToan = phuongThuc
+                    };
+
+                    foreach (var item in _cart)
+                    {
+                        invoiceModel.Items.Add(new LUnivers_Beaute.Services.InvoiceItem
+                        {
+                            TenSanPham = item.TenSanPham,
+                            SoLuong = item.SoLuong,
+                            DonGia = item.DonGia
+                        });
+                    }
+
+                    string invoicesDir = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Invoices");
+                    if (!System.IO.Directory.Exists(invoicesDir)) System.IO.Directory.CreateDirectory(invoicesDir);
+                    string pdfPath = System.IO.Path.Combine(invoicesDir, $"{maHoaDon}.pdf");
+
+                    var pdfService = new LUnivers_Beaute.Services.PdfInvoiceService();
+                    pdfService.GenerateInvoice(invoiceModel, pdfPath);
+
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = pdfPath,
+                        UseShellExecute = true
+                    });
+                }
+                catch (Exception pdfEx)
+                {
+                    MessageBox.Show("Thanh toán thành công nhưng có lỗi khi in hóa đơn: " + pdfEx.Message, "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+                // --------------------
+
                 MessageBox.Show($"Thanh toán thành công!\nMã HĐ: {maHoaDon}\nTổng: {txtTongCong.Text}", "✅ Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 _cart.Clear();
+                txtSoDienThoai.Text = "";
+                txtTienKhachDua.Text = "";
+                txtSearch.Text = "";
+                cboKhuyenMai.SelectedIndex = 0;
+                cboThanhToan.SelectedIndex = 0;
                 LoadProducts(); // Refresh stock
                 LoadKhachHang(); // Refresh points
             }
@@ -464,9 +617,10 @@ namespace LUnivers_Beaute.Views
     {
         public string MaSanPham { get; set; } = "";
         public string TenSanPham { get; set; } = "";
-        public string TenThuongHieu { get; set; } = "";
+        public string TenThuongHieu { get; set; }
         public decimal GiaNiemYet { get; set; }
         public int SoLuongTon { get; set; }
+        public string HinhAnh { get; set; }
     }
 
     public class CartItem : INotifyPropertyChanged

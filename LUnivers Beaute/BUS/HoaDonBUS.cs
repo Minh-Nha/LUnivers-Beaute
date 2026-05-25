@@ -27,6 +27,11 @@ namespace BUS
             return _dal.GetSanPhamBanHang(maCuaHang, searchTerm, maDanhMuc);
         }
 
+        public DataTable GetSanPhamBanHangPaged(string maCuaHang, string searchTerm, int? maDanhMuc, int pageNumber, int pageSize, out int totalRecords)
+        {
+            return _dal.GetSanPhamBanHangPaged(maCuaHang, searchTerm, maDanhMuc, pageNumber, pageSize, out totalRecords);
+        }
+
         public int TaoHoaDon(string maHoaDon, string maCuaHang, string maNhanVien, int? maKhachHang, int? maKhuyenMai, string phuongThucThanhToan, string chiTietJSON)
         {
             return _dal.TaoHoaDon(maHoaDon, maCuaHang, maNhanVien, maKhachHang, maKhuyenMai, phuongThucThanhToan, chiTietJSON);

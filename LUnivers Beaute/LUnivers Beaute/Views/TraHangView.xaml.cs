@@ -17,6 +17,18 @@ namespace LUnivers_Beaute.Views
         public decimal SoTienHoan { get; set; }
     }
 
+    public class ComboItemModel
+    {
+        public string Value { get; set; } = "";
+        public string Display { get; set; } = "";
+        public string ExtraData { get; set; } = "";
+
+        public override string ToString()
+        {
+            return Display;
+        }
+    }
+
     public partial class TraHangView : UserControl
     {
         private PhieuTraHangBUS _bus = new PhieuTraHangBUS();
@@ -44,14 +56,40 @@ namespace LUnivers_Beaute.Views
                 if (dgChiTietPhieuTra_Temp != null) dgChiTietPhieuTra_Temp.ItemsSource = _chiTietTemp;
 
                 // Load HoaDon for ComboBox
-                cboHoaDon.ItemsSource = new HoaDonBUS().GetAll().DefaultView;
-                cboHoaDon.DisplayMemberPath = "MaHoaDon";
-                cboHoaDon.SelectedValuePath = "MaHoaDon";
+                DataTable dtHoaDon = new HoaDonBUS().GetAll();
+                var listHoaDon = new System.Collections.Generic.List<ComboItemModel>();
+                foreach (DataRow r in dtHoaDon.Rows)
+                {
+                    string date = r.Table.Columns.Contains("NgayLap") ? r["NgayLap"].ToString() : "";
+                    string cus = r.Table.Columns.Contains("KhachHang") ? r["KhachHang"].ToString() : "";
+                    listHoaDon.Add(new ComboItemModel
+                    {
+                        Value = r["MaHoaDon"].ToString(),
+                        Display = $"{r["MaHoaDon"]} - Khách: {cus} ({date})"
+                    });
+                }
+                cboHoaDon.ItemsSource = listHoaDon;
+                cboHoaDon.DisplayMemberPath = "Display";
+                cboHoaDon.SelectedValuePath = "Value";
 
                 // Load Lô Sản Phẩm
-                cboChiTietLo.ItemsSource = new TonKhoBUS().GetAll().DefaultView;
-                cboChiTietLo.DisplayMemberPath = "TenSanPham"; // In TonKho view
-                cboChiTietLo.SelectedValuePath = "MaLo";
+                DataTable dtTonKho = new TonKhoBUS().GetAll();
+                var listTonKho = new System.Collections.Generic.List<ComboItemModel>();
+                foreach (DataRow r in dtTonKho.Rows)
+                {
+                    string soLo = r.Table.Columns.Contains("SoLo") ? r["SoLo"].ToString() : "?";
+                    string maLo = r.Table.Columns.Contains("MaLo") ? r["MaLo"].ToString() : soLo;
+                    string tenSp = r["TenSanPham"].ToString();
+                    listTonKho.Add(new ComboItemModel
+                    {
+                        Value = maLo,
+                        Display = $"[Lô {soLo}] {tenSp}",
+                        ExtraData = tenSp
+                    });
+                }
+                cboChiTietLo.ItemsSource = listTonKho;
+                cboChiTietLo.DisplayMemberPath = "Display";
+                cboChiTietLo.SelectedValuePath = "Value";
             }
             catch (System.Exception ex)
             {
@@ -126,8 +164,8 @@ namespace LUnivers_Beaute.Views
                 int soLuong = Convert.ToInt32(txtChiTietSoLuong.Text);
                 decimal tienHoan = Convert.ToDecimal(txtChiTietTienHoan.Text);
                 
-                DataRowView row = (DataRowView)cboChiTietLo.SelectedItem;
-                string tenSanPham = row["TenSanPham"].ToString() ?? "";
+                ComboItemModel item = (ComboItemModel)cboChiTietLo.SelectedItem;
+                string tenSanPham = item.ExtraData;
 
                 _chiTietTemp.Add(new ChiTietPhieuTraModel
                 {

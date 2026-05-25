@@ -20,7 +20,7 @@ namespace DAL
                 new SqlParameter("@MatKhau", matKhau));
         }
 
-        public int Insert(string hoTen, string soDienThoai, string vaiTro, string tenDangNhap, string matKhau, string maCuaHang, bool trangThai)
+        public int Insert(string hoTen, string soDienThoai, string vaiTro, string tenDangNhap, string matKhau, string maCuaHang, string email, bool trangThai)
         {
             return DatabaseHelpers.ExecuteNonQuery("sp_InsertNhanVien",
                 new SqlParameter("@HoTen", hoTen),
@@ -29,10 +29,11 @@ namespace DAL
                 new SqlParameter("@TenDangNhap", tenDangNhap),
                 new SqlParameter("@MatKhau", matKhau),
                 new SqlParameter("@MaCuaHang", maCuaHang),
+                new SqlParameter("@Email", (object?)email ?? System.DBNull.Value),
                 new SqlParameter("@TrangThai", trangThai));
         }
 
-        public int Update(string maNhanVien, string hoTen, string soDienThoai, string vaiTro, string tenDangNhap, string maCuaHang, bool trangThai)
+        public int Update(string maNhanVien, string hoTen, string soDienThoai, string vaiTro, string tenDangNhap, string maCuaHang, string email, bool trangThai)
         {
             return DatabaseHelpers.ExecuteNonQuery("sp_UpdateNhanVien",
                 new SqlParameter("@MaNhanVien", maNhanVien),
@@ -41,7 +42,20 @@ namespace DAL
                 new SqlParameter("@VaiTro", vaiTro),
                 new SqlParameter("@TenDangNhap", tenDangNhap),
                 new SqlParameter("@MaCuaHang", maCuaHang),
+                new SqlParameter("@Email", (object?)email ?? System.DBNull.Value),
                 new SqlParameter("@TrangThai", trangThai));
+        }
+
+        public DataTable CheckEmailExists(string email)
+        {
+            return DatabaseHelpers.GetData("sp_CheckEmailExists", new SqlParameter("@Email", email));
+        }
+
+        public int UpdatePasswordByEmail(string email, string matKhauMoi)
+        {
+            return DatabaseHelpers.ExecuteNonQuery("sp_UpdatePasswordByEmail",
+                new SqlParameter("@Email", email),
+                new SqlParameter("@MatKhau", matKhauMoi));
         }
 
         public int Delete(string maNhanVien)

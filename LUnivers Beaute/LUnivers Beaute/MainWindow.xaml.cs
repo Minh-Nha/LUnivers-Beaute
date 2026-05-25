@@ -46,6 +46,14 @@ namespace LUnivers_Beaute
         {
             string role = (_vaiTro ?? "").Trim().ToLower();
 
+            if (role != "admin")
+            {
+                if (navCaiDat != null)
+                {
+                    navCaiDat.Visibility = Visibility.Collapsed;
+                }
+            }
+
             if (role == "admin")
             {
                 // Full access
@@ -119,6 +127,7 @@ namespace LUnivers_Beaute
                     "NhanVien" => new NhanVienView(_vaiTro),
                     "ChamCong" => new ChamCongView(),
                     "CuaHang" => new CuaHangView(),
+                    "CaiDat" => new CaiDatView(),
                     _ => new DashboardView()
                 };
             }
@@ -155,16 +164,15 @@ namespace LUnivers_Beaute
             }
         }
 
-        private void BtnClose_Click(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Shutdown();
-        }
-
         private void BtnLogout_Click(object sender, RoutedEventArgs e)
         {
-            var loginWindow = new LoginWindow();
-            loginWindow.Show();
-            this.Close();
+            var result = MessageBox.Show("Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?", "Xác nhận đăng xuất", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                var loginWindow = new LoginWindow();
+                loginWindow.Show();
+                this.Close();
+            }
         }
     }
 }

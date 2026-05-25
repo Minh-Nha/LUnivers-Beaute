@@ -1,4 +1,4 @@
-﻿USE LUnivers_Beaute;
+USE LUnivers_Beaute;
 GO
 
 CREATE OR ALTER PROCEDURE sp_TaoPhieuNhapKho
@@ -22,18 +22,20 @@ BEGIN
             MaSanPham VARCHAR(50),
             SoLuong INT,
             GiaNhap DECIMAL(18,2),
+            GiaNiemYet DECIMAL(18,2),
             SoLo VARCHAR(50),
             NgaySanXuat DATE,
             HanSuDung DATE
         );
 
-        INSERT INTO #Cart (MaSanPham, SoLuong, GiaNhap, SoLo, NgaySanXuat, HanSuDung)
-        SELECT MaSanPham, SoLuong, GiaNhap, SoLo, NgaySanXuat, HanSuDung
+        INSERT INTO #Cart (MaSanPham, SoLuong, GiaNhap, GiaNiemYet, SoLo, NgaySanXuat, HanSuDung)
+        SELECT MaSanPham, SoLuong, GiaNhap, GiaNiemYet, SoLo, NgaySanXuat, HanSuDung
         FROM OPENJSON(@ChiTietJSON)
         WITH (
             MaSanPham VARCHAR(50) '$.MaSanPham',
             SoLuong INT '$.SoLuong',
             GiaNhap DECIMAL(18,2) '$.GiaNhap',
+            GiaNiemYet DECIMAL(18,2) '$.GiaNiemYet',
             SoLo VARCHAR(50) '$.SoLo',
             NgaySanXuat DATE '$.NgaySanXuat',
             HanSuDung DATE '$.HanSuDung'
@@ -43,16 +45,17 @@ BEGIN
         DECLARE @CurMaSanPham VARCHAR(50);
         DECLARE @CurSoLuong INT;
         DECLARE @CurGiaNhap DECIMAL(18,2);
+        DECLARE @CurGiaNiemYet DECIMAL(18,2);
         DECLARE @CurSoLo VARCHAR(50);
         DECLARE @CurNSX DATE;
         DECLARE @CurHSD DATE;
         DECLARE @NewMaLo INT;
 
         DECLARE curCart CURSOR LOCAL FOR 
-        SELECT MaSanPham, SoLuong, GiaNhap, SoLo, NgaySanXuat, HanSuDung FROM #Cart;
+        SELECT MaSanPham, SoLuong, GiaNhap, GiaNiemYet, SoLo, NgaySanXuat, HanSuDung FROM #Cart;
 
         OPEN curCart;
-        FETCH NEXT FROM curCart INTO @CurMaSanPham, @CurSoLuong, @CurGiaNhap, @CurSoLo, @CurNSX, @CurHSD;
+        FETCH NEXT FROM curCart INTO @CurMaSanPham, @CurSoLuong, @CurGiaNhap, @CurGiaNiemYet, @CurSoLo, @CurNSX, @CurHSD;
 
         WHILE @@FETCH_STATUS = 0
         BEGIN
@@ -71,11 +74,17 @@ BEGIN
                 SET @NewMaLo = SCOPE_IDENTITY();
             END
 
+            -- Update product listed price if provided
+            IF @CurGiaNiemYet IS NOT NULL AND @CurGiaNiemYet > 0
+            BEGIN
+                UPDATE SanPham SET GiaNiemYet = @CurGiaNiemYet WHERE MaSanPham = @CurMaSanPham;
+            END
+
             -- Insert into ChiTietNhapKho (the trigger trg_NhapHang_TonKho will automatically add to TonKho)
             INSERT INTO ChiTietNhapKho (MaPhieuNhap, MaLo, SoLuong, GiaNhap)
             VALUES (@MaPhieuNhap, @NewMaLo, @CurSoLuong, @CurGiaNhap);
 
-            FETCH NEXT FROM curCart INTO @CurMaSanPham, @CurSoLuong, @CurGiaNhap, @CurSoLo, @CurNSX, @CurHSD;
+            FETCH NEXT FROM curCart INTO @CurMaSanPham, @CurSoLuong, @CurGiaNhap, @CurGiaNiemYet, @CurSoLo, @CurNSX, @CurHSD;
         END
 
         CLOSE curCart;

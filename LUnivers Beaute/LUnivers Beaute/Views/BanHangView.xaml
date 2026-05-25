@@ -14,6 +14,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <!-- Header Row -->
@@ -85,7 +86,7 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Width="170" Margin="0,0,10,10" CornerRadius="14" Cursor="Hand" Background="White" BorderBrush="#EDEDED" BorderThickness="1" MouseLeftButtonUp="Product_Click">
+                            <Border Width="145" Margin="0,0,10,12" CornerRadius="14" Cursor="Hand" Background="White" BorderBrush="#EDEDED" BorderThickness="1" MouseLeftButtonUp="Product_Click">
                                 <Border.Style>
                                     <Style TargetType="Border">
                                         <Style.Triggers>
@@ -101,26 +102,35 @@
                                     </Style>
                                 </Border.Style>
                                 <Grid>
-                                    <StackPanel Margin="12">
-                                        <Border Height="85" CornerRadius="10" Margin="0,0,0,10">
-                                            <Border.Background>
-                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                    <GradientStop Color="#FFF0E6" Offset="0"/>
-                                                    <GradientStop Color="#FFE0CC" Offset="1"/>
-                                                </LinearGradientBrush>
-                                            </Border.Background>
-                                            <TextBlock Text="💄" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </Border>
+                                    <StackPanel Margin="10">
+                                        <Grid Height="110" Margin="0,0,0,10">
+                                            <Border CornerRadius="10">
+                                                <Border.Background>
+                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                        <GradientStop Color="#FFF0E6" Offset="0"/>
+                                                        <GradientStop Color="#FFE0CC" Offset="1"/>
+                                                    </LinearGradientBrush>
+                                                </Border.Background>
+                                                <TextBlock Text="💄" FontSize="34" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            
+                                            <Border CornerRadius="10">
+                                                <Border.Background>
+                                                    <ImageBrush ImageSource="{Binding HinhAnh}" Stretch="UniformToFill"/>
+                                                </Border.Background>
+                                            </Border>
+                                        </Grid>
                                         <TextBlock Text="{Binding TenSanPham}" FontSize="12" FontWeight="SemiBold" Foreground="#2D2D2D" TextTrimming="CharacterEllipsis" Height="18"/>
                                         <TextBlock Text="{Binding TenThuongHieu}" FontSize="10" Foreground="#B0B0B0" Margin="0,2,0,8" TextTrimming="CharacterEllipsis"/>
-                                        <Grid>
-                                            <TextBlock Text="{Binding GiaNiemYet, StringFormat={}{0:N0} ₫}" FontSize="14" FontWeight="Bold" Foreground="#E8956D"/>
-                                            <Border Background="#E8F5E9" CornerRadius="4" Padding="5,2" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        
+                                        <StackPanel Orientation="Vertical">
+                                            <TextBlock Text="{Binding GiaNiemYet, StringFormat={}{0:N0} ₫}" FontSize="14" FontWeight="Bold" Foreground="#E8956D" Margin="0,0,0,4"/>
+                                            <Border Background="#E8F5E9" CornerRadius="4" Padding="6,2" HorizontalAlignment="Left">
                                                 <TextBlock FontSize="10" FontWeight="Bold" Foreground="#2E7D32">
                                                     <Run Text="SL: "/><Run Text="{Binding SoLuongTon, Mode=OneWay}"/>
                                                 </TextBlock>
                                             </Border>
-                                        </Grid>
+                                        </StackPanel>
                                     </StackPanel>
                                 </Grid>
                             </Border>
@@ -128,6 +138,12 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
+            
+            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,16,0,0">
+                <Button x:Name="btnPrevPage" Content="&lt;" Style="{StaticResource SecondaryButton}" Width="36" Height="36" Padding="0" Click="BtnPrevPage_Click"/>
+                <TextBlock x:Name="txtPageInfo" Text="Trang 1 / 1" VerticalAlignment="Center" Margin="16,0" FontWeight="SemiBold" Foreground="#2D2D2D"/>
+                <Button x:Name="btnNextPage" Content="&gt;" Style="{StaticResource SecondaryButton}" Width="36" Height="36" Padding="0" Click="BtnNextPage_Click"/>
+            </StackPanel>
         </Grid>
 
         <!-- RIGHT: CART PANEL -->
@@ -170,27 +186,26 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         
-                        <StackPanel Grid.ColumnSpan="2">
-                            <TextBlock Text="KHÁCH HÀNG" FontSize="10" FontWeight="Bold" Foreground="#B0B0B0" Margin="0,0,0,6"/>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <ComboBox x:Name="cboKhachHang" Style="{StaticResource ModernComboBox}" SelectedValuePath="MaKhachHang" SelectionChanged="CboKhachHang_SelectionChanged">
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding DisplayText}" TextTrimming="CharacterEllipsis"/>
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                </ComboBox>
-                                <Button Grid.Column="1" Content="✕" Style="{StaticResource IconButton}" Width="28" Height="28" FontSize="10" Margin="6,0,0,0" Click="BtnClearKhachHang_Click" ToolTip="Bỏ chọn KH"/>
-                            </Grid>
+                        <StackPanel Grid.ColumnSpan="2" Margin="0,0,0,10">
+                            <TextBlock Text="TÌM KHÁCH HÀNG (SĐT)" FontSize="10" FontWeight="Bold" Foreground="#B0B0B0" Margin="0,0,0,6"/>
+                            <Border Background="White" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="📞" FontSize="14" VerticalAlignment="Center" Margin="8,0,0,0" Opacity="0.5"/>
+                                    <TextBox x:Name="txtSoDienThoai" Grid.Column="1" MaxLength="10" Padding="8,8" FontSize="13" TextChanged="TxtSoDienThoai_TextChanged" PreviewTextInput="NumberOnly_PreviewTextInput" Background="Transparent" BorderThickness="0" Foreground="#2D2D2D" VerticalContentAlignment="Center"/>
+                                    <Button Grid.Column="2" Content="✕" Style="{StaticResource IconButton}" Width="24" Height="24" FontSize="10" Margin="0,0,6,0" Click="BtnClearKhachHang_Click" ToolTip="Xóa SĐT" VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+                            <TextBlock x:Name="txtTenKhachHang" Text="Khách vãng lai" FontSize="12" FontWeight="SemiBold" Foreground="#4CAF50" Margin="0,4,0,0" Visibility="Visible"/>
                         </StackPanel>
                         
                         <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,6,0">
                             <TextBlock Text="THANH TOÁN" FontSize="10" FontWeight="Bold" Foreground="#B0B0B0" Margin="0,0,0,6"/>
-                            <ComboBox x:Name="cboThanhToan" Style="{StaticResource ModernComboBox}">
+                            <ComboBox x:Name="cboThanhToan" Style="{StaticResource ModernComboBox}" SelectionChanged="CboThanhToan_SelectionChanged">
                                 <ComboBoxItem Content="Tiền mặt" IsSelected="True"/>
                                 <ComboBoxItem Content="Chuyển khoản"/>
                                 <ComboBoxItem Content="Thẻ tín dụng"/>
@@ -209,28 +224,7 @@
                     </Grid>
                 </Border>
 
-                <!-- Nhân viên selector -->
-                <Border Grid.Row="2" CornerRadius="8" Background="#F0F7FF" Padding="10,8" Margin="0,0,0,10">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="👤" FontSize="12" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                        <ComboBox x:Name="cboNhanVien" Grid.Column="1" Style="{StaticResource ModernComboBox}" SelectedValuePath="MaNhanVien" SelectionChanged="CboNhanVien_SelectionChanged">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding DisplayText}" TextTrimming="CharacterEllipsis"/>
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
-                        <TextBlock Grid.Column="2" FontSize="11" Foreground="#5B7A9E" VerticalAlignment="Center" Margin="10,0,0,0">
-                            <Run Text="🏪 "/><Run x:Name="runCuaHang" Text="" FontWeight="SemiBold"/>
-                        </TextBlock>
-                    </Grid>
-                </Border>
+
 
                 <!-- Cart Items List -->
                 <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" Margin="0,0,0,8">
@@ -289,9 +283,17 @@
                             <TextBlock x:Name="txtDiemTichLuy" Text="⭐ 0" HorizontalAlignment="Right" Foreground="#F5A623" FontSize="12" FontWeight="SemiBold"/>
                         </Grid>
                         <Border Height="1" Background="#E0E0E0" Margin="0,4,0,10"/>
-                        <Grid>
+                        <Grid Margin="0,0,0,6">
                             <TextBlock Text="KHÁCH CẦN TRẢ:" Foreground="#2D2D2D" FontSize="13" FontWeight="Bold" VerticalAlignment="Center"/>
                             <TextBlock x:Name="txtTongCong" Text="0 ₫" HorizontalAlignment="Right" Foreground="#E8956D" FontSize="20" FontWeight="Bold"/>
+                        </Grid>
+                        <Grid Margin="0,0,0,6">
+                            <TextBlock Text="Tiền khách đưa:" Foreground="#7A7A7A" FontSize="13" VerticalAlignment="Center"/>
+                            <TextBox x:Name="txtTienKhachDua" TextChanged="TxtTienKhachDua_TextChanged" PreviewTextInput="NumberOnly_PreviewTextInput" TextAlignment="Right" Width="120" HorizontalAlignment="Right" Padding="6,4" FontSize="14" Background="White" BorderBrush="#E0E0E0" BorderThickness="1" Foreground="#2D2D2D"/>
+                        </Grid>
+                        <Grid>
+                            <TextBlock Text="Tiền thối:" Foreground="#7A7A7A" FontSize="13" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="txtTienThoi" Text="0 ₫" HorizontalAlignment="Right" Foreground="#2D2D2D" FontSize="15" FontWeight="Bold"/>
                         </Grid>
                     </StackPanel>
                 </Border>

@@ -152,6 +152,7 @@ namespace LUnivers_Beaute.Views
 
                 string hoTen = txtHoTen.Text.Trim();
                 string sdt = txtSoDienThoai.Text.Trim();
+                string email = txtEmail.Text.Trim();
                 string vaiTro = (cboVaiTro.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Nhân viên bán hàng";
                 string tenDN = txtTenDangNhap.Text.Trim();
                 string maCH = cboCuaHang.SelectedValue?.ToString() ?? "";
@@ -163,14 +164,15 @@ namespace LUnivers_Beaute.Views
                     if (string.IsNullOrEmpty(txtMatKhau.Password))
                     { MessageBox.Show("Vui lòng nhập mật khẩu!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
 
-                    _bus.Insert(hoTen, sdt, vaiTro, tenDN, txtMatKhau.Password, maCH, trangThai);
+                    string hashedPassword = LUnivers_Beaute.Helpers.HashHelper.ComputeSha256Hash(txtMatKhau.Password);
+                    _bus.Insert(hoTen, sdt, vaiTro, tenDN, hashedPassword, maCH, email, trangThai);
                     MessageBox.Show("Thêm nhân viên thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
                     // UPDATE
                     string maNV = txtMaNhanVien.Text.Trim();
-                    _bus.Update(maNV, hoTen, sdt, vaiTro, tenDN, maCH, trangThai);
+                    _bus.Update(maNV, hoTen, sdt, vaiTro, tenDN, maCH, email, trangThai);
                     MessageBox.Show("Cập nhật nhân viên thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
 
@@ -230,15 +232,20 @@ namespace LUnivers_Beaute.Views
             txtMaNhanVien.Text = row["MaNhanVien"]?.ToString() ?? "";
             txtHoTen.Text = row["HoTen"]?.ToString() ?? "";
             txtSoDienThoai.Text = row["SoDienThoai"]?.ToString() ?? "";
+            txtEmail.Text = row["Email"]?.ToString() ?? "";
             txtTenDangNhap.Text = row["TenDangNhap"]?.ToString() ?? "";
             txtMatKhau.Password = "";
 
             // Vai trò
-            string vaiTro = row["VaiTro"]?.ToString() ?? "Nhân viên";
+            string vaiTro = (row["VaiTro"]?.ToString() ?? "").Trim();
             for (int i = 0; i < cboVaiTro.Items.Count; i++)
             {
-                if ((cboVaiTro.Items[i] as ComboBoxItem)?.Content?.ToString() == vaiTro)
-                { cboVaiTro.SelectedIndex = i; break; }
+                string itemContent = (cboVaiTro.Items[i] as ComboBoxItem)?.Content?.ToString()?.Trim() ?? "";
+                if (itemContent.Equals(vaiTro, StringComparison.OrdinalIgnoreCase))
+                { 
+                    cboVaiTro.SelectedIndex = i; 
+                    break; 
+                }
             }
 
             // Cửa hàng
@@ -255,6 +262,7 @@ namespace LUnivers_Beaute.Views
             txtMaNhanVien.Text = "";
             txtHoTen.Text = "";
             txtSoDienThoai.Text = "";
+            txtEmail.Text = "";
             txtTenDangNhap.Text = "";
             txtMatKhau.Password = "";
             cboVaiTro.SelectedIndex = 0;

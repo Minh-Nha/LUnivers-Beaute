@@ -6,7 +6,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CloudinaryDotNet" Version="1.29.1" />
     <PackageReference Include="PDFsharp" Version="6.1.0" />
+    <PackageReference Include="QuestPDF" Version="2026.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <PropertyGroup>

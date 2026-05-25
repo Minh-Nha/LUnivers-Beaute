@@ -101,7 +101,8 @@
                         <Button Content="ĐĂNG NHẬP" Style="{StaticResource PrimaryButton}" Height="46" FontSize="14" Click="BtnLogin_Click"/>
 
                         <TextBlock Text="Quên mật khẩu?" FontSize="12" Margin="0,18,0,0"
-                                   Foreground="#DE8A63" HorizontalAlignment="Center" Cursor="Hand" FontFamily="Segoe UI"/>
+                                   Foreground="#DE8A63" HorizontalAlignment="Center" Cursor="Hand" FontFamily="Segoe UI"
+                                   MouseLeftButtonDown="TxtForgotPassword_Click" Background="Transparent"/>
 
                         <TextBlock Text="v1.0.0 — L'Univers Beauté © 2026" FontSize="10" Margin="0,36,0,0"
                                    Foreground="#B0B0B0" HorizontalAlignment="Center" FontFamily="Segoe UI"/>

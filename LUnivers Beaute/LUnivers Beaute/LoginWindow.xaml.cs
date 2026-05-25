@@ -25,7 +25,8 @@ namespace LUnivers_Beaute
                 return;
             }
 
-            DataTable dt = _nhanVienBUS.Login(username, password);
+            string hashedPassword = LUnivers_Beaute.Helpers.HashHelper.ComputeSha256Hash(password);
+            DataTable dt = _nhanVienBUS.Login(username, hashedPassword);
             if (dt != null && dt.Rows.Count > 0)
             {
                 DataRow row = dt.Rows[0];
@@ -43,6 +44,14 @@ namespace LUnivers_Beaute
             {
                 MessageBox.Show("Tên đăng nhập hoặc mật khẩu không chính xác!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void TxtForgotPassword_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+            var forgotPwWindow = new ForgotPasswordWindow();
+            forgotPwWindow.Owner = this;
+            forgotPwWindow.ShowDialog();
         }
 
         private void BtnClose_Click(object sender, RoutedEventArgs e)

@@ -73,7 +73,7 @@
         <Grid x:Name="crudPanel" Visibility="Collapsed">
             <Border Background="#66000000" MouseDown="Overlay_MouseDown"/>
             
-            <Border HorizontalAlignment="Center" VerticalAlignment="Center" Width="700" MaxHeight="750" 
+            <Border HorizontalAlignment="Center" VerticalAlignment="Center" Width="750" MaxHeight="750" 
                     Style="{StaticResource CardBorder}" Padding="32" Background="White">
                 <Border.Effect>
                     <DropShadowEffect Color="Black" Direction="270" ShadowDepth="4" BlurRadius="20" Opacity="0.2"/>
@@ -85,33 +85,40 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     
-                    <TextBlock x:Name="txtPanelTitle" Text="✨ Tạo Phiếu Trả Hàng" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,24"/>
+                    <TextBlock x:Name="txtPanelTitle" Text="✨ Tạo Phiếu Trả Hàng" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,24"/>
                     
                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,24">
                         <StackPanel Margin="0,0,12,0">
-                            <Grid Margin="0,0,0,20">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="16"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
+                            <!-- Section 1: Thông tin chung -->
+                            <TextBlock Text="Thông tin chung" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,12"/>
+                            <Border Background="#FDFDFD" BorderBrush="#EEEEEE" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,0,24">
                                 <StackPanel>
-                                    <TextBlock Text="Mã Hóa Đơn *" Foreground="{StaticResource TextSecondaryBrush}" FontSize="13" Margin="0,0,0,6"/>
-                                    <ComboBox x:Name="cboHoaDon" Style="{StaticResource ModernComboBox}" Height="38"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="2">
-                                    <TextBlock Text="Ngày trả *" Foreground="{StaticResource TextSecondaryBrush}" FontSize="13" Margin="0,0,0,6"/>
-                                    <DatePicker x:Name="dpNgayTra" Style="{StaticResource ModernDatePicker}" Height="38"/>
-                                </StackPanel>
-                            </Grid>
+                                    <Grid Margin="0,0,0,16">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="2*"/>
+                                            <ColumnDefinition Width="16"/>
+                                            <ColumnDefinition Width="1*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="Mã Hóa Đơn *" Foreground="{StaticResource TextSecondaryBrush}" FontSize="13" Margin="0,0,0,6"/>
+                                            <ComboBox x:Name="cboHoaDon" Style="{StaticResource ModernComboBox}" Height="40"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Text="Ngày trả *" Foreground="{StaticResource TextSecondaryBrush}" FontSize="13" Margin="0,0,0,6"/>
+                                            <DatePicker x:Name="dpNgayTra" Style="{StaticResource ModernDatePicker}" Height="40"/>
+                                        </StackPanel>
+                                    </Grid>
 
-                            <TextBlock Text="Lý do *" Foreground="{StaticResource TextSecondaryBrush}" FontSize="13" Margin="0,0,0,6"/>
-                            <TextBox x:Name="txtLyDo" Style="{StaticResource ModernTextBox}" Height="50" TextWrapping="Wrap" AcceptsReturn="True" Margin="0,0,0,24"/>
+                                    <TextBlock Text="Lý do trả hàng *" Foreground="{StaticResource TextSecondaryBrush}" FontSize="13" Margin="0,0,0,6"/>
+                                    <TextBox x:Name="txtLyDo" Style="{StaticResource ModernTextBox}" Height="70" Padding="14,10" VerticalContentAlignment="Top" TextWrapping="Wrap" AcceptsReturn="True"/>
+                                </StackPanel>
+                            </Border>
 
-                            <TextBlock Text="Chi tiết trả hàng" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,12"/>
+                            <!-- Section 2: Chi tiết -->
+                            <TextBlock Text="Chi tiết sản phẩm hoàn trả" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,12"/>
                             
                             <!-- A mini panel to add details -->
-                            <Border Style="{StaticResource CardBorder}" Padding="16" Background="#F8F9FA" Margin="0,0,0,16">
+                            <Border Background="#F8F9FA" BorderBrush="#EEEEEE" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,0,16">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
@@ -119,30 +126,43 @@
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="90"/>
                                         <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Lô Sản Phẩm" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,12,6"/>
-                                    <TextBlock Grid.Column="1" Text="Số Lượng" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,12,6"/>
-                                    <TextBlock Grid.Column="2" Text="Tiền Hoàn" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,12,6"/>
+                                    <TextBlock Text="Sản phẩm từ Lô" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,12,6"/>
+                                    <TextBlock Grid.Column="1" Text="Số lượng trả" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,12,6"/>
+                                    <TextBlock Grid.Column="2" Text="Tiền hoàn lại (đ)" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,12,6"/>
                                     
-                                    <ComboBox x:Name="cboChiTietLo" Grid.Row="1" Style="{StaticResource ModernComboBox}" Margin="0,0,12,0" Height="36"/>
-                                    <TextBox x:Name="txtChiTietSoLuong" Grid.Row="1" Grid.Column="1" Style="{StaticResource ModernTextBox}" Margin="0,0,12,0" Height="36"/>
-                                    <TextBox x:Name="txtChiTietTienHoan" Grid.Row="1" Grid.Column="2" Style="{StaticResource ModernTextBox}" Margin="0,0,12,0" Height="36"/>
-                                    <Button x:Name="btnAddDetail" Grid.Row="1" Grid.Column="3" Content="Thêm" Style="{StaticResource PrimaryButton}" Padding="16,0" Height="36" Click="BtnAddDetail_Click"/>
+                                    <ComboBox x:Name="cboChiTietLo" Grid.Row="1" Style="{StaticResource ModernComboBox}" Margin="0,0,12,0" Height="40"/>
+                                    <TextBox x:Name="txtChiTietSoLuong" Grid.Row="1" Grid.Column="1" Style="{StaticResource ModernTextBox}" Margin="0,0,12,0" Height="40" Padding="10,0" VerticalContentAlignment="Center" TextAlignment="Center"/>
+                                    <TextBox x:Name="txtChiTietTienHoan" Grid.Row="1" Grid.Column="2" Style="{StaticResource ModernTextBox}" Margin="0,0,12,0" Height="40" Padding="10,0" VerticalContentAlignment="Center" TextAlignment="Right"/>
+                                    <Button x:Name="btnAddDetail" Grid.Row="1" Grid.Column="3" Content="＋ Thêm" Style="{StaticResource PrimaryButton}" Padding="16,0" Height="40" Click="BtnAddDetail_Click"/>
                                 </Grid>
                             </Border>
 
-                            <DataGrid AutoGenerateColumns="False" x:Name="dgChiTietPhieuTra_Temp" Height="150" Style="{StaticResource ModernDataGrid}" ColumnHeaderStyle="{StaticResource ModernDataGridColumnHeader}">
+                            <DataGrid AutoGenerateColumns="False" x:Name="dgChiTietPhieuTra_Temp" Height="150" Style="{StaticResource ModernDataGrid}" ColumnHeaderStyle="{StaticResource ModernDataGridColumnHeader}" RowStyle="{StaticResource ModernDataGridRow}" CellStyle="{StaticResource ModernDataGridCell}">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="LÔ" Binding="{Binding MaLo}" Width="*"/>
-                                    <DataGridTextColumn Header="SỐ LƯỢNG" Binding="{Binding SoLuongTra}" Width="80"/>
-                                    <DataGridTextColumn Header="SỐ TIỀN HOÀN" Binding="{Binding SoTienHoan}" Width="100"/>
-                                    <DataGridTemplateColumn Header="" Width="40">
+                                    <DataGridTextColumn Header="LÔ" Binding="{Binding MaLo}" Width="60"/>
+                                    <DataGridTextColumn Header="SẢN PHẨM" Binding="{Binding TenSanPham}" Width="*"/>
+                                    <DataGridTextColumn Header="SỐ LƯỢNG" Binding="{Binding SoLuongTra}" Width="80">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="TextAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="SỐ TIỀN HOÀN" Binding="{Binding SoTienHoan, StringFormat={}{0:#,##0} đ}" Width="120">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="TextAlignment" Value="Right"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTemplateColumn Header="" Width="50">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Button Content="X" Foreground="Red" Background="Transparent" BorderThickness="0" FontWeight="Bold" Click="BtnRemoveDetail_Click"/>
+                                                <Button Content="🗑️" ToolTip="Xóa" Foreground="#E74C3C" Background="Transparent" BorderThickness="0" FontSize="14" Click="BtnRemoveDetail_Click"/>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
@@ -151,14 +171,14 @@
                         </StackPanel>
                     </ScrollViewer>
 
-                    <Grid Grid.Row="2">
+                    <Grid Grid.Row="2" Margin="0,10,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="12"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Button Content="Hủy" Style="{StaticResource SecondaryButton}" Click="BtnCancel_Click"/>
-                        <Button Grid.Column="2" Content="💾 Lưu lại" Style="{StaticResource PrimaryButton}" Click="BtnSave_Click"/>
+                        <Button Content="Hủy bỏ" Style="{StaticResource SecondaryButton}" Height="42" Click="BtnCancel_Click"/>
+                        <Button Grid.Column="2" Content="💾 Lưu phiếu trả hàng" Style="{StaticResource PrimaryButton}" Height="42" Click="BtnSave_Click"/>
                     </Grid>
                 </Grid>
             </Border>

@@ -8,13 +8,13 @@ namespace LUnivers_Beaute.Helpers
     public class PagingHelper
     {
         private DataTable _fullData;
-        private DataGrid _dataGrid;
+        private ItemsControl _dataGrid;
         private TextBlock _txtPageInfo;
         private int _currentPage = 1;
         private int _pageSize = 10;
         private int _totalPages = 1;
 
-        public PagingHelper(DataGrid dataGrid, TextBlock txtPageInfo, int pageSize = 10)
+        public PagingHelper(ItemsControl dataGrid, TextBlock txtPageInfo, int pageSize = 10)
         {
             _dataGrid = dataGrid;
             _txtPageInfo = txtPageInfo;

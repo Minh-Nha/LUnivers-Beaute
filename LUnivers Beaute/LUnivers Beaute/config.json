@@ -1,0 +1,11 @@
+{
+  "Cloudinary": {
+    "CloudName": "dg7sptj1h",
+    "ApiKey": "632172187765658",
+    "ApiSecret": "D-Z-CazNdZiJc156KO41BO-2Cvo"
+  },
+  "Email": {
+    "SenderEmail": "",
+    "AppPassword": ""
+  }
+}

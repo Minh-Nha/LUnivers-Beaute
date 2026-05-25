@@ -16,6 +16,7 @@ BEGIN
         SELECT 
             tk.MaCuaHang,
             ch.TenCuaHang,
+            tk.MaLo,
             sp.MaSanPham,
             sp.TenSanPham,
             dm.TenDanhMuc,

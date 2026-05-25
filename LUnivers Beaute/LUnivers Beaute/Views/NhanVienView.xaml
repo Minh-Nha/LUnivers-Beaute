@@ -136,6 +136,7 @@
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
                             <DataGridTextColumn Header="SỐ ĐIỆN THOẠI" Binding="{Binding SoDienThoai}" Width="130"/>
+                            <DataGridTextColumn Header="EMAIL" Binding="{Binding Email}" Width="160"/>
                             <DataGridTextColumn Header="CỬA HÀNG" Binding="{Binding TenCuaHang}" Width="150"/>
                             <DataGridTemplateColumn Header="VAI TRÒ" Width="120">
                                 <DataGridTemplateColumn.CellTemplate>
@@ -232,6 +233,9 @@
 
                             <TextBlock Text="Số điện thoại *" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,6"/>
                             <TextBox x:Name="txtSoDienThoai" Style="{StaticResource ModernTextBox}" Margin="0,0,0,16"/>
+
+                            <TextBlock Text="Email" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,6"/>
+                            <TextBox x:Name="txtEmail" Style="{StaticResource ModernTextBox}" Margin="0,0,0,16"/>
 
                             <Grid Margin="0,0,0,16">
                                 <Grid.ColumnDefinitions>
