@@ -1,0 +1,44 @@
+<UserControl x:Class="LUnivers_Beaute.Views.ChatbotView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Header -->
+        <Border Grid.Row="0" Style="{StaticResource CardBorder}" Padding="20" Margin="0,0,0,16">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="🤖" FontSize="32" Margin="0,0,16,0" VerticalAlignment="Center"/>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="TRỢ LÝ AI - GEMINI" FontSize="22" FontWeight="Bold" Foreground="#2D2D2D"/>
+                    <TextBlock Text="Hỏi tôi bất cứ điều gì về dữ liệu, hệ thống, hoặc kiến thức tổng quát." FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Chat Area -->
+        <Border Grid.Row="1" Style="{StaticResource CardBorder}" Padding="16">
+            <ScrollViewer x:Name="scrollViewer" VerticalScrollBarVisibility="Auto">
+                <StackPanel x:Name="spChatArea" Margin="0,0,10,0"/>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Input Area -->
+        <Border Grid.Row="2" Style="{StaticResource CardBorder}" Padding="12" Margin="0,16,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="txtMessage" Style="{StaticResource ModernTextBox}" Padding="16,12" FontSize="15" Margin="0,0,12,0" 
+                         Background="#F8F9FA" BorderBrush="#E0E0E0" TextWrapping="Wrap" AcceptsReturn="True" MaxHeight="100"
+                         KeyDown="TxtMessage_KeyDown"/>
+                <Button Grid.Column="1" Content="GỬI 🚀" Style="{StaticResource PrimaryButton}" Width="100" FontWeight="Bold" FontSize="14" Click="BtnSend_Click"/>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

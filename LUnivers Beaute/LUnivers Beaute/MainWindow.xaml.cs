@@ -56,7 +56,10 @@ namespace LUnivers_Beaute
 
             if (role == "admin")
             {
-                // Full access
+                if (btnToggleChatbot != null)
+                {
+                    btnToggleChatbot.Visibility = Visibility.Visible;
+                }
                 return;
             }
 
@@ -142,6 +145,18 @@ namespace LUnivers_Beaute
             else
             {
                 DragMove();
+            }
+        }
+
+        private void BtnToggleChatbot_Click(object sender, RoutedEventArgs e)
+        {
+            if (pnlChatbot.Visibility == Visibility.Collapsed)
+            {
+                pnlChatbot.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                pnlChatbot.Visibility = Visibility.Collapsed;
             }
         }
 

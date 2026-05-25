@@ -14,6 +14,13 @@ namespace LUnivers_Beaute.Views
         public CaiDatView()
         {
             InitializeComponent();
+            this.Loaded += CaiDatView_Loaded;
+        }
+
+        private async void CaiDatView_Loaded(object sender, RoutedEventArgs e)
+        {
+            var banks = await LUnivers_Beaute.Services.VietQRService.GetBanksAsync();
+            cboBank.ItemsSource = banks;
             LoadConfig();
         }
 
@@ -36,6 +43,33 @@ namespace LUnivers_Beaute.Views
                             txtCloudName.Text = cloudConfig.GetProperty("CloudName").GetString();
                             txtApiKey.Text = cloudConfig.GetProperty("ApiKey").GetString();
                             txtApiSecret.Password = cloudConfig.GetProperty("ApiSecret").GetString();
+                        }
+                        if (doc.RootElement.TryGetProperty("VietQR", out JsonElement vietQRConfig))
+                        {
+                            string bankCode = vietQRConfig.GetProperty("BankCode").GetString();
+                            foreach (LUnivers_Beaute.Services.BankModel item in cboBank.Items)
+                            {
+                                if (item.Code == bankCode || item.Bin == bankCode)
+                                {
+                                    cboBank.SelectedItem = item;
+                                    break;
+                                }
+                            }
+                            txtAccountNumber.Text = vietQRConfig.GetProperty("AccountNumber").GetString();
+                            txtAccountName.Text = vietQRConfig.GetProperty("AccountName").GetString();
+                        }
+                        if (doc.RootElement.TryGetProperty("Gemini", out JsonElement geminiConfig))
+                        {
+                            txtGeminiApiKey.Password = geminiConfig.GetProperty("ApiKey").GetString();
+                            string modelName = geminiConfig.GetProperty("ModelName").GetString();
+                            foreach (ComboBoxItem item in cboGeminiModel.Items)
+                            {
+                                if (item.Tag?.ToString() == modelName)
+                                {
+                                    cboGeminiModel.SelectedItem = item;
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
@@ -67,6 +101,24 @@ namespace LUnivers_Beaute.Views
                 cloudNode["ApiKey"] = txtApiKey.Text.Trim();
                 cloudNode["ApiSecret"] = txtApiSecret.Password;
                 root["Cloudinary"] = cloudNode;
+
+                JsonObject vietQRNode = new JsonObject();
+                if (cboBank.SelectedItem is LUnivers_Beaute.Services.BankModel selectedBank)
+                {
+                    vietQRNode["BankCode"] = selectedBank.Bin;
+                }
+                else
+                {
+                    vietQRNode["BankCode"] = "";
+                }
+                vietQRNode["AccountNumber"] = txtAccountNumber.Text.Trim();
+                vietQRNode["AccountName"] = txtAccountName.Text.Trim().ToUpper();
+                root["VietQR"] = vietQRNode;
+
+                JsonObject geminiNode = new JsonObject();
+                geminiNode["ApiKey"] = txtGeminiApiKey.Password;
+                geminiNode["ModelName"] = (cboGeminiModel.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "gemini-3.1-flash-lite";
+                root["Gemini"] = geminiNode;
 
                 var options = new JsonSerializerOptions { WriteIndented = true };
                 File.WriteAllText(configPath, root.ToJsonString(options));

@@ -515,6 +515,17 @@ namespace LUnivers_Beaute.Views
                 var cartJsonList = _cart.Select(c => new { MaSanPham = c.MaSanPham, SoLuong = c.SoLuong, DonGia = c.DonGia }).ToList();
                 string json = JsonSerializer.Serialize(cartJsonList);
 
+                if (phuongThuc == "Chuyển khoản")
+                {
+                    var qrWindow = new VietQRWindow(tongCong, maHoaDon);
+                    qrWindow.Owner = Window.GetWindow(this);
+                    if (qrWindow.ShowDialog() != true)
+                    {
+                        // Hủy thanh toán
+                        return;
+                    }
+                }
+
                 _hoaDonBus.TaoHoaDon(maHoaDon, _currentCuaHang, _currentNhanVien, maKhachHang, maKhuyenMai, phuongThuc, json);
 
                 // --- GENERATE PDF ---

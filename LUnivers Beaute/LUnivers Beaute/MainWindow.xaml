@@ -287,6 +287,51 @@
                 <!-- CONTENT HOST -->
                 <ContentControl Grid.Row="1" x:Name="ContentArea" Margin="0,0,16,16"/>
             </Grid>
+
+            <!-- FLOATING CHATBOT WIDGET -->
+            <Grid Grid.ColumnSpan="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,32,32" Panel.ZIndex="100">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Border x:Name="pnlChatbot" Grid.Row="0" Width="420" Height="650" Margin="0,0,0,16" 
+                        Background="White" CornerRadius="16" Visibility="Collapsed">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="30" ShadowDepth="10" Opacity="0.15" Direction="270" Color="Black"/>
+                    </Border.Effect>
+                    <views:ChatbotView />
+                </Border>
+                
+                <Button x:Name="btnToggleChatbot" Grid.Row="1" Width="60" Height="60" HorizontalAlignment="Right" 
+                        Click="BtnToggleChatbot_Click" Cursor="Hand" Visibility="Collapsed">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="bd" CornerRadius="30">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#E8956D" Offset="0"/>
+                                        <GradientStop Color="#D4764E" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="20" ShadowDepth="6" Opacity="0.3" Color="#D4764E"/>
+                                </Border.Effect>
+                                <TextBlock Text="✨" FontSize="28" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" Margin="0,0,0,4"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="bd" Property="RenderTransform">
+                                        <Setter.Value>
+                                            <ScaleTransform ScaleX="1.05" ScaleY="1.05" CenterX="30" CenterY="30"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
         </Grid>
     </Border>
 </Window>
