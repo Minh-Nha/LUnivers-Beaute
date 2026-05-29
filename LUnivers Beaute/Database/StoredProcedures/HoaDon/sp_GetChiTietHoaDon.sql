@@ -12,7 +12,9 @@ BEGIN
         cthd.MaHoaDon,
         sp.TenSanPham,
         lsx.SoLo,
+        cthd.MaLo,
         cthd.SoLuong,
+        cthd.DonGia AS DonGiaNum,
         FORMAT(cthd.DonGia, 'N0') + N' ₫' AS DonGia,
         FORMAT(cthd.ThanhTien, 'N0') + N' ₫' AS ThanhTien
     FROM ChiTietHoaDon cthd

@@ -115,10 +115,10 @@
                             </Border>
 
                             <!-- Section 2: Chi tiết -->
-                            <TextBlock Text="Chi tiết sản phẩm hoàn trả" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,12"/>
+                            <TextBlock x:Name="lblChiTietTitle" Text="Chi tiết sản phẩm hoàn trả" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,12"/>
                             
-                            <!-- A mini panel to add details -->
-                            <Border Background="#F8F9FA" BorderBrush="#EEEEEE" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,0,16">
+                            <!-- A mini panel to add details (Hidden since we auto-populate directly in the grid) -->
+                            <Border Visibility="Collapsed" Background="#F8F9FA" BorderBrush="#EEEEEE" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,0,16">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
@@ -130,39 +130,88 @@
                                         <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Sản phẩm từ Lô" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,12,6"/>
+                                    <TextBlock x:Name="lblSanPhamTuLo" Text="Sản phẩm từ Lô" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,12,6"/>
                                     <TextBlock Grid.Column="1" Text="Số lượng trả" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,12,6"/>
                                     <TextBlock Grid.Column="2" Text="Tiền hoàn lại (đ)" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,12,6"/>
                                     
                                     <ComboBox x:Name="cboChiTietLo" Grid.Row="1" Style="{StaticResource ModernComboBox}" Margin="0,0,12,0" Height="40"/>
                                     <TextBox x:Name="txtChiTietSoLuong" Grid.Row="1" Grid.Column="1" Style="{StaticResource ModernTextBox}" Margin="0,0,12,0" Height="40" Padding="10,0" VerticalContentAlignment="Center" TextAlignment="Center"/>
-                                    <TextBox x:Name="txtChiTietTienHoan" Grid.Row="1" Grid.Column="2" Style="{StaticResource ModernTextBox}" Margin="0,0,12,0" Height="40" Padding="10,0" VerticalContentAlignment="Center" TextAlignment="Right"/>
+                                    <TextBox x:Name="txtChiTietTienHoan" Grid.Row="1" Grid.Column="2" Style="{StaticResource ModernTextBox}" Margin="0,0,12,0" Height="40" Padding="10,0" VerticalContentAlignment="Center" TextAlignment="Right" IsReadOnly="True" Focusable="False" Background="#F5F5F5"/>
                                     <Button x:Name="btnAddDetail" Grid.Row="1" Grid.Column="3" Content="＋ Thêm" Style="{StaticResource PrimaryButton}" Padding="16,0" Height="40" Click="BtnAddDetail_Click"/>
                                 </Grid>
                             </Border>
 
-                            <DataGrid AutoGenerateColumns="False" x:Name="dgChiTietPhieuTra_Temp" Height="150" Style="{StaticResource ModernDataGrid}" ColumnHeaderStyle="{StaticResource ModernDataGridColumnHeader}" RowStyle="{StaticResource ModernDataGridRow}" CellStyle="{StaticResource ModernDataGridCell}">
+                            <DataGrid AutoGenerateColumns="False" x:Name="dgChiTietPhieuTra_Temp" Height="220" Style="{StaticResource ModernDataGrid}" ColumnHeaderStyle="{StaticResource ModernDataGridColumnHeader}" RowStyle="{StaticResource ModernDataGridRow}" CellStyle="{StaticResource ModernDataGridCell}">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="LÔ" Binding="{Binding MaLo}" Width="60"/>
-                                    <DataGridTextColumn Header="SẢN PHẨM" Binding="{Binding TenSanPham}" Width="*"/>
-                                    <DataGridTextColumn Header="SỐ LƯỢNG" Binding="{Binding SoLuongTra}" Width="80">
+                                    <DataGridTextColumn Header="SẢN PHẨM" Binding="{Binding TenSanPham}" Width="*" IsReadOnly="True">
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource ModernDataGridColumnHeader}">
+                                                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                            </Style>
+                                        </DataGridTextColumn.HeaderStyle>
                                         <DataGridTextColumn.ElementStyle>
                                             <Style TargetType="TextBlock">
-                                                <Setter Property="TextAlignment" Value="Center"/>
+                                                <Setter Property="TextAlignment" Value="Left"/>
                                             </Style>
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
-                                    <DataGridTextColumn Header="SỐ TIỀN HOÀN" Binding="{Binding SoTienHoan, StringFormat={}{0:#,##0} đ}" Width="120">
+
+                                    <DataGridTemplateColumn Header="SỐ LƯỢNG" Width="120">
+                                        <DataGridTemplateColumn.HeaderStyle>
+                                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource ModernDataGridColumnHeader}">
+                                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTemplateColumn.HeaderStyle>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                    <Button Content="－" Click="BtnDecreaseQty_Click" 
+                                                            Width="24" Height="24" Margin="0,0,6,0"
+                                                            Background="#FFF0E6" Foreground="#DE8A63" BorderThickness="0"
+                                                            FontWeight="Bold" FontSize="12" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+                                                        <Button.Resources>
+                                                            <Style TargetType="Border">
+                                                                <Setter Property="CornerRadius" Value="12"/>
+                                                            </Style>
+                                                        </Button.Resources>
+                                                    </Button>
+                                                    <TextBlock Text="{Binding SoLuongTra, UpdateSourceTrigger=PropertyChanged}" 
+                                                               Width="30" TextAlignment="Center" VerticalAlignment="Center" 
+                                                               FontWeight="Bold" FontSize="13" Foreground="#2D2D2D"/>
+                                                    <Button Content="＋" Click="BtnIncreaseQty_Click" 
+                                                            Width="24" Height="24" Margin="6,0,0,0"
+                                                            Background="#FFF0E6" Foreground="#DE8A63" BorderThickness="0"
+                                                            FontWeight="Bold" FontSize="12" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+                                                        <Button.Resources>
+                                                            <Style TargetType="Border">
+                                                                <Setter Property="CornerRadius" Value="12"/>
+                                                            </Style>
+                                                        </Button.Resources>
+                                                    </Button>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <DataGridTextColumn Header="SỐ TIỀN HOÀN" Binding="{Binding SoTienHoan, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:#,##0} đ}" Width="150" IsReadOnly="True">
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource ModernDataGridColumnHeader}">
+                                                <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                                            </Style>
+                                        </DataGridTextColumn.HeaderStyle>
                                         <DataGridTextColumn.ElementStyle>
                                             <Style TargetType="TextBlock">
                                                 <Setter Property="TextAlignment" Value="Right"/>
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                                <Setter Property="Foreground" Value="#DE8A63"/>
                                             </Style>
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
+
                                     <DataGridTemplateColumn Header="" Width="50">
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Button Content="🗑️" ToolTip="Xóa" Foreground="#E74C3C" Background="Transparent" BorderThickness="0" FontSize="14" Click="BtnRemoveDetail_Click"/>
+                                                <Button Content="🗑️" ToolTip="Xóa" Foreground="#E74C3C" Background="Transparent" BorderThickness="0" FontSize="14" Click="BtnRemoveDetail_Click" HorizontalAlignment="Center"/>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>

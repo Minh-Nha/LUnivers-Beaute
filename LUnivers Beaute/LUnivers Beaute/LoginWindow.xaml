@@ -60,9 +60,9 @@
                         </Border>
 
                         <TextBlock Text="L'Univers" FontSize="34" FontWeight="Light" 
-                                   Foreground="#3D3D3D" HorizontalAlignment="Center" FontFamily="Segoe UI Light"/>
+                                   Foreground="#3D3D3D" HorizontalAlignment="Center" FontFamily="Georgia"/>
                         <TextBlock Text="BEAUTÉ" FontSize="38" FontWeight="Bold" 
-                                   Foreground="#DE8A63" HorizontalAlignment="Center" FontFamily="Segoe UI" Margin="0,-4,0,0"/>
+                                   Foreground="#DE8A63" HorizontalAlignment="Center" FontFamily="Georgia" Margin="0,-4,0,0"/>
 
                         <Border Height="2" Width="50" Margin="0,20,0,20" HorizontalAlignment="Center" CornerRadius="1">
                             <Border.Background>
@@ -88,7 +88,7 @@
 
                     <StackPanel>
                         <TextBlock Text="Chào mừng trở lại!" FontSize="24" FontWeight="Bold"
-                                   Foreground="#2D2D2D" FontFamily="Segoe UI" Margin="0,0,0,6"/>
+                                   Foreground="#2D2D2D" FontFamily="Georgia" Margin="0,0,0,6"/>
                         <TextBlock Text="Đăng nhập để tiếp tục quản lý" FontSize="13"
                                    Foreground="#7A7A7A" FontFamily="Segoe UI" Margin="0,0,0,32"/>
 
@@ -96,9 +96,14 @@
                         <TextBox x:Name="txtUsername" Style="{StaticResource ModernTextBox}" Margin="0,0,0,18"/>
 
                         <TextBlock Text="MẬT KHẨU" Style="{StaticResource FieldLabel}"/>
-                        <PasswordBox x:Name="txtPassword" Style="{StaticResource ModernPasswordBox}" Margin="0,0,0,18"/>
+                        <PasswordBox x:Name="txtPassword" Style="{StaticResource ModernPasswordBox}" Margin="0,0,0,14"/>
 
-                        <Button Content="ĐĂNG NHẬP" Style="{StaticResource PrimaryButton}" Height="46" FontSize="14" Click="BtnLogin_Click"/>
+                        <TextBlock x:Name="lblErrorMessage" Text="" Foreground="#E74C3C" FontSize="12.5" FontWeight="SemiBold" Margin="0,0,0,14" Visibility="Collapsed" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+
+                        <Button x:Name="btnLogin" Content="ĐĂNG NHẬP" Style="{StaticResource PrimaryButton}" Height="46" FontSize="14" Click="BtnLogin_Click" IsDefault="True"/>
+
+                        <ProgressBar x:Name="loginProgressBar" Height="4" IsIndeterminate="True" Background="Transparent" Foreground="#DE8A63" BorderThickness="0" Margin="0,10,0,0" Visibility="Collapsed"/>
+                        <TextBlock x:Name="lblStatusMessage" Text="" Foreground="#DE8A63" FontSize="12" Margin="0,8,0,0" HorizontalAlignment="Center" Visibility="Collapsed" FontStyle="Italic"/>
 
                         <TextBlock Text="Quên mật khẩu?" FontSize="12" Margin="0,18,0,0"
                                    Foreground="#DE8A63" HorizontalAlignment="Center" Cursor="Hand" FontFamily="Segoe UI"

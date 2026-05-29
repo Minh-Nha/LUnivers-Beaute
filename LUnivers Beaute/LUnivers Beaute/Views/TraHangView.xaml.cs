@@ -9,12 +9,52 @@ using BUS;
 
 namespace LUnivers_Beaute.Views
 {
-    public class ChiTietPhieuTraModel
+    public class ChiTietPhieuTraModel : System.ComponentModel.INotifyPropertyChanged
     {
+        private int _soLuongTra;
+        private decimal _soTienHoan;
+
         public int MaLo { get; set; }
         public string TenSanPham { get; set; } = "";
-        public int SoLuongTra { get; set; }
-        public decimal SoTienHoan { get; set; }
+        public decimal DonGia { get; set; }
+        public int MaxSoLuong { get; set; }
+
+        public int SoLuongTra
+        {
+            get => _soLuongTra;
+            set
+            {
+                int validValue = value;
+                if (validValue < 0) validValue = 0;
+                if (validValue > MaxSoLuong) validValue = MaxSoLuong;
+
+                if (_soLuongTra != validValue)
+                {
+                    _soLuongTra = validValue;
+                    OnPropertyChanged(nameof(SoLuongTra));
+                    SoTienHoan = _soLuongTra * DonGia;
+                }
+            }
+        }
+
+        public decimal SoTienHoan
+        {
+            get => _soTienHoan;
+            set
+            {
+                if (_soTienHoan != value)
+                {
+                    _soTienHoan = value;
+                    OnPropertyChanged(nameof(SoTienHoan));
+                }
+            }
+        }
+
+        public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged(string name)
+        {
+            PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(name));
+        }
     }
 
     public class ComboItemModel
@@ -22,6 +62,7 @@ namespace LUnivers_Beaute.Views
         public string Value { get; set; } = "";
         public string Display { get; set; } = "";
         public string ExtraData { get; set; } = "";
+        public decimal Price { get; set; }
 
         public override string ToString()
         {
@@ -44,6 +85,10 @@ namespace LUnivers_Beaute.Views
             {
                 dgData.SelectionChanged += DgData_SelectionChanged;
             }
+            if (cboHoaDon != null)
+            {
+                cboHoaDon.SelectionChanged += CboHoaDon_SelectionChanged;
+            }
         }
 
         private void LoadData()
@@ -55,45 +100,112 @@ namespace LUnivers_Beaute.Views
                 // Binding temp list to dgChiTietPhieuTra_Temp
                 if (dgChiTietPhieuTra_Temp != null) dgChiTietPhieuTra_Temp.ItemsSource = _chiTietTemp;
 
-                // Load HoaDon for ComboBox
+                // Load HoaDon for ComboBox (Only today's invoices)
                 DataTable dtHoaDon = new HoaDonBUS().GetAll();
                 var listHoaDon = new System.Collections.Generic.List<ComboItemModel>();
+                string todayStr = DateTime.Today.ToString("dd/MM/yyyy");
                 foreach (DataRow r in dtHoaDon.Rows)
                 {
                     string date = r.Table.Columns.Contains("NgayLap") ? r["NgayLap"].ToString() : "";
-                    string cus = r.Table.Columns.Contains("KhachHang") ? r["KhachHang"].ToString() : "";
-                    listHoaDon.Add(new ComboItemModel
+                    if (!string.IsNullOrEmpty(date) && date.StartsWith(todayStr))
                     {
-                        Value = r["MaHoaDon"].ToString(),
-                        Display = $"{r["MaHoaDon"]} - Khách: {cus} ({date})"
-                    });
+                        string cus = r.Table.Columns.Contains("KhachHang") ? r["KhachHang"].ToString() : "";
+                        listHoaDon.Add(new ComboItemModel
+                        {
+                            Value = r["MaHoaDon"].ToString(),
+                            Display = $"{r["MaHoaDon"]} - Khách: {cus} ({date})",
+                            ExtraData = date
+                        });
+                    }
                 }
                 cboHoaDon.ItemsSource = listHoaDon;
                 cboHoaDon.DisplayMemberPath = "Display";
                 cboHoaDon.SelectedValuePath = "Value";
-
-                // Load Lô Sản Phẩm
-                DataTable dtTonKho = new TonKhoBUS().GetAll();
-                var listTonKho = new System.Collections.Generic.List<ComboItemModel>();
-                foreach (DataRow r in dtTonKho.Rows)
-                {
-                    string soLo = r.Table.Columns.Contains("SoLo") ? r["SoLo"].ToString() : "?";
-                    string maLo = r.Table.Columns.Contains("MaLo") ? r["MaLo"].ToString() : soLo;
-                    string tenSp = r["TenSanPham"].ToString();
-                    listTonKho.Add(new ComboItemModel
-                    {
-                        Value = maLo,
-                        Display = $"[Lô {soLo}] {tenSp}",
-                        ExtraData = tenSp
-                    });
-                }
-                cboChiTietLo.ItemsSource = listTonKho;
-                cboChiTietLo.DisplayMemberPath = "Display";
-                cboChiTietLo.SelectedValuePath = "Value";
             }
             catch (System.Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void CboHoaDon_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cboHoaDon.SelectedItem is ComboItemModel selectedInvoice)
+            {
+                // 1. Set return date (NgayTra) to the invoice's date (NgayLap) and make it read-only (disabled)
+                if (DateTime.TryParse(selectedInvoice.ExtraData, out DateTime invoiceDate))
+                {
+                    dpNgayTra.SelectedDate = invoiceDate;
+                }
+                else
+                {
+                    dpNgayTra.SelectedDate = DateTime.Now;
+                }
+                dpNgayTra.IsEnabled = false;
+
+                // Update text label to "Chi tiết sản phẩm hoàn trả của hóa đơn " + MaHoaDon
+                if (lblChiTietTitle != null)
+                {
+                    lblChiTietTitle.Text = "Chi tiết sản phẩm hoàn trả của hóa đơn " + selectedInvoice.Value;
+                }
+
+                // Clear previous temporary return details since we changed invoice
+                _chiTietTemp.Clear();
+
+                // 2. Load products from this invoice's details directly into return list
+                try
+                {
+                    DataTable dtChiTiet = new HoaDonBUS().GetChiTiet(selectedInvoice.Value);
+                    foreach (DataRow r in dtChiTiet.Rows)
+                    {
+                        string soLo = r.Table.Columns.Contains("SoLo") ? r["SoLo"].ToString() : "?";
+                        int maLo = r.Table.Columns.Contains("MaLo") && r["MaLo"] != DBNull.Value ? Convert.ToInt32(r["MaLo"]) : 0;
+                        string tenSp = r["TenSanPham"].ToString();
+                        int purchasedQty = r.Table.Columns.Contains("SoLuong") && r["SoLuong"] != DBNull.Value ? Convert.ToInt32(r["SoLuong"]) : 0;
+                        decimal donGiaNum = 0;
+                        if (r.Table.Columns.Contains("DonGiaNum") && r["DonGiaNum"] != DBNull.Value)
+                        {
+                            donGiaNum = Convert.ToDecimal(r["DonGiaNum"]);
+                        }
+                        else if (r.Table.Columns.Contains("DonGia") && r["DonGia"] != DBNull.Value)
+                        {
+                            string rawPrice = r["DonGia"].ToString() ?? "";
+                            string cleanPrice = "";
+                            foreach (char c in rawPrice)
+                            {
+                                if (char.IsDigit(c)) cleanPrice += c;
+                            }
+                            if (!string.IsNullOrEmpty(cleanPrice))
+                            {
+                                decimal.TryParse(cleanPrice, out donGiaNum);
+                            }
+                        }
+
+                        _chiTietTemp.Add(new ChiTietPhieuTraModel
+                        {
+                            MaLo = maLo,
+                            TenSanPham = tenSp,
+                            DonGia = donGiaNum,
+                            MaxSoLuong = purchasedQty,
+                            SoLuongTra = purchasedQty, // Default return quantity to purchased quantity
+                            SoTienHoan = purchasedQty * donGiaNum // Default return refund amount
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi khi tải chi tiết hóa đơn: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                dpNgayTra.SelectedDate = null;
+                dpNgayTra.IsEnabled = true;
+                _chiTietTemp.Clear();
+                if (lblChiTietTitle != null)
+                {
+                    lblChiTietTitle.Text = "Chi tiết sản phẩm hoàn trả";
+                }
             }
         }
 
@@ -116,6 +228,16 @@ namespace LUnivers_Beaute.Views
         
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
+            // Reset fields
+            cboHoaDon.SelectedIndex = -1;
+            dpNgayTra.SelectedDate = null;
+            dpNgayTra.IsEnabled = true;
+            txtLyDo.Clear();
+            _chiTietTemp.Clear();
+            if (lblChiTietTitle != null)
+            {
+                lblChiTietTitle.Text = "Chi tiết sản phẩm hoàn trả";
+            }
             crudPanel.Visibility = Visibility.Visible;
         }
 
@@ -181,6 +303,22 @@ namespace LUnivers_Beaute.Views
             catch
             {
                 MessageBox.Show("Vui lòng nhập số liệu hợp lệ!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void BtnDecreaseQty_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is ChiTietPhieuTraModel item)
+            {
+                item.SoLuongTra--;
+            }
+        }
+
+        private void BtnIncreaseQty_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is ChiTietPhieuTraModel item)
+            {
+                item.SoLuongTra++;
             }
         }
 

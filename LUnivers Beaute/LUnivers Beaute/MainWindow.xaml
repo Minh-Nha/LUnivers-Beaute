@@ -57,17 +57,17 @@
                                 <TextBlock Text="✦" FontSize="20" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
                             </Border>
                             <StackPanel VerticalAlignment="Center">
-                                <TextBlock FontSize="17" FontWeight="Bold" Foreground="#2D2D2D" FontFamily="Segoe UI">
+                                <TextBlock FontSize="17" FontWeight="Bold" Foreground="#2D2D2D" FontFamily="Georgia">
                                     <Run Text="L' Universe"/>
                                 </TextBlock>
-                                <TextBlock Text="Beauté" FontSize="12" Foreground="#E8956D" FontFamily="Segoe UI" FontStyle="Italic" Margin="0,-2,0,0"/>
+                                <TextBlock Text="Beauté" FontSize="12" Foreground="#E8956D" FontFamily="Georgia" FontStyle="Italic" Margin="0,-2,0,0"/>
                             </StackPanel>
                         </StackPanel>
                         <Border Height="1" Background="#F0F0F0" Margin="0,20,0,0"/>
                     </StackPanel>
 
                     <!-- NAV MENU -->
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <ScrollViewer Grid.Row="1" Style="{StaticResource ModernScrollViewer}" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled">
                         <StackPanel Margin="0,4,0,10">
 
                             <RadioButton x:Name="navDashboard" Style="{StaticResource NavButton}" IsChecked="True" Checked="Nav_Checked" Tag="Dashboard" GroupName="MainNav">
@@ -200,9 +200,21 @@
                                 <TextBlock Text="Cài đặt" VerticalAlignment="Center" FontWeight="SemiBold"/>
                             </StackPanel>
                         </RadioButton>
-                        <Button Style="{StaticResource IconButton}" Width="Auto" Height="42" HorizontalAlignment="Stretch" Click="BtnLogout_Click">
-                            <StackPanel Orientation="Horizontal" Margin="14,0">
-                                <TextBlock Text="⏻" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="#E74C3C"/>
+                        <Button Click="BtnLogout_Click" Height="42" Margin="10,1" Cursor="Hand" BorderThickness="0" Background="Transparent" HorizontalAlignment="Stretch">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="10" Padding="14,0">
+                                        <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="border" Property="Background" Value="#FFF0F0"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🚪" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="#E74C3C"/>
                                 <TextBlock Text="Đăng xuất" FontSize="13" VerticalAlignment="Center" Foreground="#E74C3C" FontWeight="SemiBold"/>
                             </StackPanel>
                         </Button>
