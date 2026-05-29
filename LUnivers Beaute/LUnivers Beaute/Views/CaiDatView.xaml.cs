@@ -44,9 +44,11 @@ namespace LUnivers_Beaute.Views
                             txtApiKey.Text = cloudConfig.GetProperty("ApiKey").GetString();
                             txtApiSecret.Password = cloudConfig.GetProperty("ApiSecret").GetString();
                         }
-                        if (doc.RootElement.TryGetProperty("VietQR", out JsonElement vietQRConfig))
+                        // Load from Database
+                        var vietQRConfig = BUS.VietQRConfigBUS.GetVietQRConfig();
+                        if (vietQRConfig != null)
                         {
-                            string bankCode = vietQRConfig.GetProperty("BankCode").GetString();
+                            string bankCode = vietQRConfig.BankCode;
                             foreach (LUnivers_Beaute.Services.BankModel item in cboBank.Items)
                             {
                                 if (item.Code == bankCode || item.Bin == bankCode)
@@ -55,8 +57,8 @@ namespace LUnivers_Beaute.Views
                                     break;
                                 }
                             }
-                            txtAccountNumber.Text = vietQRConfig.GetProperty("AccountNumber").GetString();
-                            txtAccountName.Text = vietQRConfig.GetProperty("AccountName").GetString();
+                            txtAccountNumber.Text = vietQRConfig.AccountNumber;
+                            txtAccountName.Text = vietQRConfig.AccountName;
                         }
                         if (doc.RootElement.TryGetProperty("Gemini", out JsonElement geminiConfig))
                         {
@@ -102,18 +104,19 @@ namespace LUnivers_Beaute.Views
                 cloudNode["ApiSecret"] = txtApiSecret.Password;
                 root["Cloudinary"] = cloudNode;
 
-                JsonObject vietQRNode = new JsonObject();
+                // Save to Database
+                DTO.VietQRConfigDTO vietQRConfig = new DTO.VietQRConfigDTO();
                 if (cboBank.SelectedItem is LUnivers_Beaute.Services.BankModel selectedBank)
                 {
-                    vietQRNode["BankCode"] = selectedBank.Bin;
+                    vietQRConfig.BankCode = selectedBank.Bin;
                 }
                 else
                 {
-                    vietQRNode["BankCode"] = "";
+                    vietQRConfig.BankCode = "";
                 }
-                vietQRNode["AccountNumber"] = txtAccountNumber.Text.Trim();
-                vietQRNode["AccountName"] = txtAccountName.Text.Trim().ToUpper();
-                root["VietQR"] = vietQRNode;
+                vietQRConfig.AccountNumber = txtAccountNumber.Text.Trim();
+                vietQRConfig.AccountName = txtAccountName.Text.Trim().ToUpper();
+                BUS.VietQRConfigBUS.UpdateVietQRConfig(vietQRConfig);
 
                 JsonObject geminiNode = new JsonObject();
                 geminiNode["ApiKey"] = txtGeminiApiKey.Password;

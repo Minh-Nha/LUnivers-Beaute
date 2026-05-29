@@ -8,23 +8,16 @@ namespace LUnivers_Beaute.Services
     {
         public static string GenerateQRUrl(decimal amount, string invoiceId)
         {
-            string configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json");
             string bankCode = "";
             string accNum = "";
             string accName = "";
 
-            if (File.Exists(configPath))
+            var config = BUS.VietQRConfigBUS.GetVietQRConfig();
+            if (config != null)
             {
-                string jsonString = File.ReadAllText(configPath);
-                using (JsonDocument doc = JsonDocument.Parse(jsonString))
-                {
-                    if (doc.RootElement.TryGetProperty("VietQR", out JsonElement vietQRConfig))
-                    {
-                        bankCode = vietQRConfig.GetProperty("BankCode").GetString();
-                        accNum = vietQRConfig.GetProperty("AccountNumber").GetString();
-                        accName = vietQRConfig.GetProperty("AccountName").GetString();
-                    }
-                }
+                bankCode = config.BankCode;
+                accNum = config.AccountNumber;
+                accName = config.AccountName;
             }
 
             if (string.IsNullOrEmpty(accNum) || string.IsNullOrEmpty(bankCode))

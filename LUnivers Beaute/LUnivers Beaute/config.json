@@ -5,7 +5,15 @@
     "ApiSecret": "D-Z-CazNdZiJc156KO41BO-2Cvo"
   },
   "Email": {
-    "SenderEmail": "",
-    "AppPassword": ""
+    "SenderEmail": "nnminhnha1511@gmail.com",
+    "AppPassword": "fqer tzwr nwvs yssk"
+  },
+  "Gemini": {
+    "ApiKey": "AIzaSyBITnkGZdVI5CSQRvmiPlo3OnOcGvdsj2I"
+  },
+  "VietQR": {
+    "BankCode": "",
+    "AccountNumber": "",
+    "AccountName": ""
   }
 }
