@@ -33,8 +33,6 @@ body {
     line-height: 1.6;
     overflow-x: hidden;
     scroll-behavior: smooth;
-    /* Soft noise texture overlay for premium feel */
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
 }
 
 /* Typography */
@@ -51,14 +49,14 @@ h1, h2 { font-style: normal; } /* Keep main titles non-italic if preferred, or r
 .orb {
     position: absolute;
     border-radius: 50%;
-    filter: blur(100px);
     z-index: -1;
     animation: orbMove 20s infinite alternate ease-in-out;
+    will-change: transform;
 }
 
-.orb-1 { width: 70vw; height: 70vw; background: rgba(232, 149, 109, 0.15); top: -20vh; right: -10vw; }
-.orb-2 { width: 60vw; height: 60vw; background: rgba(252, 225, 212, 0.4); bottom: -10vh; left: -20vw; animation-delay: -5s; }
-.orb-3 { width: 50vw; height: 50vw; background: rgba(255, 255, 255, 0.9); top: 30vh; left: 20vw; filter: blur(60px); animation-duration: 15s; }
+.orb-1 { width: 70vw; height: 70vw; background: radial-gradient(circle, rgba(232, 149, 109, 0.15) 0%, transparent 60%); top: -20vh; right: -10vw; }
+.orb-2 { width: 60vw; height: 60vw; background: radial-gradient(circle, rgba(252, 225, 212, 0.4) 0%, transparent 60%); bottom: -10vh; left: -20vw; animation-delay: -5s; }
+.orb-3 { width: 50vw; height: 50vw; background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, transparent 60%); top: 30vh; left: 20vw; animation-duration: 15s; }
 
 @keyframes orbMove {
     0% { transform: translate(0, 0) scale(1); }
@@ -74,9 +72,7 @@ header {
     transform: translateX(-50%);
     width: 90%;
     max-width: 1200px;
-    background: var(--glass-bg);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
+    background: rgba(255, 255, 255, 0.98);
     border-radius: 100px;
     padding: 12px 24px;
     z-index: 1000;
@@ -117,6 +113,7 @@ header {
     border: 1px solid var(--primary);
     opacity: 0.5;
     animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+    will-change: transform, opacity;
 }
 
 @keyframes ping {
@@ -229,7 +226,7 @@ nav a:not(.btn):hover {
 }
 
 .hero-pill {
-    background: rgba(255,255,255,0.9);
+    background: rgba(255,255,255,0.95);
     border: 1px solid rgba(232, 149, 109, 0.3);
     padding: 10px 28px;
     border-radius: 50px;
@@ -241,7 +238,6 @@ nav a:not(.btn):hover {
     align-items: center;
     gap: 10px;
     box-shadow: 0 10px 25px rgba(232, 149, 109, 0.15);
-    backdrop-filter: blur(10px);
 }
 
 .hero-title {
@@ -297,16 +293,15 @@ nav a:not(.btn):hover {
     transform: translateX(-50%) rotateX(10deg) translateZ(0);
     width: 85%;
     height: 100%;
-    background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
+    background: rgba(255,255,255,0.9);
     border-radius: 32px;
     border: 2px solid rgba(255,255,255,0.9);
     box-shadow: 0 40px 80px rgba(232, 149, 109, 0.2), inset 0 0 0 1px rgba(255,255,255,0.5);
     overflow: hidden;
     z-index: 2;
-    transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
     transform-style: preserve-3d;
+    will-change: transform;
 }
 
 .main-mockup:hover {
@@ -349,10 +344,10 @@ nav a:not(.btn):hover {
 
 .float-card {
     position: absolute;
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.98);
     padding: 24px;
     border-radius: 24px;
-    box-shadow: 0 25px 50px rgba(232, 149, 109, 0.15);
+    box-shadow: 0 15px 35px rgba(232, 149, 109, 0.15);
     border: 1px solid rgba(255,255,255,1);
     z-index: 3;
     animation: float 6s ease-in-out infinite;
@@ -360,7 +355,7 @@ nav a:not(.btn):hover {
     align-items: center;
     gap: 16px;
     font-weight: 700;
-    backdrop-filter: blur(10px);
+    will-change: transform;
 }
 
 .card-1 {
@@ -409,6 +404,7 @@ nav a:not(.btn):hover {
 .marquee {
     display: flex;
     animation: marquee 25s linear infinite;
+    will-change: transform;
 }
 
 .marquee span {
@@ -461,17 +457,17 @@ nav a:not(.btn):hover {
 }
 
 .bento-item {
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.95);
     border: 1px solid var(--glass-border);
     border-radius: 40px;
     padding: 40px;
     position: relative;
     overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
     display: flex;
     flex-direction: column;
     box-shadow: var(--shadow-soft);
+    will-change: transform;
 }
 
 .bento-item:hover {
@@ -526,7 +522,6 @@ nav a:not(.btn):hover {
     background: rgba(255,255,255,0.25);
     color: white;
     box-shadow: none;
-    backdrop-filter: blur(10px);
 }
 
 .bento-item h3 {
@@ -554,11 +549,10 @@ nav a:not(.btn):hover {
 .bento-visual {
     flex: 1;
     margin-top: 30px;
-    background: rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.25);
     border-radius: 24px;
     border: 1px solid rgba(255,255,255,0.3);
     position: relative;
-    backdrop-filter: blur(5px);
     overflow: hidden;
     min-height: 0;
 }
@@ -717,6 +711,7 @@ nav a:not(.btn):hover {
     top: -50%;
     left: -50%;
     animation: rotate 15s linear infinite;
+    will-change: transform;
 }
 
 /* CSS Layers Mockup for Split Section */
@@ -738,12 +733,12 @@ nav a:not(.btn):hover {
     width: 100%;
     height: 100%;
     border-radius: 24px;
-    background: rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.85);
     border: 2px solid rgba(255,255,255,0.8);
-    backdrop-filter: blur(8px);
-    box-shadow: 0 20px 40px rgba(232, 149, 109, 0.15);
-    transition: all 0.5s ease;
+    box-shadow: 0 15px 30px rgba(232, 149, 109, 0.15);
+    transition: margin-top 0.5s ease;
     animation: floatLayers 6s infinite alternate ease-in-out;
+    will-change: transform, margin-top;
 }
 
 .layer-3 { transform: translateZ(-60px); opacity: 0.5; animation-delay: 0s; }
