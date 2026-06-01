@@ -105,8 +105,8 @@
                         phát triển chuyên biệt cho cửa hàng.</p>
                     <div class="bento-visual">
                         <!-- Nhét ảnh mô tả AI vào đây -->
-                        <img src="https://placehold.co/800x600/E8956D/FFFFFF?text=AI+Feature" alt="AI Feature"
-                            style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8;">
+                        <img src="gemini.png" alt="AI Feature"
+                            style="width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: inherit;">
                     </div>
                 </div>
 
@@ -116,9 +116,17 @@
                     <h3>Chăm Sóc Khách Hàng VIP</h3>
                     <p>Tự động ghi nhận lịch sử giao dịch, phân hạng hội viên và áp dụng các chương trình tri ân một
                         cách mượt mà nhất.</p>
-                    <!-- Nhét ảnh khách hàng/CRM vào đây -->
-                    <img src="https://placehold.co/600x400/D4764E/FFFFFF?text=CRM+App" alt="CRM"
-                        style="position: absolute; right: -20px; bottom: -20px; width: 250px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    <!-- CSS Animated VIP Card -->
+                    <div class="css-vip-card">
+                        <div class="vip-header">
+                            <span>MEMBER</span>
+                            <span class="stars">★★★★★</span>
+                        </div>
+                        <div class="vip-body">
+                            <div class="vip-line w-full"></div>
+                            <div class="vip-line w-half"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Tall Item -->
@@ -126,9 +134,9 @@
                     <div class="bento-icon">❁</div>
                     <h3>Thanh Toán Một Chạm</h3>
                     <p>Mã VietQR tự động khớp giá trị đơn hàng. Nhanh chóng, chính xác và chuyên nghiệp.</p>
-                    <div class="qr-mock">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=DemoQR" alt="QR"
-                            style="width:100%; opacity: 0.3;">
+                    <div class="css-scanner-box">
+                        <div class="scanner-line"></div>
+                        <div class="qr-dots"></div>
                     </div>
                 </div>
 
@@ -137,6 +145,13 @@
                     <div class="bento-icon">❀</div>
                     <h3>Kiểm Soát Tồn Kho</h3>
                     <p>Theo dõi luân chuyển sản phẩm theo thời gian thực, đảm bảo sự chuẩn xác tuyệt đối.</p>
+                    <div class="css-inventory-chart">
+                        <div class="bar h-70"></div>
+                        <div class="bar h-40"></div>
+                        <div class="bar h-90"></div>
+                        <div class="bar h-50"></div>
+                        <div class="bar h-80"></div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -144,13 +159,17 @@
         <!-- STAGGERED SPLIT SECTION -->
         <section id="features" class="split-section">
             <div class="split-image reveal">
-                <!-- Nhét ảnh tổng quan phần mềm vào đây (Thay thế thẻ div chứa chữ ✦ bên dưới) -->
-                <img src="https://placehold.co/1200x800/FCE1D4/E8956D?text=Overview" alt="Overview"
-                    style="width: 100%; height: 100%; object-fit: cover; position: relative; z-index: 2;">
+                <!-- CSS Layer Animation instead of image -->
+                <div class="css-layers-mockup">
+                    <div class="layer layer-3"></div>
+                    <div class="layer layer-2"></div>
+                    <div class="layer layer-1">
+                        <div class="layer-content">
+                            <span class="shield-icon">✦</span>
+                        </div>
+                    </div>
+                </div>
 
-                <div
-                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 100px; color: white; z-index: 1;">
-                    ✦</div>
             </div>
             <div class="split-content reveal" style="transition-delay: 0.2s;">
                 <h2>Được Thiết Kế Riêng Cho Sự Hoàn Hảo</h2>
