@@ -117,12 +117,38 @@ namespace LUnivers_Beaute.Views
         {
             try
             {
-                var dt = _khuyenMaiBus.GetAll();
-                // Filter active promotions only (within date range)
+                // Gọi GetAll với trangThaiLoc: 1 để chỉ lấy các khuyến mãi đang trong thời gian diễn ra và đang được kích hoạt từ database
+                var dt = _khuyenMaiBus.GetAll(trangThaiLoc: 1);
+                
+                // Kiểm tra bổ sung ở phía C# để đảm bảo tuyệt đối không hiển thị các khuyến mãi đã hết hạn
                 var activeRows = dt.AsEnumerable().Where(r =>
                 {
+                    // Kiểm tra trạng thái kích hoạt
                     var trangThai = r["TrangThai"]?.ToString();
-                    return trangThai == "Đang diễn ra" || trangThai == "True" || trangThai == "1";
+                    bool isActive = trangThai == "True" || trangThai == "1" || trangThai == "Đang diễn ra";
+                    if (!isActive) return false;
+
+                    // Kiểm tra tình trạng được trả về từ stored procedure
+                    if (dt.Columns.Contains("TinhTrang"))
+                    {
+                        var tinhTrang = r["TinhTrang"]?.ToString();
+                        if (tinhTrang != "Đang diễn ra") return false;
+                    }
+
+                    // So sánh ngày hiện tại của hệ thống với khoảng thời gian bắt đầu và kết thúc của khuyến mãi
+                    if (dt.Columns.Contains("RawNgayBatDau") && r["RawNgayBatDau"] != DBNull.Value &&
+                        dt.Columns.Contains("RawNgayKetThuc") && r["RawNgayKetThuc"] != DBNull.Value)
+                    {
+                        var now = DateTime.Today;
+                        if (DateTime.TryParse(r["RawNgayBatDau"]?.ToString(), out DateTime start) &&
+                            DateTime.TryParse(r["RawNgayKetThuc"]?.ToString(), out DateTime end))
+                        {
+                            if (now < start.Date || now > end.Date)
+                                return false;
+                        }
+                    }
+
+                    return true;
                 });
 
                 DataTable activeDt;
