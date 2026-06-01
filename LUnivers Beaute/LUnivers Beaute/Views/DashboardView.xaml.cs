@@ -179,5 +179,14 @@ namespace LUnivers_Beaute.Views
                 });
             }
         }
+
+        private void BtnXemTatCa_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var mainWindow = Window.GetWindow(this) as MainWindow;
+            if (mainWindow != null)
+            {
+                mainWindow.NavigateToTag("HoaDon");
+            }
+        }
     }
 }

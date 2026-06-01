@@ -361,7 +361,7 @@ namespace LUnivers_Beaute
             lstSearchResults.SelectedItem = null;
         }
 
-        private void NavigateToTag(string tag)
+        public void NavigateToTag(string tag)
         {
             var rb = FindVisualChildren<RadioButton>(this).FirstOrDefault(r => r.Tag as string == tag);
             if (rb != null)

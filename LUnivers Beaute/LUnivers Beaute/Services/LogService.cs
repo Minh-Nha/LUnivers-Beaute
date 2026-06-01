@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text.Json;
+using System.Data;
+using BUS;
 
 namespace LUnivers_Beaute.Services
 {
@@ -25,30 +25,127 @@ namespace LUnivers_Beaute.Services
 
     public static class LogService
     {
-        private static readonly string AccessLogPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "access_logs.json");
-        private static readonly string EditLogPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "edit_logs.json");
-        private static readonly object FileLock = new object();
+        private static readonly LogBUS LogBus = new LogBUS();
 
         static LogService()
         {
-            SeedInitialLogs();
-        }
-
-        private static void SeedInitialLogs()
-        {
-            lock (FileLock)
+            try
             {
-                if (!File.Exists(AccessLogPath))
+                string databaseSqlPath = @"d:\HK4\CN.NET\LUnivers-Beaute\LUnivers Beaute\Database\Database.sql";
+                string storeSqlPath = @"d:\HK4\CN.NET\LUnivers-Beaute\LUnivers Beaute\Database\Store.sql";
+                string logsSqlPath = @"d:\HK4\CN.NET\LUnivers-Beaute\LUnivers Beaute\Database\Database_Logs.sql";
+
+                // 1. Cập nhật Database.sql (Bảng)
+                if (System.IO.File.Exists(databaseSqlPath))
                 {
-                    var initialAccess = new List<AccessLog>();
-                    File.WriteAllText(AccessLogPath, JsonSerializer.Serialize(initialAccess, new JsonSerializerOptions { WriteIndented = true }));
+                    string databaseContent = System.IO.File.ReadAllText(databaseSqlPath, System.Text.Encoding.Unicode);
+                    if (!databaseContent.Contains("LichSuTruyCap"))
+                    {
+                        string appendText = "\r\n\r\n-- ==========================================\r\n" +
+                                            "-- BẢNG LỊCH SỬ TRUY CẬP & LỊCH SỬ CHỈNH SỬA (Thêm tự động)\r\n" +
+                                            "-- ==========================================\r\n" +
+                                            "CREATE TABLE LichSuTruyCap (\r\n" +
+                                            "    Id INT IDENTITY(1,1) PRIMARY KEY,\r\n" +
+                                            "    Timestamp DATETIME NOT NULL DEFAULT GETDATE(),\r\n" +
+                                            "    UserName NVARCHAR(100) NOT NULL,\r\n" +
+                                            "    IpAddress VARCHAR(50) NOT NULL,\r\n" +
+                                            "    DeviceName NVARCHAR(100) NOT NULL,\r\n" +
+                                            "    Location NVARCHAR(250) NOT NULL\r\n" +
+                                            ");\r\n" +
+                                            "GO\r\n\r\n" +
+                                            "CREATE TABLE LichSuChinhSua (\r\n" +
+                                            "    Id INT IDENTITY(1,1) PRIMARY KEY,\r\n" +
+                                            "    Timestamp DATETIME NOT NULL DEFAULT GETDATE(),\r\n" +
+                                            "    UserName NVARCHAR(100) NOT NULL,\r\n" +
+                                            "    Action NVARCHAR(100) NOT NULL,\r\n" +
+                                            "    Detail NVARCHAR(MAX) NOT NULL,\r\n" +
+                                            "    Icon NVARCHAR(50) NOT NULL\r\n" +
+                                            ");\r\n" +
+                                            "GO\r\n";
+                        System.IO.File.AppendAllText(databaseSqlPath, appendText, System.Text.Encoding.Unicode);
+                    }
                 }
 
-                if (!File.Exists(EditLogPath))
+                // 2. Cập nhật Store.sql (Stored Procedures)
+                if (System.IO.File.Exists(storeSqlPath))
                 {
-                    var initialEdits = new List<EditLog>();
-                    File.WriteAllText(EditLogPath, JsonSerializer.Serialize(initialEdits, new JsonSerializerOptions { WriteIndented = true }));
+                    string storeContent = System.IO.File.ReadAllText(storeSqlPath, System.Text.Encoding.Unicode);
+                    if (!storeContent.Contains("sp_InsertLichSuTruyCap"))
+                    {
+                        string appendText = "\r\n\r\n-- ==========================================\r\n" +
+                                            "-- STORED PROCEDURES LỊCH SỬ (Thêm tự động)\r\n" +
+                                            "-- ==========================================\r\n" +
+                                            "/****** Object:  StoredProcedure [dbo].[sp_InsertLichSuTruyCap] ******/\r\n" +
+                                            "SET ANSI_NULLS ON\r\n" +
+                                            "GO\r\n" +
+                                            "SET QUOTED_IDENTIFIER ON\r\n" +
+                                            "GO\r\n" +
+                                            "CREATE PROCEDURE [dbo].[sp_InsertLichSuTruyCap]\r\n" +
+                                            "    @UserName NVARCHAR(100),\r\n" +
+                                            "    @IpAddress VARCHAR(50),\r\n" +
+                                            "    @DeviceName NVARCHAR(100),\r\n" +
+                                            "    @Location NVARCHAR(250)\r\n" +
+                                            "AS\r\n" +
+                                            "BEGIN\r\n" +
+                                            "    INSERT INTO LichSuTruyCap (UserName, IpAddress, DeviceName, Location)\r\n" +
+                                            "    VALUES (@UserName, @IpAddress, @DeviceName, @Location);\r\n" +
+                                            "END;\r\n" +
+                                            "GO\r\n\r\n" +
+                                            "/****** Object:  StoredProcedure [dbo].[sp_GetAllLichSuTruyCap] ******/\r\n" +
+                                            "SET ANSI_NULLS ON\r\n" +
+                                            "GO\r\n" +
+                                            "SET QUOTED_IDENTIFIER ON\r\n" +
+                                            "GO\r\n" +
+                                            "CREATE PROCEDURE [dbo].[sp_GetAllLichSuTruyCap]\r\n" +
+                                            "AS\r\n" +
+                                            "BEGIN\r\n" +
+                                            "    SELECT Id, Timestamp, UserName, IpAddress, DeviceName, Location\r\n" +
+                                            "    FROM LichSuTruyCap\r\n" +
+                                            "    ORDER BY Timestamp DESC;\r\n" +
+                                            "END;\r\n" +
+                                            "GO\r\n\r\n" +
+                                            "/****** Object:  StoredProcedure [dbo].[sp_InsertLichSuChinhSua] ******/\r\n" +
+                                            "SET ANSI_NULLS ON\r\n" +
+                                            "GO\r\n" +
+                                            "SET QUOTED_IDENTIFIER ON\r\n" +
+                                            "GO\r\n" +
+                                            "CREATE PROCEDURE [dbo].[sp_InsertLichSuChinhSua]\r\n" +
+                                            "    @UserName NVARCHAR(100),\r\n" +
+                                            "    @Action NVARCHAR(100),\r\n" +
+                                            "    @Detail NVARCHAR(MAX),\r\n" +
+                                            "    @Icon NVARCHAR(50)\r\n" +
+                                            "AS\r\n" +
+                                            "BEGIN\r\n" +
+                                            "    INSERT INTO LichSuChinhSua (UserName, Action, Detail, Icon)\r\n" +
+                                            "    VALUES (@UserName, @Action, @Detail, @Icon);\r\n" +
+                                            "END;\r\n" +
+                                            "GO\r\n\r\n" +
+                                            "/****** Object:  StoredProcedure [dbo].[sp_GetAllLichSuChinhSua] ******/\r\n" +
+                                            "SET ANSI_NULLS ON\r\n" +
+                                            "GO\r\n" +
+                                            "SET QUOTED_IDENTIFIER ON\r\n" +
+                                            "GO\r\n" +
+                                            "CREATE PROCEDURE [dbo].[sp_GetAllLichSuChinhSua]\r\n" +
+                                            "AS\r\n" +
+                                            "BEGIN\r\n" +
+                                            "    SELECT Id, Timestamp, UserName, Action, Detail, Icon\r\n" +
+                                            "    FROM LichSuChinhSua\r\n" +
+                                            "    ORDER BY Timestamp DESC;\r\n" +
+                                            "END;\r\n" +
+                                            "GO\r\n";
+                        System.IO.File.AppendAllText(storeSqlPath, appendText, System.Text.Encoding.Unicode);
+                    }
                 }
+
+                // 3. Xóa Database_Logs.sql dư thừa
+                if (System.IO.File.Exists(logsSqlPath))
+                {
+                    System.IO.File.Delete(logsSqlPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Lỗi tự động cập nhật SQL files: " + ex.Message);
             }
         }
 
@@ -71,89 +168,85 @@ namespace LUnivers_Beaute.Services
 
         public static void LogAccess(string userName, string location)
         {
-            lock (FileLock)
+            try
             {
-                try
-                {
-                    var logs = GetAccessLogs();
-                    logs.Insert(0, new AccessLog
-                    {
-                        Timestamp = DateTime.Now,
-                        User = string.IsNullOrEmpty(userName) ? "Khách/Ẩn danh" : userName,
-                        IpAddress = GetLocalIpAddress(),
-                        DeviceName = System.Environment.MachineName,
-                        Location = string.IsNullOrEmpty(location) ? "Hệ thống nội bộ (Local)" : location
-                    });
+                string uName = string.IsNullOrEmpty(userName) ? "Khách/Ẩn danh" : userName;
+                string ip = GetLocalIpAddress();
+                string device = System.Environment.MachineName;
+                string loc = string.IsNullOrEmpty(location) ? "Hệ thống nội bộ (Local)" : location;
 
-                    // Giới hạn 100 dòng mới nhất
-                    if (logs.Count > 100) logs.RemoveRange(100, logs.Count - 100);
-
-                    File.WriteAllText(AccessLogPath, JsonSerializer.Serialize(logs, new JsonSerializerOptions { WriteIndented = true }));
-                }
-                catch { }
+                LogBus.InsertAccessLog(uName, ip, device, loc);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Lỗi ghi log truy cập: " + ex.Message);
             }
         }
 
         public static void LogEdit(string userName, string action, string detail, string icon = "✏️")
         {
-            lock (FileLock)
+            try
             {
-                try
-                {
-                    var logs = GetEditLogs();
-                    logs.Insert(0, new EditLog
-                    {
-                        Timestamp = DateTime.Now,
-                        User = string.IsNullOrEmpty(userName) ? "Hệ thống" : userName,
-                        Action = action,
-                        Detail = detail,
-                        Icon = icon
-                    });
-
-                    // Giới hạn 100 dòng mới nhất
-                    if (logs.Count > 100) logs.RemoveRange(100, logs.Count - 100);
-
-                    File.WriteAllText(EditLogPath, JsonSerializer.Serialize(logs, new JsonSerializerOptions { WriteIndented = true }));
-                    
-                    // Trigger notification event for UI updates
-                    OnNewEditLog?.Invoke();
-                }
-                catch { }
+                string uName = string.IsNullOrEmpty(userName) ? "Hệ thống" : userName;
+                LogBus.InsertEditLog(uName, action, detail, icon);
+                
+                // Trigger notification event for UI updates
+                OnNewEditLog?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Lỗi ghi log chỉnh sửa: " + ex.Message);
             }
         }
 
         public static List<AccessLog> GetAccessLogs()
         {
-            lock (FileLock)
+            var list = new List<AccessLog>();
+            try
             {
-                try
+                DataTable dt = LogBus.GetAllAccessLogs();
+                foreach (DataRow row in dt.Rows)
                 {
-                    if (File.Exists(AccessLogPath))
+                    list.Add(new AccessLog
                     {
-                        string json = File.ReadAllText(AccessLogPath);
-                        return JsonSerializer.Deserialize<List<AccessLog>>(json) ?? new List<AccessLog>();
-                    }
+                        Timestamp = row["Timestamp"] != DBNull.Value ? Convert.ToDateTime(row["Timestamp"]) : DateTime.Now,
+                        User = row["UserName"] != DBNull.Value ? row["UserName"].ToString() : "Khách/Ẩn danh",
+                        IpAddress = row["IpAddress"] != DBNull.Value ? row["IpAddress"].ToString() : "",
+                        DeviceName = row["DeviceName"] != DBNull.Value ? row["DeviceName"].ToString() : "",
+                        Location = row["Location"] != DBNull.Value ? row["Location"].ToString() : ""
+                    });
                 }
-                catch { }
-                return new List<AccessLog>();
             }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Lỗi tải lịch sử truy cập: " + ex.Message);
+            }
+            return list;
         }
 
         public static List<EditLog> GetEditLogs()
         {
-            lock (FileLock)
+            var list = new List<EditLog>();
+            try
             {
-                try
+                DataTable dt = LogBus.GetAllEditLogs();
+                foreach (DataRow row in dt.Rows)
                 {
-                    if (File.Exists(EditLogPath))
+                    list.Add(new EditLog
                     {
-                        string json = File.ReadAllText(EditLogPath);
-                        return JsonSerializer.Deserialize<List<EditLog>>(json) ?? new List<EditLog>();
-                    }
+                        Timestamp = row["Timestamp"] != DBNull.Value ? Convert.ToDateTime(row["Timestamp"]) : DateTime.Now,
+                        User = row["UserName"] != DBNull.Value ? row["UserName"].ToString() : "Hệ thống",
+                        Action = row["Action"] != DBNull.Value ? row["Action"].ToString() : "",
+                        Detail = row["Detail"] != DBNull.Value ? row["Detail"].ToString() : "",
+                        Icon = row["Icon"] != DBNull.Value ? row["Icon"].ToString() : "✏️"
+                    });
                 }
-                catch { }
-                return new List<EditLog>();
             }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Lỗi tải lịch sử chỉnh sửa: " + ex.Message);
+            }
+            return list;
         }
 
         public static event Action OnNewEditLog;

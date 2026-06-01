@@ -91,5 +91,30 @@ namespace DAL
             }
             return dt;
         }
+
+        public static int ExecuteNonQueryRaw(string sqlQuery, params SqlParameter[] parameters)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand(sqlQuery, conn))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        if (parameters != null && parameters.Length > 0)
+                        {
+                            cmd.Parameters.AddRange(parameters);
+                        }
+
+                        conn.Open();
+                        return cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Database raw execution error: " + ex.Message);
+            }
+        }
     }
 }
