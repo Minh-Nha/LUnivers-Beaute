@@ -1,251 +1,218 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="L'Univers Beauté - Nền tảng quản lý cửa hàng làm đẹp thông minh, tích hợp AI và VietQR.">
-    <title>L'Univers Beauté — Giải Pháp Quản Lý Toàn Diện</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="L'Univers Beauté - Nền tảng quản lý cửa hàng làm đẹp thông minh.">
+    <title>L'Univers Beauté — Nâng Tầm Quản Lý</title>
+    <!-- Google Fonts: Playfair Display -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="../LUnivers Beaute/LUniversBeaute.ico" type="image/x-icon">
 </head>
+
 <body>
-    <!-- Decorative background elements -->
-    <div class="bg-shape shape-1"></div>
-    <div class="bg-shape shape-2"></div>
-    <div class="bg-shape shape-3"></div>
+    <!-- Background Orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
 
     <header>
-        <div class="container nav-container">
-            <div class="logo">
-                <div class="logo-icon">✦</div>
-                <div class="logo-text">
-                    <h1>L' Universe</h1>
-                    <span>Beauté</span>
-                </div>
+        <div class="logo">
+            <div class="logo-icon">✦</div>
+            <div class="logo-text">
+                <h1>L' Universe</h1>
+                <span>Beauté</span>
             </div>
-            <nav>
-                <a href="#features">Tính Năng Cốt Lõi</a>
-                <a href="#modules">Hệ Sinh Thái</a>
-                <a href="#about">Về Phần Mềm</a>
-                <a href="#download" class="btn btn-outline">Tải Về Windows</a>
-            </nav>
         </div>
+        <nav>
+            <a href="#features">Trải Nghiệm</a>
+            <a href="#ecosystem">Tính Năng</a>
+            <a href="#download" class="btn btn-primary">Tải Ứng Dụng</a>
+        </nav>
     </header>
 
     <main>
-        <!-- HERO SECTION -->
-        <section class="hero container">
-            <div class="hero-content">
-                <span class="badge">✨ Phiên Bản Đột Phá 1.0.0</span>
-                <h2 class="hero-title">
-L' Universe</h2>
-                <p class="hero-desc">
-                    L'Univers Beauté không chỉ là phần mềm quản lý bán hàng. Chúng tôi cung cấp một hệ sinh thái vận hành toàn diện với Trợ lý ảo AI, hệ thống thanh toán tự động VietQR, và công cụ quản trị tinh gọn. Giúp bạn kiểm soát mọi hoạt động kinh doanh chỉ với vài cú click chuột.
-                </p>
-                <div class="hero-actions">
-                    <a href="LUniversBeaute_Setup_v1.0.0.exe" class="btn btn-primary btn-large">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                        Tải Bản Cài Đặt (Windows)
-                    </a>
-                    <p class="sub-text">Bản quyền thuộc về L'Univers Beauté — Hỗ trợ Windows 10/11 (64-bit)</p>
+        <!-- COMPLEX HERO SECTION -->
+        <section class="hero">
+            <div class="hero-pill">Phiên Bản Tiên Phong 1.0.0</div>
+            <h2 class="hero-title reveal">
+                Quản Lý Vận Hành.<br><span>Nâng Tầm Trải Nghiệm.</span>
+            </h2>
+            <p class="hero-desc reveal" style="transition-delay: 0.1s;">
+                L'Univers Beauté mang đến giải pháp quản lý toàn diện cho không gian làm đẹp. Mượt mà trong từng thao
+                tác, tinh tế trong từng điểm chạm khách hàng.
+            </p>
+
+            <div class="hero-visuals reveal" style="transition-delay: 0.2s;">
+                <div class="main-mockup">
+                    <div class="mockup-inner">
+                        <img src="app-screenshot.png" alt="App UI" class="app-screenshot"
+                            onerror="this.style.display='none';">
+                    </div>
                 </div>
-            </div>
-            
-            <div class="hero-image">
-                <div class="glass-mockup">
-                    <div class="mockup-header">
-                        <span class="dot red"></span>
-                        <span class="dot yellow"></span>
-                        <span class="dot green"></span>
-                        <div class="mockup-search"></div>
+
+                <div class="float-card card-1 bg-purple">
+                    <div class="card-icon">✧</div>
+                    <div>
+                        <div style="font-size: 12px; opacity: 0.7; font-weight: normal;">Trợ lý thông minh</div>
+                        <div>Tối ưu chiến lược</div>
                     </div>
-                    <div class="mockup-body" style="padding: 0; position: relative;">
-                        <!-- Đặt hình chụp màn hình app của bạn vào thư mục LandingPage và đổi tên thành app-screenshot.png -->
-                        <img src="app-screenshot.png" alt="Giao diện L'Univers Beauté" class="app-screenshot" onerror="this.style.display='none'; document.getElementById('fallback-ui').style.display='flex';">
-                        
-                        <!-- Giao diện giả lập mờ hiển thị nếu chưa có ảnh -->
-                        <div id="fallback-ui" style="display: flex; flex: 1; width: 100%;">
-                            <div class="mockup-sidebar">
-                                <div class="sidebar-item active"></div>
-                                <div class="sidebar-item"></div>
-                                <div class="sidebar-item"></div>
-                                <div class="sidebar-item"></div>
-                            </div>
-                            <div class="mockup-content">
-                                <div class="dashboard-grid">
-                                    <div class="mockup-card small-card"></div>
-                                    <div class="mockup-card small-card"></div>
-                                    <div class="mockup-card small-card"></div>
-                                </div>
-                                <div class="mockup-graph"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="floating-badge ai-badge">
-                        <span>🤖 Trợ Lý AI </span>
-                    </div>
-                    <div class="floating-badge qr-badge">
-                        <span>📱 Thanh Toán VietQR</span>
-                    </div>
-                    <div class="floating-badge cloud-badge">
-                        <span>☁️ Cloud Database</span>
+                </div>
+
+                <div class="float-card card-2 bg-orange">
+                    <div class="card-icon">⚡</div>
+                    <div>
+                        <div style="font-size: 12px; opacity: 0.7; font-weight: normal;">Đồng bộ dữ liệu</div>
+                        <div>Trải nghiệm xuyên suốt</div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- HIGHLIGHT FEATURES -->
-        <section id="features" class="features container">
-            <div class="section-header">
-                <h3>Công Nghệ Vận Hành Đỉnh Cao</h3>
-                <p>Những tính năng độc quyền giúp L'Univers Beauté trở nên khác biệt và mạnh mẽ</p>
+        <!-- MARQUEE -->
+        <div class="marquee-wrapper">
+            <div class="marquee">
+                <span>✦ QUẢN LÝ TỐI ƯU</span>
+                <span>✦ TRẢI NGHIỆM XUYÊN SUỐT</span>
+                <span>✦ THANH TOÁN THÔNG MINH</span>
+                <span>✦ BẢO MẬT TUYỆT ĐỐI</span>
+                <span>✦ QUẢN LÝ TỐI ƯU</span>
+                <span>✦ TRẢI NGHIỆM XUYÊN SUỐT</span>
+                <span>✦ THANH TOÁN THÔNG MINH</span>
+                <span>✦ BẢO MẬT TUYỆT ĐỐI</span>
             </div>
-            
-            <div class="grid-features">
-                <div class="feature-card glass-card">
-                    <div class="feature-icon ai-icon">🤖</div>
-                    <h4>Trợ Lý AI Độc Quyền (Gemini)</h4>
-                    <p>Phân tích số liệu kinh doanh, theo dõi doanh thu và giải đáp thắc mắc người dùng ngay lập tức nhờ sức mạnh của Google Gemini AI. Tự động nhận diện ngữ cảnh và đưa ra chiến lược tức thời.</p>
-                </div>
-                
-                <div class="feature-card glass-card">
-                    <div class="feature-icon qr-icon">📱</div>
-                    <h4>Thanh Toán VietQR Động</h4>
-                    <p>Hệ thống tự động khởi tạo mã QR động dựa trên giá trị đơn hàng hiện tại. Hỗ trợ hàng chục ngân hàng qua API trực tiếp, đảm bảo độ chính xác tuyệt đối và xóa bỏ hoàn toàn rủi ro chuyển sai số tiền.</p>
-                </div>
-                
-                <div class="feature-card glass-card">
-                    <div class="feature-icon pos-icon">🛒</div>
-                    <h4>POS Bán Hàng Thông Minh</h4>
-                    <p>Giao diện máy tính tiền thiết kế chuẩn UI/UX, hỗ trợ tính toán chương trình khuyến mãi tự động, quét mã vạch và tối ưu hoá thao tác nhân viên với tốc độ phản hồi cực nhanh.</p>
-                </div>
+        </div>
+
+        <!-- BENTO BOX FEATURES -->
+        <section id="ecosystem" class="bento-section">
+            <div class="section-header reveal">
+                <h2>Hệ Sinh Thái<br>Chuyên Nghiệp</h2>
+                <p>Thiết kế tinh giản nhưng đáp ứng trọn vẹn mọi nhu cầu vận hành thực tế.</p>
             </div>
-        </section>
 
-        <!-- SYSTEM MODULES SECTION -->
-        <section id="modules" class="modules-section">
-            <div class="container">
-                <div class="section-header">
-                    <h3>Hệ Sinh Thái Quản Lý Toàn Diện</h3>
-                    <p>Từ nhân sự, kho bãi đến khách hàng, mọi nghiệp vụ đều được đồng bộ chặt chẽ</p>
+            <div class="bento-grid">
+                <!-- Large Item -->
+                <div class="bento-item bento-large reveal">
+                    <div class="bento-icon">✧</div>
+                    <h3>AI Gemini Đột Phá</h3>
+                    <p>Trợ lý ảo phân tích sâu sắc dữ liệu kinh doanh, tự động phác thảo báo cáo và gợi ý chiến lược
+                        phát triển chuyên biệt cho cửa hàng.</p>
+                    <div class="bento-visual">
+                        <!-- Nhét ảnh mô tả AI vào đây -->
+                        <img src="https://placehold.co/800x600/E8956D/FFFFFF?text=AI+Feature" alt="AI Feature"
+                            style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8;">
+                    </div>
                 </div>
 
-                <div class="modules-grid">
-                    <!-- Kho Hàng -->
-                    <div class="module-item">
-                        <div class="module-icon">📦</div>
-                        <div class="module-text">
-                            <h4>Quản Trị Kho Hàng Chuyên Sâu</h4>
-                            <p>Kiểm soát từng phiếu nhập kho, phiếu trả hàng và xử lý hàng hóa hết hạn (Hủy sản phẩm). Cập nhật số lượng tồn kho tự động real-time, cảnh báo hàng sắp hết và tự động lưu vết lịch sử mọi thay đổi dữ liệu.</p>
-                        </div>
-                    </div>
+                <!-- Wide Item -->
+                <div class="bento-item bento-wide reveal" style="transition-delay: 0.1s;">
+                    <div class="bento-icon">♡</div>
+                    <h3>Chăm Sóc Khách Hàng VIP</h3>
+                    <p>Tự động ghi nhận lịch sử giao dịch, phân hạng hội viên và áp dụng các chương trình tri ân một
+                        cách mượt mà nhất.</p>
+                    <!-- Nhét ảnh khách hàng/CRM vào đây -->
+                    <img src="https://placehold.co/600x400/D4764E/FFFFFF?text=CRM+App" alt="CRM"
+                        style="position: absolute; right: -20px; bottom: -20px; width: 250px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                </div>
 
-                    <!-- Nhân Sự -->
-                    <div class="module-item">
-                        <div class="module-icon">👥</div>
-                        <div class="module-text">
-                            <h4>Nhân Sự & Chấm Công</h4>
-                            <p>Hệ thống lưu trữ thông tin nhân sự với chế độ phân quyền chặt chẽ (Admin, Nhân viên bán hàng, Nhân viên kho). Hỗ trợ chấm công tự động, giới hạn quyền truy cập theo vai trò để bảo mật tuyệt đối dữ liệu.</p>
-                        </div>
+                <!-- Tall Item -->
+                <div class="bento-item bento-tall reveal" style="transition-delay: 0.2s;">
+                    <div class="bento-icon">❁</div>
+                    <h3>Thanh Toán Một Chạm</h3>
+                    <p>Mã VietQR tự động khớp giá trị đơn hàng. Nhanh chóng, chính xác và chuyên nghiệp.</p>
+                    <div class="qr-mock">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=DemoQR" alt="QR"
+                            style="width:100%; opacity: 0.3;">
                     </div>
+                </div>
 
-                    <!-- Khách Hàng -->
-                    <div class="module-item">
-                        <div class="module-icon">💎</div>
-                        <div class="module-text">
-                            <h4>CRM & Chăm Sóc Khách Hàng</h4>
-                            <p>Theo dõi lịch sử mua sắm của từng khách hàng, tổng chi tiêu và thứ hạng VIP. Áp dụng các chương trình khuyến mãi tự động (giảm giá % hoặc trừ tiền trực tiếp) để thúc đẩy doanh số bền vững.</p>
-                        </div>
-                    </div>
-
-                    <!-- Thống Kê -->
-                    <div class="module-item">
-                        <div class="module-icon">📊</div>
-                        <div class="module-text">
-                            <h4>Dashboard Thống Kê & Báo Cáo</h4>
-                            <p>Tổng quan tình hình kinh doanh trong ngày, tuần, tháng với các biểu đồ trực quan. Phân tích chi tiết top sản phẩm bán chạy, doanh thu nhân viên và cảnh báo lượng hàng tồn đọng.</p>
-                        </div>
-                    </div>
+                <!-- Normal Item -->
+                <div class="bento-item reveal" style="transition-delay: 0.3s;">
+                    <div class="bento-icon">❀</div>
+                    <h3>Kiểm Soát Tồn Kho</h3>
+                    <p>Theo dõi luân chuyển sản phẩm theo thời gian thực, đảm bảo sự chuẩn xác tuyệt đối.</p>
                 </div>
             </div>
         </section>
 
-        <!-- ABOUT SECTION -->
-        <section id="about" class="about-section container">
-            <div class="section-header">
-                <h3>Về Phần Mềm L'Univers Beauté</h3>
-                <p>Nền tảng được tối ưu hóa từ kiến trúc cốt lõi đến trải nghiệm người dùng</p>
+        <!-- STAGGERED SPLIT SECTION -->
+        <section id="features" class="split-section">
+            <div class="split-image reveal">
+                <!-- Nhét ảnh tổng quan phần mềm vào đây (Thay thế thẻ div chứa chữ ✦ bên dưới) -->
+                <img src="https://placehold.co/1200x800/FCE1D4/E8956D?text=Overview" alt="Overview"
+                    style="width: 100%; height: 100%; object-fit: cover; position: relative; z-index: 2;">
+
+                <div
+                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 100px; color: white; z-index: 1;">
+                    ✦</div>
             </div>
-            
-            <div class="about-content">
-                <div class="about-text">
-                    <h4>Được xây dựng trên nền tảng WPF C# mạnh mẽ</h4>
-                    <p>Phần mềm tận dụng tối đa sức mạnh phần cứng của Windows (Hardware Acceleration), mang lại độ phản hồi mượt mà không độ trễ. Giao diện được thiết kế không viền (Borderless Window) hiện đại, bo góc tinh tế kết hợp hiệu ứng đổ bóng mượt mà, giúp người dùng cảm giác như đang thao tác trên một ứng dụng web cao cấp.</p>
-                    
-                    <h4 style="margin-top: 24px;">Bảo mật & Độ ổn định tuyệt đối</h4>
-                    <ul class="about-list">
-                        <li><strong>Kiến trúc bảo mật kép:</strong> Tích hợp SQL Server với truy vấn tham số hóa (Stored Procedures) hoàn toàn, chống 100% tấn công SQL Injection.</li>
-                        <li><strong>Chống chạy đa luồng lỗi:</strong> Cơ chế Single-Instance thông minh bằng Mutex giúp ngăn chặn việc mở trùng lặp ứng dụng, tự động gọi cửa sổ cũ lên trên cùng.</li>
-                        <li><strong>Trí tuệ nhân tạo an toàn:</strong> Trợ lý AI Gemini được cấu hình các bộ lọc System Instructions nghiêm ngặt, cam kết tuyệt đối không để lộ mật khẩu, key API hay cấu trúc dữ liệu nhạy cảm ra ngoài.</li>
-                    </ul>
-                </div>
-                
-                <div class="about-stats">
-                    <div class="stat-box">
-                        <span class="stat-num">0s</span>
-                        <span class="stat-label">Độ trễ thanh toán QR</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-num">14</span>
-                        <span class="stat-label">Lượt hỏi AI / Phút (Giới hạn an toàn)</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-num">100%</span>
-                        <span class="stat-label">Dữ liệu Real-time (Sóng lượn)</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-num">3</span>
-                        <span class="stat-label">Phân quyền bảo mật sâu</span>
-                    </div>
-                </div>
+            <div class="split-content reveal" style="transition-delay: 0.2s;">
+                <h2>Được Thiết Kế Riêng Cho Sự Hoàn Hảo</h2>
+                <ul class="feature-list">
+                    <li>
+                        <div class="list-icon">I</div>
+                        <div>
+                            <h4>Kiến Trúc Hiệu Suất Cao</h4>
+                            <p style="color: var(--text-muted); font-size: 15px;">Tối ưu hóa sức mạnh phần cứng máy
+                                tính, mang lại độ phản hồi tức thì mà không gặp bất kỳ độ trễ nào.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="list-icon">II</div>
+                        <div>
+                            <h4>Bảo Mật Ba Lớp Vững Chắc</h4>
+                            <p style="color: var(--text-muted); font-size: 15px;">Hệ thống phân quyền chi tiết (Admin,
+                                Quản lý, Nhân viên) giúp bảo vệ toàn vẹn dữ liệu nhạy cảm của bạn.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="list-icon">III</div>
+                        <div>
+                            <h4>Giao Diện Không Viền Hiện Đại</h4>
+                            <p style="color: var(--text-muted); font-size: 15px;">Loại bỏ các ranh giới thô cứng, mang
+                                lại một không gian làm việc rộng mở, thanh lịch và tập trung.</p>
+                        </div>
+                    </li>
+                </ul>
             </div>
         </section>
 
-        <!-- CTA SECTION -->
-        <section id="download" class="cta-section container">
-            <div class="cta-card">
-                <h2>Sẵn Sàng Thay Đổi Cách Bạn Quản Lý?</h2>
-                <p>Tải xuống ngay phiên bản mới nhất dành cho Windows và trải nghiệm sự mượt mà chưa từng có.</p>
-                <a href="LUniversBeaute_Setup_v1.0.0.exe" class="btn btn-primary btn-large" style="margin-top: 24px;">
-                    ⬇ Tải Về Cho Máy Tính
-                </a>
-            </div>
+        <!-- HUGE CTA -->
+        <section id="download" class="huge-cta reveal">
+            <div class="cta-orb"></div>
+            <h2>Sẵn Sàng Nâng Tầm<br>Cửa Hàng Của Bạn?</h2>
+            <a href="LUniversBeaute_Setup_v1.0.0.exe" class="btn btn-primary">
+                Tải Xuống Ứng Dụng Miễn Phí
+            </a>
         </section>
     </main>
 
-    <footer>
-        <div class="container footer-content">
-            <div class="logo">
-                <div class="logo-icon">✦</div>
-                <div class="logo-text">
-                    <h1>L' Universe</h1>
-                    <span>Beauté</span>
-                </div>
-            </div>
-            <p>&copy; 2024 L'Univers Beauté Software Solutions. All rights reserved. Built with WPF.</p>
-        </div>
-    </footer>
-
     <script>
-        document.querySelectorAll('.glass-card, .module-item').forEach(card => {
-            card.addEventListener('mousemove', e => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                card.style.setProperty('--mouse-x', `${x}px`);
-                card.style.setProperty('--mouse-y', `${y}px`);
+        // Intersection Observer for Reveal animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target); // Run once
+                }
             });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach((el) => {
+            observer.observe(el);
         });
     </script>
 </body>
+
 </html>
