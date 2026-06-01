@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Collections.ObjectModel;
 using System.Text.Json;
 using BUS;
+using System.Linq;
 
 namespace LUnivers_Beaute.Views
 {
@@ -218,11 +219,18 @@ namespace LUnivers_Beaute.Views
                 {
                     if (dgChiTiet != null && !string.IsNullOrEmpty(maPhieuTra))
                         dgChiTiet.ItemsSource = _bus.GetChiTietPhieuTra(maPhieuTra).DefaultView;
+                    if (btnPrint != null)
+                        btnPrint.IsEnabled = true;
                 }
                 catch (System.Exception ex)
                 {
                     MessageBox.Show(ex.Message);
                 }
+            }
+            else
+            {
+                if (btnPrint != null)
+                    btnPrint.IsEnabled = false;
             }
         }
         
@@ -260,6 +268,8 @@ namespace LUnivers_Beaute.Views
 
                 if (_bus.InsertPhieuTraHang(maPhieuTra, maHoaDon, ngayTra, lyDo, jsonChiTiet))
                 {
+                    var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                    LUnivers_Beaute.Services.LogService.LogEdit(currentUser, "Trả hàng", $"Tạo phiếu trả hàng {maPhieuTra} cho hóa đơn {maHoaDon} thành công", "↩️");
                     MessageBox.Show("Tạo phiếu trả hàng thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
                     crudPanel.Visibility = Visibility.Collapsed;
                     _chiTietTemp.Clear();
@@ -348,6 +358,175 @@ namespace LUnivers_Beaute.Views
         private void BtnNextPage_Click(object sender, RoutedEventArgs e)
         {
             _pager?.NextPage();
+        }
+
+        private void BtnPrint_Click(object sender, RoutedEventArgs e)
+        {
+            if (dgData.SelectedItem is DataRowView row)
+            {
+                string maPhieuTra = row["MaPhieuTra"]?.ToString() ?? "";
+                string maHoaDon = row["MaHoaDon"]?.ToString() ?? "";
+                string lyDo = row["LyDo"]?.ToString() ?? "";
+
+                txtPrintMaPhieu.Text = maPhieuTra;
+                txtPrintMaHoaDon.Text = maHoaDon;
+                txtPrintLyDo.Text = lyDo;
+
+                // Pre-select condition
+                cboPrintTinhTrang.SelectedIndex = 0;
+
+                // Calculate refund amount
+                decimal tongTienHoan = 0;
+                try
+                {
+                    if (dgChiTiet.ItemsSource is DataView dv)
+                    {
+                        foreach (DataRowView r in dv)
+                        {
+                            string tienStr = r["SoTienHoan"]?.ToString() ?? "0";
+                            tienStr = tienStr.Replace(" ₫", "").Replace(",", "").Replace(".", "").Trim();
+                            if (decimal.TryParse(tienStr, out decimal tien))
+                            {
+                                tongTienHoan += tien;
+                            }
+                        }
+                    }
+                }
+                catch { }
+
+                txtPrintTienHoan.Text = string.Format("{0:N0} ₫", tongTienHoan);
+                printPanel.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void BtnPrintCancel_Click(object sender, RoutedEventArgs e)
+        {
+            printPanel.Visibility = Visibility.Collapsed;
+        }
+
+        private void PrintOverlay_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            printPanel.Visibility = Visibility.Collapsed;
+        }
+
+        private void BtnPrintConfirm_Click(object sender, RoutedEventArgs e)
+        {
+            if (dgData.SelectedItem is DataRowView row)
+            {
+                try
+                {
+                    string maPhieuTra = txtPrintMaPhieu.Text;
+                    string maHoaDon = txtPrintMaHoaDon.Text;
+                    string lyDo = txtPrintLyDo.Text;
+                    string tinhTrang = (cboPrintTinhTrang.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Còn nguyên seal";
+
+                    // Retrieve details
+                    var itemsList = new System.Collections.Generic.List<Services.ReturnItem>();
+                    decimal tongTienHoanVal = 0;
+
+                    if (dgChiTiet.ItemsSource is DataView dv)
+                    {
+                        foreach (DataRowView r in dv)
+                        {
+                            string tenSp = r["TenSanPham"]?.ToString() ?? "";
+                            int qty = Convert.ToInt32(r["SoLuongTra"]);
+                            
+                            string tienStr = r["SoTienHoan"]?.ToString() ?? "0";
+                            tienStr = tienStr.Replace(" ₫", "").Replace(",", "").Replace(".", "").Trim();
+                            decimal.TryParse(tienStr, out decimal tienHoan);
+
+                            decimal unitPrice = qty > 0 ? tienHoan / qty : 0;
+                            tongTienHoanVal += tienHoan;
+
+                            itemsList.Add(new Services.ReturnItem
+                            {
+                                TenSanPham = tenSp,
+                                SoLuong = qty,
+                                DonGia = unitPrice
+                            });
+                        }
+                    }
+
+                    // Get cashier & store info
+                    string cashierName = "Nhân viên L'Univers";
+                    string storeName = "L'UNIVERS BEAUTÉ";
+                    string storeId = "CH01";
+
+                    if (Application.Current.MainWindow is MainWindow mw)
+                    {
+                        if (!string.IsNullOrEmpty(mw.HoTen)) cashierName = mw.HoTen;
+                        if (!string.IsNullOrEmpty(mw.TenCuaHang)) storeName = mw.TenCuaHang;
+                        if (!string.IsNullOrEmpty(mw.MaCuaHang)) storeId = mw.MaCuaHang;
+                    }
+
+                    string diaChiCuaHang = "L'UNIVERS BEAUTÉ - Trụ sở chính";
+                    string sdtCuaHang = "1900 9999";
+                    try
+                    {
+                        CuaHangBUS cuaHangBus = new CuaHangBUS();
+                        var dt = cuaHangBus.GetAll();
+                        var chRow = dt.AsEnumerable().FirstOrDefault(r => r["MaCuaHang"]?.ToString() == storeId);
+                        if (chRow != null)
+                        {
+                            if (dt.Columns.Contains("DiaChi")) diaChiCuaHang = chRow["DiaChi"]?.ToString() ?? diaChiCuaHang;
+                            if (dt.Columns.Contains("SoDienThoai")) sdtCuaHang = chRow["SoDienThoai"]?.ToString() ?? sdtCuaHang;
+                        }
+                    }
+                    catch { }
+
+                    DateTime ngayTra = DateTime.Now;
+                    if (row["NgayTra"] != DBNull.Value)
+                    {
+                        DateTime.TryParse(row["NgayTra"].ToString(), out ngayTra);
+                    }
+
+                    var model = new Services.ReturnModel
+                    {
+                        MaPhieuTra = maPhieuTra,
+                        MaHoaDonGoc = maHoaDon,
+                        NgayTra = ngayTra,
+                        TenNhanVien = cashierName,
+                        TenCuaHang = storeName,
+                        DiaChiCuaHang = diaChiCuaHang,
+                        SdtCuaHang = sdtCuaHang,
+                        LyDoTra = lyDo,
+                        TinhTrang = tinhTrang,
+                        Items = itemsList,
+                        TongTienHoan = tongTienHoanVal
+                    };
+
+                    var saveFileDialog = new Microsoft.Win32.SaveFileDialog
+                    {
+                        Filter = "PDF files (*.pdf)|*.pdf|All files (*.*)|*.*",
+                        FileName = $"{maPhieuTra}.pdf",
+                        Title = "Chọn nơi lưu phiếu trả hàng"
+                    };
+
+                    if (saveFileDialog.ShowDialog() != true)
+                    {
+                        return; // Người dùng hủy bỏ lưu file
+                    }
+
+                    string pdfPath = saveFileDialog.FileName;
+
+                    var pdfService = new Services.PdfReturnService();
+                    pdfService.GenerateReturnReceipt(model, pdfPath);
+
+                    printPanel.Visibility = Visibility.Collapsed;
+
+                    MessageBox.Show("In phiếu trả hàng thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = pdfPath,
+                        UseShellExecute = true
+                    });
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi khi in phiếu trả: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
     }
 }

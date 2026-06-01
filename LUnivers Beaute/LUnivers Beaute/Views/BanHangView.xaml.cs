@@ -9,6 +9,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using BUS;
 using System.ComponentModel;
+using LUnivers_Beaute.Helpers;
+using LUnivers_Beaute.Services;
 
 namespace LUnivers_Beaute.Views
 {
@@ -468,9 +470,9 @@ namespace LUnivers_Beaute.Views
             if (_cart.Count == 0) return;
 
             string tienKhachDuaStr = txtTienKhachDua.Text.Replace(",", "").Replace(".", "");
-            if (string.IsNullOrEmpty(tienKhachDuaStr) || !decimal.TryParse(tienKhachDuaStr, out decimal tienKhachDua))
+            if (!ValidationHelper.IsNonNegativeDecimal(tienKhachDuaStr, out decimal tienKhachDua))
             {
-                MessageBox.Show("Vui lòng nhập tiền khách đưa!", "Lỗi thanh toán", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ModernMessageBox.Show("Vui lòng nhập số tiền khách đưa hợp lệ!", "Lỗi thanh toán", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -479,7 +481,7 @@ namespace LUnivers_Beaute.Views
             {
                 if (tienKhachDua < tongCong)
                 {
-                    MessageBox.Show("Khách chưa đưa đủ tiền để thanh toán!", "Lỗi thanh toán", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ModernMessageBox.Show("Số tiền khách đưa chưa đủ để thanh toán hóa đơn!", "Lỗi thanh toán", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
             }
@@ -604,7 +606,9 @@ namespace LUnivers_Beaute.Views
                 {
                     MessageBox.Show("Thanh toán thành công nhưng có lỗi khi in hóa đơn: " + pdfEx.Message, "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
-                // --------------------
+                // Ghi nhận lịch sử chỉnh sửa / hoạt động thực tế
+                var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                LUnivers_Beaute.Services.LogService.LogEdit(currentUser, "Tạo hóa đơn bán hàng", $"Thanh toán thành công hóa đơn {maHoaDon} trị giá {txtTongCong.Text}", "🛒");
 
                 MessageBox.Show($"Thanh toán thành công!\nMã HĐ: {maHoaDon}\nTổng: {txtTongCong.Text}", "✅ Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
 

@@ -5,6 +5,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Linq;
 using System;
+using System.Threading.Tasks;
 using BUS;
 
 namespace LUnivers_Beaute.Views
@@ -20,13 +21,51 @@ namespace LUnivers_Beaute.Views
             this.Loaded += (s, e) => LoadData();
         }
 
-        private void LoadData()
+        private async void LoadData()
         {
             try
             {
-                if (dgData != null) dgData.ItemsSource = _bus.GetDonHangGanDay(5).DefaultView;
-                if (icTopKhachHang != null) icTopKhachHang.ItemsSource = _thongKeBUS.GetTopKhachHangMuaNhieuNhat();
-                DrawWavyChart();
+                var donHangTask = Task.Run(() => _bus.GetDonHangGanDay(5));
+                var topKHTask = Task.Run(() => _thongKeBUS.GetTopKhachHangMuaNhieuNhat());
+                var topSPTask = Task.Run(() => _thongKeBUS.GetTopSellingProducts());
+                var lowStockTask = Task.Run(() => _thongKeBUS.GetLowStockProducts());
+                var overviewTask = Task.Run(() => _thongKeBUS.GetDashboardOverviewStats());
+                var doanhThu7NgayTask = Task.Run(() => _thongKeBUS.GetDoanhThu7NgayQua());
+
+                await Task.WhenAll(donHangTask, topKHTask, topSPTask, lowStockTask, overviewTask, doanhThu7NgayTask);
+
+                var dtDonHang = donHangTask.Result;
+                var dtTopKH = topKHTask.Result;
+                var dtTopSP = topSPTask.Result;
+                var dtLowStock = lowStockTask.Result;
+                var overviewDt = overviewTask.Result;
+                var chartData = doanhThu7NgayTask.Result;
+
+                if (dgData != null) dgData.ItemsSource = dtDonHang?.DefaultView;
+                if (icTopKhachHang != null) icTopKhachHang.ItemsSource = dtTopKH;
+                if (icTopSellingProducts != null) icTopSellingProducts.ItemsSource = dtTopSP?.DefaultView;
+                if (icLowStockProducts != null) icLowStockProducts.ItemsSource = dtLowStock?.DefaultView;
+
+                // Load overview summary cards dynamically
+                if (overviewDt != null && overviewDt.Rows.Count > 0)
+                {
+                    var row = overviewDt.Rows[0];
+                    decimal dtHomNay = System.Convert.ToDecimal(row["DoanhThuHomNay"]);
+                    decimal dtThang = System.Convert.ToDecimal(row["DoanhThuThang"]);
+                    int dhHomNay = System.Convert.ToInt32(row["DonHangHomNay"]);
+                    int totalCustomers = System.Convert.ToInt32(row["TongKhachHang"]);
+
+                    if (txtDoanhThuHomNay != null)
+                        txtDoanhThuHomNay.Text = string.Format("{0:#,##0}đ", dtHomNay);
+                    if (txtDoanhThuThang != null)
+                        txtDoanhThuThang.Text = string.Format("{0:#,##0}đ", dtThang);
+                    if (txtDonHangHomNay != null)
+                        txtDonHangHomNay.Text = dhHomNay.ToString();
+                    if (txtTongKhachHang != null)
+                        txtTongKhachHang.Text = totalCustomers.ToString();
+                }
+
+                DrawWavyChart(chartData);
             }
             catch (System.Exception ex)
             {
@@ -34,11 +73,9 @@ namespace LUnivers_Beaute.Views
             }
         }
 
-        private void DrawWavyChart()
+        private void DrawWavyChart(System.Collections.Generic.List<DTO.DoanhThuNgayDTO> data)
         {
             if (ChartCanvas == null || XAxisLabels == null) return;
-            
-            var data = _thongKeBUS.GetDoanhThu7NgayQua();
             if (data == null || data.Count == 0) return;
 
             ChartCanvas.Children.Clear();

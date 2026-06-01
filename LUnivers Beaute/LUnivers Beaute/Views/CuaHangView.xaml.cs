@@ -1,4 +1,5 @@
 using LUnivers_Beaute.Helpers;
+using LUnivers_Beaute.Services;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
@@ -97,11 +98,15 @@ namespace LUnivers_Beaute.Views
                 if (string.IsNullOrEmpty(txtMaCuaHang.Text))
                 {
                     _bus.Insert(ten, diaChi, sdt, trangThai);
+                    var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                    LogService.LogEdit(currentUser, "Thêm cửa hàng", $"Thêm cửa hàng '{ten}' thành công", "🏪");
                     MessageBox.Show("Thêm mới thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
                     _bus.Update(txtMaCuaHang.Text, ten, diaChi, sdt, trangThai);
+                    var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                    LogService.LogEdit(currentUser, "Cập nhật cửa hàng", $"Cập nhật cửa hàng thành công (Mã: {txtMaCuaHang.Text}, Tên mới: '{ten}')", "📝");
                     MessageBox.Show("Cập nhật thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 crudPanel.Visibility = Visibility.Collapsed;
@@ -121,7 +126,11 @@ namespace LUnivers_Beaute.Views
                 {
                     try
                     {
-                        _bus.Delete(row["MaCuaHang"].ToString() ?? "");
+                        string tenCH = row["TenCuaHang"]?.ToString() ?? "";
+                        string maCH = row["MaCuaHang"]?.ToString() ?? "";
+                        _bus.Delete(maCH);
+                        var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                        LogService.LogEdit(currentUser, "Xóa cửa hàng", $"Xóa cửa hàng '{tenCH}' (Mã: {maCH}) thành công", "🗑️");
                         MessageBox.Show("Xóa thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                         LoadData();
                     }
@@ -132,7 +141,7 @@ namespace LUnivers_Beaute.Views
                 }
             }
         }
-            private void BtnPrevPage_Click(object sender, RoutedEventArgs e)
+        private void BtnPrevPage_Click(object sender, RoutedEventArgs e)
         {
             _pager?.PreviousPage();
         }
@@ -140,6 +149,19 @@ namespace LUnivers_Beaute.Views
         private void BtnNextPage_Click(object sender, RoutedEventArgs e)
         {
             _pager?.NextPage();
+        }
+
+        private void BtnExportExcel_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                DataTable dt = _bus.GetAll();
+                ExcelExportHelper.ExportToExcel(dt, "DanhSachCuaHang.csv");
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xuất danh sách cửa hàng: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

@@ -210,5 +210,18 @@ namespace LUnivers_Beaute.Views
                 }
             }
         }
+
+        private void BtnExportReport_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                DataTable dt = _bus.GetAll();
+                ExcelExportHelper.ExportToExcel(dt, "BaoCaoHoaDon.csv");
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xuất báo cáo: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
     }
 }

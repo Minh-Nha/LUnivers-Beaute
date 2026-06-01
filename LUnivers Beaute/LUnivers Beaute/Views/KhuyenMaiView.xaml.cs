@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using LUnivers_Beaute.Helpers;
 using System.Data;
 using System.Windows;
@@ -20,15 +21,24 @@ namespace LUnivers_Beaute.Views
             this.Loaded += (s, e) => LoadData();
         }
 
-        private void LoadData()
+        private async void LoadData()
         {
             try
             {
-                if (dgData != null) _pager.SetData(_bus.GetAll());
+                var busGetAllTask = Task.Run(() => _bus.GetAll());
+                var dmBusGetAllTask = Task.Run(() => _dmBus.GetAll());
+                var spBusGetAllTask = Task.Run(() => _spBus.GetAll());
+
+                await Task.WhenAll(busGetAllTask, dmBusGetAllTask, spBusGetAllTask);
+
+                var allPromotions = busGetAllTask.Result;
+                var dmData = dmBusGetAllTask.Result;
+                var spData = spBusGetAllTask.Result;
+
+                if (dgData != null) _pager.SetData(allPromotions);
                 
-                var dmData = _dmBus.GetAll();
                 cboDanhMuc.ItemsSource = dmData.DefaultView;
-                cboSanPham.ItemsSource = _spBus.GetAll().DefaultView;
+                cboSanPham.ItemsSource = spData.DefaultView;
 
                 // Add "Tất cả danh mục" for search combobox
                 var dtSearchDm = dmData.Copy();
@@ -156,19 +166,27 @@ namespace LUnivers_Beaute.Views
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(txtTenChuongTrinh.Text))
+                string tenCT = txtTenChuongTrinh.Text.Trim();
+                if (string.IsNullOrEmpty(tenCT) || tenCT.Length < 3)
                 {
-                    MessageBox.Show("Vui lòng nhập tên chương trình khuyến mãi!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-                
-                if (!double.TryParse(txtMucGiam.Text, out double mucGiam))
-                {
-                    MessageBox.Show("Vui lòng nhập mức giảm hợp lệ!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ModernMessageBox.Show("Tên chương trình khuyến mãi không hợp lệ (phải từ 3 ký tự trở lên)!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
-                string loaiGiam = cboLoaiGiam.Text;
+                string loaiGiam = (cboLoaiGiam.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Phần trăm";
+                if (!ValidationHelper.IsPositiveDecimal(txtMucGiam.Text, out decimal mucGiamVal))
+                {
+                    ModernMessageBox.Show("Mức giảm phải là một số dương hợp lệ!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                double mucGiam = (double)mucGiamVal;
+
+                if (loaiGiam == "Phần trăm (%)" && mucGiam > 100)
+                {
+                    ModernMessageBox.Show("Chương trình giảm giá theo phần trăm thì mức giảm tối đa là 100%!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 string apDungUI = cboApDung.Text;
                 string apDungTheo = "HoaDon";
                 if (apDungUI == "Danh mục") apDungTheo = "DanhMuc";
@@ -185,6 +203,12 @@ namespace LUnivers_Beaute.Views
                 System.DateTime ngayBatDau = dpNgayBatDau.SelectedDate ?? System.DateTime.Now;
                 System.DateTime ngayKetThuc = dpNgayKetThuc.SelectedDate ?? System.DateTime.Now.AddMonths(1);
                 
+                if (ngayBatDau > ngayKetThuc)
+                {
+                    ModernMessageBox.Show("Ngày bắt đầu không được lớn hơn ngày kết thúc chương trình!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 bool trangThai = cboTrangThai.SelectedIndex != 2;
 
                 bool isUpdate = !string.IsNullOrEmpty(txtMaKhuyenMai.Text);
@@ -202,18 +226,20 @@ namespace LUnivers_Beaute.Views
 
                 if (result)
                 {
-                    MessageBox.Show((isUpdate ? "Cập nhật" : "Thêm") + " khuyến mãi thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+                    var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                    LUnivers_Beaute.Services.LogService.LogEdit(currentUser, isUpdate ? "Cập nhật khuyến mãi" : "Thêm khuyến mãi", $"{(isUpdate ? "Cập nhật" : "Thêm")} chương trình '{txtTenChuongTrinh.Text}' thành công", "🎁");
+                    ModernMessageBox.Show((isUpdate ? "Cập nhật" : "Thêm") + " khuyến mãi thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
                     crudPanel.Visibility = Visibility.Collapsed;
                     LoadData();
                 }
                 else
                 {
-                    MessageBox.Show("Thao tác thất bại!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    ModernMessageBox.Show("Thao tác thất bại!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (System.Exception ex)
             {
-                MessageBox.Show("Lỗi: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                ModernMessageBox.Show("Lỗi: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -228,6 +254,8 @@ namespace LUnivers_Beaute.Views
                         int maKhuyenMai = int.Parse(row["MaKhuyenMai"].ToString());
                         if (_bus.Delete(maKhuyenMai))
                         {
+                            var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                            LUnivers_Beaute.Services.LogService.LogEdit(currentUser, "Xóa khuyến mãi", $"Xóa chương trình khuyến mãi '{row["TenChuongTrinh"]}' thành công", "🗑️");
                             MessageBox.Show("Xóa khuyến mãi thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
                             LoadData();
                         }
@@ -241,6 +269,19 @@ namespace LUnivers_Beaute.Views
                         MessageBox.Show("Lỗi: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
+            }
+        }
+
+        private void BtnExportExcel_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                DataTable dt = _bus.GetAll();
+                ExcelExportHelper.ExportToExcel(dt, "DanhSachKhuyenMai.csv");
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xuất danh sách khuyến mãi: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

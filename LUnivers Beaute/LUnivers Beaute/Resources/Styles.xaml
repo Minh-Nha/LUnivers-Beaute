@@ -1,5 +1,6 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:helpers="clr-namespace:LUnivers_Beaute.Helpers">
 
     <!-- ═══════════════════════════════════════════════════════════════
          L'UNIVERS BEAUTÉ — LIGHT THEME DESIGN SYSTEM
@@ -175,7 +176,7 @@
 
     <!-- SECONDARY BUTTON -->
     <Style x:Key="SecondaryButton" TargetType="Button">
-        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Background" Value="White"/>
         <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
         <Setter Property="FontSize" Value="13"/>
         <Setter Property="FontFamily" Value="Segoe UI"/>
@@ -186,13 +187,13 @@
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="border" Background="{TemplateBinding Background}" 
                             CornerRadius="10" Padding="{TemplateBinding Padding}"
-                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                            BorderBrush="#DE8A63" BorderThickness="1.5">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="border" Property="Background" Value="#FFF5F0"/>
-                            <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource AccentPeachBrush}"/>
+                            <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource AccentCoralBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -303,15 +304,30 @@
                             CornerRadius="8" BorderBrush="{TemplateBinding BorderBrush}" 
                             BorderThickness="{TemplateBinding BorderThickness}"
                             Padding="{TemplateBinding Padding}">
-                        <ScrollViewer x:Name="PART_ContentHost" Focusable="false"/>
+                        <Grid>
+                            <TextBlock x:Name="placeholder" Text="{TemplateBinding Tag}" 
+                                       Foreground="{StaticResource TextSecondaryBrush}" 
+                                       Opacity="0.6" IsHitTestVisible="False"
+                                       VerticalAlignment="Center" Margin="2,0,0,0"
+                                       Visibility="Collapsed"/>
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false"/>
+                        </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="Text" Value="">
+                            <Setter TargetName="placeholder" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="Text" Value="{x:Null}">
+                            <Setter TargetName="placeholder" Property="Visibility" Value="Visible"/>
+                        </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource AccentPeachBrush}"/>
+                            <Setter TargetName="placeholder" Property="Visibility" Value="Collapsed"/>
                         </Trigger>
-                        <Trigger Property="IsFocused" Value="True">
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
                             <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource AccentPeachBrush}"/>
                             <Setter TargetName="border" Property="BorderThickness" Value="1.5"/>
+                            <Setter TargetName="placeholder" Property="Visibility" Value="Collapsed"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -330,6 +346,7 @@
         <Setter Property="FontFamily" Value="Segoe UI"/>
         <Setter Property="CaretBrush" Value="{StaticResource AccentPeachBrush}"/>
         <Setter Property="SelectionBrush" Value="{StaticResource AccentPeachBrush}"/>
+        <Setter Property="helpers:PasswordBoxHelper.MonitorPassword" Value="True"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="PasswordBox">
@@ -337,14 +354,27 @@
                             CornerRadius="8" BorderBrush="{TemplateBinding BorderBrush}" 
                             BorderThickness="{TemplateBinding BorderThickness}"
                             Padding="{TemplateBinding Padding}">
-                        <ScrollViewer x:Name="PART_ContentHost" Focusable="false"/>
+                        <Grid>
+                            <TextBlock x:Name="placeholder" Text="{TemplateBinding Tag}" 
+                                       Foreground="{StaticResource TextSecondaryBrush}" 
+                                       Opacity="0.6" IsHitTestVisible="False"
+                                       VerticalAlignment="Center" Margin="2,0,0,0"
+                                       Visibility="Collapsed"/>
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false"/>
+                        </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="helpers:PasswordBoxHelper.PasswordLength" Value="0">
+                            <Setter TargetName="placeholder" Property="Visibility" Value="Visible"/>
+                        </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource AccentPeachBrush}"/>
+                            <Setter TargetName="placeholder" Property="Visibility" Value="Collapsed"/>
                         </Trigger>
-                        <Trigger Property="IsFocused" Value="True">
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
                             <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource AccentPeachBrush}"/>
+                            <Setter TargetName="border" Property="BorderThickness" Value="1.5"/>
+                            <Setter TargetName="placeholder" Property="Visibility" Value="Collapsed"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -468,6 +498,17 @@
         <Setter Property="Padding" Value="16,12"/>
         <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
         <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridColumnHeader">
+                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style x:Key="ModernDataGridRow" TargetType="DataGridRow">

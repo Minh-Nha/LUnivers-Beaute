@@ -1,4 +1,5 @@
 using LUnivers_Beaute.Helpers;
+using LUnivers_Beaute.Services;
 using System.Data;
 using System.Linq;
 using System.Windows;
@@ -140,16 +141,6 @@ namespace LUnivers_Beaute.Views
         {
             try
             {
-                // Validation
-                if (string.IsNullOrWhiteSpace(txtHoTen.Text))
-                { MessageBox.Show("Vui lòng nhập họ tên!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
-                if (string.IsNullOrWhiteSpace(txtSoDienThoai.Text))
-                { MessageBox.Show("Vui lòng nhập số điện thoại!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
-                if (string.IsNullOrWhiteSpace(txtTenDangNhap.Text))
-                { MessageBox.Show("Vui lòng nhập tên đăng nhập!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
-                if (cboCuaHang.SelectedValue == null)
-                { MessageBox.Show("Vui lòng chọn cửa hàng!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
-
                 string hoTen = txtHoTen.Text.Trim();
                 string sdt = txtSoDienThoai.Text.Trim();
                 string email = txtEmail.Text.Trim();
@@ -158,14 +149,49 @@ namespace LUnivers_Beaute.Views
                 string maCH = cboCuaHang.SelectedValue?.ToString() ?? "";
                 bool trangThai = cboTrangThai.SelectedIndex == 0;
 
+                if (!ValidationHelper.IsValidName(hoTen))
+                {
+                    ModernMessageBox.Show("Họ tên nhân viên không hợp lệ (phải từ 2 ký tự trở lên, không chứa chữ số hoặc ký tự đặc biệt)!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (!ValidationHelper.IsPhoneNumber(sdt))
+                {
+                    ModernMessageBox.Show("Số điện thoại không hợp lệ (phải là số di động Việt Nam gồm 10 chữ số, bắt đầu bằng 03, 05, 07, 08, hoặc 09)!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (!string.IsNullOrEmpty(email) && !ValidationHelper.IsValidEmail(email))
+                {
+                    ModernMessageBox.Show("Email không hợp lệ (ví dụ: nhanvien@domain.com)!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(tenDN) || tenDN.Length < 3)
+                {
+                    ModernMessageBox.Show("Tên đăng nhập phải từ 3 ký tự trở lên!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(maCH))
+                {
+                    ModernMessageBox.Show("Vui lòng chọn cửa hàng làm việc!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 if (!_isEditMode)
                 {
                     // INSERT - mã NV tự động tăng từ SP
-                    if (string.IsNullOrEmpty(txtMatKhau.Password))
-                    { MessageBox.Show("Vui lòng nhập mật khẩu!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+                    if (string.IsNullOrEmpty(txtMatKhau.Password) || txtMatKhau.Password.Length < 6)
+                    {
+                        ModernMessageBox.Show("Mật khẩu tài khoản mới phải từ 6 ký tự trở lên!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
 
                     string hashedPassword = LUnivers_Beaute.Helpers.HashHelper.ComputeSha256Hash(txtMatKhau.Password);
                     _bus.Insert(hoTen, sdt, vaiTro, tenDN, hashedPassword, maCH, email, trangThai);
+                    var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                    LogService.LogEdit(currentUser, "Thêm nhân viên", $"Thêm nhân viên mới '{hoTen}' ({vaiTro}) thành công", "👤");
                     MessageBox.Show("Thêm nhân viên thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
@@ -173,6 +199,8 @@ namespace LUnivers_Beaute.Views
                     // UPDATE
                     string maNV = txtMaNhanVien.Text.Trim();
                     _bus.Update(maNV, hoTen, sdt, vaiTro, tenDN, maCH, email, trangThai);
+                    var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                    LogService.LogEdit(currentUser, "Cập nhật nhân viên", $"Cập nhật nhân viên '{hoTen}' (Mã: {maNV}) thành công", "📝");
                     MessageBox.Show("Cập nhật nhân viên thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
 
@@ -203,6 +231,8 @@ namespace LUnivers_Beaute.Views
                     try
                     {
                         _bus.Delete(maNV);
+                        var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                        LogService.LogEdit(currentUser, "Xóa nhân viên", $"Xóa nhân viên '{hoTen}' (Mã: {maNV}) thành công", "🗑️");
                         MessageBox.Show("Xóa nhân viên thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                         crudPanel.Visibility = Visibility.Collapsed;
                         LoadData();
@@ -274,5 +304,24 @@ namespace LUnivers_Beaute.Views
 
         private void BtnPrevPage_Click(object sender, RoutedEventArgs e) => _pager?.PreviousPage();
         private void BtnNextPage_Click(object sender, RoutedEventArgs e) => _pager?.NextPage();
+
+        private void BtnExportExcel_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string? keyword = string.IsNullOrWhiteSpace(txtSearch?.Text) ? null : txtSearch.Text.Trim();
+                string? maCuaHang = cboFilterCuaHang?.SelectedValue?.ToString();
+                if (string.IsNullOrEmpty(maCuaHang)) maCuaHang = null;
+
+                int? trangThai = GetSelectedTrangThai();
+
+                DataTable dt = _bus.GetAll(keyword, maCuaHang, trangThai);
+                ExcelExportHelper.ExportToExcel(dt, "DanhSachNhanVien.csv");
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xuất danh sách nhân viên: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
     }
 }

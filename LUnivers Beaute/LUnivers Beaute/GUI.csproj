@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <Content Include="LUniversBeaute.ico" />
+    <Resource Include="LUniverBeauteLogo.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -13,6 +13,7 @@
     <PackageReference Include="CloudinaryDotNet" Version="1.29.1" />
     <PackageReference Include="PDFsharp" Version="6.1.0" />
     <PackageReference Include="QuestPDF" Version="2026.5.0" />
+    <PackageReference Include="ClosedXML" Version="0.102.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,7 +31,7 @@
     <UseWPF>true</UseWPF>
     <StartupObject>LUnivers_Beaute.App</StartupObject>
     <AssemblyName>LUniversBeaute</AssemblyName>
-    <ApplicationIcon>LUniversBeaute.ico</ApplicationIcon>
+    <ApplicationIcon>LUniverBeauteLogo.ico</ApplicationIcon>
   </PropertyGroup>
 
 </Project>

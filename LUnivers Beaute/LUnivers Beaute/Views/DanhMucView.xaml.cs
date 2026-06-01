@@ -1,4 +1,5 @@
 using LUnivers_Beaute.Helpers;
+using LUnivers_Beaute.Services;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
@@ -103,11 +104,15 @@ namespace LUnivers_Beaute.Views
                 if (string.IsNullOrEmpty(txtMaDanhMuc.Text))
                 {
                     _bus.Insert(txtTenDanhMuc.Text.Trim());
+                    var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                    LogService.LogEdit(currentUser, "Thêm danh mục", $"Thêm danh mục '{txtTenDanhMuc.Text.Trim()}' thành công", "📂");
                     MessageBox.Show("Thêm danh mục thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
                     _bus.Update(int.Parse(txtMaDanhMuc.Text), txtTenDanhMuc.Text.Trim());
+                    var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                    LogService.LogEdit(currentUser, "Cập nhật danh mục", $"Cập nhật danh mục thành công (Mã: {txtMaDanhMuc.Text}, Tên mới: '{txtTenDanhMuc.Text.Trim()}')", "📝");
                     MessageBox.Show("Cập nhật danh mục thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 
@@ -135,7 +140,11 @@ namespace LUnivers_Beaute.Views
                 {
                     try
                     {
-                        _bus.Delete(int.Parse(row["MaDanhMuc"].ToString()));
+                        string tenDM = row["TenDanhMuc"].ToString();
+                        string maDM = row["MaDanhMuc"].ToString();
+                        _bus.Delete(int.Parse(maDM));
+                        var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                        LogService.LogEdit(currentUser, "Xóa danh mục", $"Xóa danh mục '{tenDM}' (Mã: {maDM}) thành công", "🗑️");
                         MessageBox.Show("Xóa danh mục thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                         LoadData();
                     }
@@ -144,6 +153,19 @@ namespace LUnivers_Beaute.Views
                         MessageBox.Show("Không thể xóa danh mục: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
+            }
+        }
+
+        private void BtnExportExcel_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                DataTable dt = _bus.GetAll(txtSearch?.Text?.Trim());
+                ExcelExportHelper.ExportToExcel(dt, "DanhSachDanhMuc.csv");
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xuất danh sách danh mục: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

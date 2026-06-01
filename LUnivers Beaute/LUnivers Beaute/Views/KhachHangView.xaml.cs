@@ -1,4 +1,5 @@
 using LUnivers_Beaute.Helpers;
+using LUnivers_Beaute.Services;
 using System.Data;
 using System.Linq;
 using System.Windows;
@@ -131,27 +132,38 @@ namespace LUnivers_Beaute.Views
             try
             {
                 // Validation
-                if (string.IsNullOrWhiteSpace(txtHoTen.Text))
+                string hoTen = txtHoTen.Text.Trim();
+                string sdt = txtSoDienThoai.Text.Trim();
+
+                if (!ValidationHelper.IsValidName(hoTen))
                 {
-                    MessageBox.Show("Vui lòng nhập họ tên khách hàng!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(txtSoDienThoai.Text))
-                {
-                    MessageBox.Show("Vui lòng nhập số điện thoại!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ModernMessageBox.Show("Họ tên khách hàng không hợp lệ (phải từ 2 ký tự trở lên, không chứa chữ số hoặc ký tự đặc biệt)!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
-                string hoTen = txtHoTen.Text.Trim();
-                string sdt = txtSoDienThoai.Text.Trim();
+                if (!ValidationHelper.IsPhoneNumber(sdt))
+                {
+                    ModernMessageBox.Show("Số điện thoại không hợp lệ (phải là số di động Việt Nam gồm 10 chữ số, bắt đầu bằng 03, 05, 07, 08, hoặc 09)!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 int diem = 0;
-                int.TryParse(txtDiemTichLuy.Text, out diem);
+                if (!string.IsNullOrWhiteSpace(txtDiemTichLuy.Text))
+                {
+                    if (!ValidationHelper.IsNonNegativeInteger(txtDiemTichLuy.Text, out diem))
+                    {
+                        ModernMessageBox.Show("Điểm tích lũy phải là số nguyên không âm!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                }
                 bool trangThai = cboTrangThai.SelectedIndex == 0; // 0 = Hoạt động, 1 = Khóa
 
                 if (string.IsNullOrEmpty(txtMaKhachHang.Text))
                 {
                     // INSERT
                     _bus.Insert(hoTen, sdt, diem, trangThai);
+                    var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                    LogService.LogEdit(currentUser, "Thêm khách hàng", $"Thêm khách hàng mới '{hoTen}' thành công", "👥");
                     MessageBox.Show("Thêm khách hàng thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
@@ -159,6 +171,8 @@ namespace LUnivers_Beaute.Views
                     // UPDATE
                     int maKH = int.Parse(txtMaKhachHang.Text);
                     _bus.Update(maKH, hoTen, sdt, diem, trangThai);
+                    var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                    LogService.LogEdit(currentUser, "Cập nhật khách hàng", $"Cập nhật khách hàng thành công (Mã: {maKH}, Tên mới: '{hoTen}')", "📝");
                     MessageBox.Show("Cập nhật khách hàng thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
 
@@ -196,6 +210,8 @@ namespace LUnivers_Beaute.Views
                     {
                         int maKH = System.Convert.ToInt32(row["MaKhachHang"]);
                         _bus.Delete(maKH);
+                        var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                        LogService.LogEdit(currentUser, "Xóa khách hàng", $"Xóa khách hàng '{hoTen}' (Mã: {maKH}) thành công", "🗑️");
                         MessageBox.Show("Xóa khách hàng thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                         crudPanel.Visibility = Visibility.Collapsed;
                         LoadData();
@@ -256,6 +272,22 @@ namespace LUnivers_Beaute.Views
         private void BtnNextPage_Click(object sender, RoutedEventArgs e)
         {
             _pager?.NextPage();
+        }
+
+        private void BtnExportExcel_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string? keyword = string.IsNullOrWhiteSpace(txtSearch?.Text) ? null : txtSearch.Text.Trim();
+                int? trangThai = GetSelectedTrangThai();
+
+                DataTable dt = _bus.GetAll(keyword, trangThai);
+                ExcelExportHelper.ExportToExcel(dt, "DanhSachKhachHang.csv");
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xuất danh sách khách hàng: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

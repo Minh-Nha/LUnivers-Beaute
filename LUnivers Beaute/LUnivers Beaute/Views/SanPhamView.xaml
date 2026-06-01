@@ -22,7 +22,7 @@
                     <TextBlock Text="Quản lý danh sách sản phẩm mỹ phẩm" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <Button Content="📥 Xuất Excel" Style="{StaticResource SecondaryButton}" Margin="0,0,8,0" Padding="14,10"/>
+                    <Button x:Name="btnExportExcel" Content="📥 Xuất Excel" Style="{StaticResource SecondaryButton}" Margin="0,0,8,0" Padding="14,10" Click="BtnExportExcel_Click"/>
                     <Button x:Name="btnAdd" Content="＋ Thêm sản phẩm" Style="{StaticResource PrimaryButton}" Padding="16,10" Click="BtnAdd_Click"/>
                 </StackPanel>
             </Grid>
@@ -37,7 +37,7 @@
                         <ColumnDefinition Width="160"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox x:Name="txtSearch" Style="{StaticResource ModernTextBox}" Margin="0,0,10,0"/>
+                    <TextBox x:Name="txtSearch" Style="{StaticResource ModernTextBox}" Tag="Tìm kiếm tên sản phẩm, mã vạch..." Margin="0,0,10,0"/>
                     <ComboBox x:Name="cboFilterDanhMuc" Grid.Column="1" Style="{StaticResource ModernComboBox}" Margin="0,0,10,0" SelectedValuePath="MaDanhMuc" IsEditable="False">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>

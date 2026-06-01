@@ -33,10 +33,10 @@
                     <DataGrid AutoGenerateColumns="False" x:Name="dgData" Grid.Row="1" Style="{StaticResource ModernDataGrid}" ColumnHeaderStyle="{StaticResource ModernDataGridColumnHeader}"
                               RowStyle="{StaticResource ModernDataGridRow}" CellStyle="{StaticResource ModernDataGridCell}">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="MÃ PHIẾU" Binding="{Binding MaPhieuTra}" Width="100"/>
-                            <DataGridTextColumn Header="HÓA ĐƠN" Binding="{Binding MaHoaDon}" Width="100"/>
-                            <DataGridTextColumn Header="NGÀY TRẢ" Binding="{Binding NgayTra}" Width="110"/>
-                            <DataGridTextColumn Header="LÝ DO" Binding="{Binding LyDo}" Width="*"/>
+                            <DataGridTextColumn Header="MÃ PHIẾU" Binding="{Binding MaPhieuTra}" Width="1.3*"/>
+                            <DataGridTextColumn Header="HÓA ĐƠN" Binding="{Binding MaHoaDon}" Width="1.3*"/>
+                            <DataGridTextColumn Header="NGÀY TRẢ" Binding="{Binding NgayTra}" Width="1.7*"/>
+                            <DataGridTextColumn Header="LÝ DO" Binding="{Binding LyDo}" Width="2.7*"/>
                         </DataGrid.Columns>
                     </DataGrid>
                     
@@ -53,6 +53,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <TextBlock Text="📋 Chi tiết phiếu trả" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="20,16,0,12"/>
                     <DataGrid AutoGenerateColumns="False" x:Name="dgChiTiet" Grid.Row="1" Style="{StaticResource ModernDataGrid}" ColumnHeaderStyle="{StaticResource ModernDataGridColumnHeader}"
@@ -64,6 +65,7 @@
                             <DataGridTextColumn Header="TIỀN HOÀN" Binding="{Binding SoTienHoan}" Width="100"/>
                         </DataGrid.Columns>
                     </DataGrid>
+                    <Button x:Name="btnPrint" Grid.Row="2" Content="🖨️ In phiếu trả hàng" Style="{StaticResource SecondaryButton}" Margin="20,12,20,16" Click="BtnPrint_Click" IsEnabled="False"/>
                 </Grid>
             </Border>
         </Grid>
@@ -228,6 +230,60 @@
                         </Grid.ColumnDefinitions>
                         <Button Content="Hủy bỏ" Style="{StaticResource SecondaryButton}" Height="42" Click="BtnCancel_Click"/>
                         <Button Grid.Column="2" Content="💾 Lưu phiếu trả hàng" Style="{StaticResource PrimaryButton}" Height="42" Click="BtnSave_Click"/>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Overlay Print Dialog -->
+        <Grid x:Name="printPanel" Visibility="Collapsed">
+            <Border Background="#66000000" MouseDown="PrintOverlay_MouseDown"/>
+            
+            <Border HorizontalAlignment="Center" VerticalAlignment="Center" Width="500" 
+                    Style="{StaticResource CardBorder}" Padding="32" Background="White">
+                <Border.Effect>
+                    <DropShadowEffect Color="Black" Direction="270" ShadowDepth="4" BlurRadius="20" Opacity="0.2"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Text="🖨️ In Phiếu Trả Hàng" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,20"/>
+                    
+                    <StackPanel Grid.Row="1" Margin="0,0,0,20">
+                        <TextBlock Text="Mã phiếu trả:" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="txtPrintMaPhieu" Style="{StaticResource ModernTextBox}" Margin="0,0,0,12" IsReadOnly="True" Background="#F5F5F5"/>
+                        
+                        <TextBlock Text="Mã hóa đơn gốc:" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="txtPrintMaHoaDon" Style="{StaticResource ModernTextBox}" Margin="0,0,0,12" IsReadOnly="True" Background="#F5F5F5"/>
+                        
+                        <TextBlock Text="Lý do trả hàng:" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="txtPrintLyDo" Style="{StaticResource ModernTextBox}" Margin="0,0,0,12"/>
+                        
+                        <TextBlock Text="Tình trạng sản phẩm:" Style="{StaticResource FieldLabel}"/>
+                        <ComboBox x:Name="cboPrintTinhTrang" Style="{StaticResource ModernComboBox}" Margin="0,0,0,12" Height="40">
+                            <ComboBoxItem Content="Còn nguyên seal" IsSelected="True"/>
+                            <ComboBoxItem Content="Đã mở nắp"/>
+                            <ComboBoxItem Content="Bao bì bị móp méo"/>
+                            <ComboBoxItem Content="Lỗi kỹ thuật / vòi xịt"/>
+                            <ComboBoxItem Content="Giao nhầm mẫu"/>
+                        </ComboBox>
+
+                        <TextBlock Text="Số tiền hoàn trả:" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="txtPrintTienHoan" Style="{StaticResource ModernTextBox}" IsReadOnly="True" Background="#F5F5F5" FontWeight="Bold" Foreground="#DE8A63"/>
+                    </StackPanel>
+                    
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Content="Hủy bỏ" Style="{StaticResource SecondaryButton}" Height="40" Click="BtnPrintCancel_Click"/>
+                        <Button Grid.Column="2" Content="🖨️ Xác nhận In" Style="{StaticResource PrimaryButton}" Height="40" Click="BtnPrintConfirm_Click"/>
                     </Grid>
                 </Grid>
             </Border>

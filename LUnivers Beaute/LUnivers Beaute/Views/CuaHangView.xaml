@@ -15,7 +15,7 @@
                     <TextBlock Text="Quản lý thông tin chi nhánh" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <Button Content="📥 Xuất Excel" Style="{StaticResource SecondaryButton}" Margin="0,0,8,0" Padding="14,10"/>
+                    <Button x:Name="btnExportExcel" Content="📥 Xuất Excel" Style="{StaticResource SecondaryButton}" Margin="0,0,8,0" Padding="14,10" Click="BtnExportExcel_Click"/>
                     <Button x:Name="btnAdd" Content="＋ Thêm cửa hàng" Style="{StaticResource PrimaryButton}" Padding="16,10" Click="BtnAdd_Click"/>
                 </StackPanel>
             </Grid>
@@ -26,7 +26,7 @@
                         <ColumnDefinition Width="160"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Style="{StaticResource ModernTextBox}" Margin="0,0,10,0"/>
+                    <TextBox x:Name="txtSearch" Style="{StaticResource ModernTextBox}" Tag="Tìm kiếm tên cửa hàng, địa chỉ..." Margin="0,0,10,0"/>
                     <ComboBox Grid.Column="1" Style="{StaticResource ModernComboBox}" Margin="0,0,10,0">
                         <ComboBoxItem Content="Trạng thái" IsSelected="True"/>
                     </ComboBox>

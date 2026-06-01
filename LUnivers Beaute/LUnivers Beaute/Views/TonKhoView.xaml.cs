@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using BUS;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace LUnivers_Beaute.Views
 {
@@ -26,12 +27,23 @@ namespace LUnivers_Beaute.Views
             this.Loaded += (s, e) => LoadData();
         }
 
-        private void LoadData()
+        private async void LoadData()
         {
             try
             {
                 TonKhoBUS bus = new TonKhoBUS();
-                _allData = bus.GetAll();
+                CuaHangBUS chBus = new CuaHangBUS();
+                DanhMucBUS dmBus = new DanhMucBUS();
+
+                var allDataTask = Task.Run(() => bus.GetAll());
+                var chTask = Task.Run(() => chBus.GetAll());
+                var dmTask = Task.Run(() => dmBus.GetAll());
+
+                await Task.WhenAll(allDataTask, chTask, dmTask);
+
+                _allData = allDataTask.Result;
+                var dtCH = chTask.Result.Copy();
+                var dtDM = dmTask.Result.Copy();
 
                 string role = (_userRole ?? "").Trim().ToLower();
                 if (role != "admin" && !string.IsNullOrEmpty(_userMaCuaHang))
@@ -47,9 +59,6 @@ namespace LUnivers_Beaute.Views
                 UpdateStatistics();
                 
                 // Load filters
-                CuaHangBUS chBus = new CuaHangBUS();
-                var dtCH = chBus.GetAll().Copy();
-
                 if (role != "admin" && !string.IsNullOrEmpty(_userMaCuaHang))
                 {
                     for (int i = dtCH.Rows.Count - 1; i >= 0; i--)
@@ -72,8 +81,6 @@ namespace LUnivers_Beaute.Views
                     cboSearchCuaHang.SelectedIndex = 0;
                 }
 
-                DanhMucBUS dmBus = new DanhMucBUS();
-                var dtDM = dmBus.GetAll().Copy();
                 var rowDM = dtDM.NewRow();
                 rowDM["MaDanhMuc"] = 0;
                 rowDM["TenDanhMuc"] = "Tất cả danh mục";
@@ -118,10 +125,7 @@ namespace LUnivers_Beaute.Views
                 if (maDanhMuc == 0) maDanhMuc = null;
 
                 int? tuSoLuong = null;
-                if (int.TryParse(txtTuSoLuong?.Text, out int minVal)) tuSoLuong = minVal;
-
                 int? denSoLuong = null;
-                if (int.TryParse(txtDenSoLuong?.Text, out int maxVal)) denSoLuong = maxVal;
 
                 DataTable filteredData = bus.SearchAndSort(searchText, selectedStatus, _currentSortColumn, _currentSortOrder, maCuaHang, maDanhMuc, tuSoLuong, denSoLuong);
                 
@@ -138,6 +142,15 @@ namespace LUnivers_Beaute.Views
 
         private void BtnSearch_Click(object sender, RoutedEventArgs e)
         {
+            FilterData();
+        }
+
+        private void BtnReset_Click(object sender, RoutedEventArgs e)
+        {
+            txtSearch.Clear();
+            cboSearchCuaHang.SelectedIndex = 0;
+            cboSearchDanhMuc.SelectedIndex = 0;
+            cmbTrangThai.SelectedIndex = 0;
             FilterData();
         }
 
@@ -184,6 +197,33 @@ namespace LUnivers_Beaute.Views
         private void BtnNextPage_Click(object sender, RoutedEventArgs e)
         {
             _pager?.NextPage();
+        }
+
+        private void BtnExportReport_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                TonKhoBUS bus = new TonKhoBUS();
+                string searchText = txtSearch?.Text?.Trim() ?? "";
+                string selectedStatus = (cmbTrangThai?.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Tất cả";
+                if (selectedStatus == "Tất cả trạng thái") selectedStatus = "Tất cả";
+
+                string maCuaHang = cboSearchCuaHang?.SelectedValue?.ToString();
+                if (string.IsNullOrEmpty(maCuaHang)) maCuaHang = null;
+
+                int? maDanhMuc = cboSearchDanhMuc?.SelectedValue as int?;
+                if (maDanhMuc == 0) maDanhMuc = null;
+
+                int? tuSoLuong = null;
+                int? denSoLuong = null;
+
+                DataTable dt = bus.SearchAndSort(searchText, selectedStatus, _currentSortColumn, _currentSortOrder, maCuaHang, maDanhMuc, tuSoLuong, denSoLuong);
+                ExcelExportHelper.ExportToExcel(dt, "BaoCaoTonKho.csv");
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xuất báo cáo tồn kho: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

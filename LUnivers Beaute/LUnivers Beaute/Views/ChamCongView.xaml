@@ -26,7 +26,7 @@
                         <ColumnDefinition Width="160"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Style="{StaticResource ModernTextBox}" Margin="0,0,10,0"/>
+                    <TextBox x:Name="txtSearch" Style="{StaticResource ModernTextBox}" Tag="Tìm kiếm theo mã NV, tên..." Margin="0,0,10,0"/>
                     <DatePicker Grid.Column="1" Margin="0,0,10,0" FontSize="13" Style="{StaticResource ModernDatePicker}"/>
                     <Button Grid.Column="2" Content="🔍 Tìm kiếm" Style="{StaticResource PrimaryButton}" Padding="16,10"/>
                 </Grid>

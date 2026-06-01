@@ -62,5 +62,34 @@ namespace DAL
                 throw new Exception("Database error: " + ex.Message);
             }
         }
+
+        public static DataTable ExecuteQuery(string sqlQuery, params SqlParameter[] parameters)
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand(sqlQuery, conn))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        if (parameters != null && parameters.Length > 0)
+                        {
+                            cmd.Parameters.AddRange(parameters);
+                        }
+                        
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            da.Fill(dt);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Database query error: " + ex.Message);
+            }
+            return dt;
+        }
     }
 }

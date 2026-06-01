@@ -218,26 +218,34 @@ namespace LUnivers_Beaute.Views
         {
             if (cboSanPham.SelectedItem == null)
             {
-                MessageBox.Show("Vui lòng chọn sản phẩm!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ModernMessageBox.Show("Vui lòng chọn sản phẩm cần nhập!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!ValidationHelper.IsPositiveInteger(txtSoLuong.Text, out int sl))
+            {
+                ModernMessageBox.Show("Số lượng nhập kho phải là một số nguyên dương hợp lệ!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             string cleanGiaNhap = txtGiaNhap.Text.Replace(",", "").Replace(".", "").Trim();
-            if (!int.TryParse(txtSoLuong.Text, out int sl) || !double.TryParse(cleanGiaNhap, out double gia))
+            if (!ValidationHelper.IsPositiveDecimal(cleanGiaNhap, out decimal giaVal))
             {
-                MessageBox.Show("Vui lòng nhập đầy đủ thông tin hợp lệ (Số lượng, Giá nhập)!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ModernMessageBox.Show("Giá nhập phải là một số tiền dương hợp lệ!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
+            double gia = (double)giaVal;
 
             double giaNiemYet = 0;
             if (!string.IsNullOrWhiteSpace(txtGiaNiemYet.Text))
             {
                 string cleanGiaNiemYet = txtGiaNiemYet.Text.Replace(",", "").Replace(".", "").Trim();
-                if (!double.TryParse(cleanGiaNiemYet, out giaNiemYet))
+                if (!ValidationHelper.IsPositiveDecimal(cleanGiaNiemYet, out decimal giaNiemYetVal))
                 {
-                    MessageBox.Show("Giá bán niêm yết không hợp lệ!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ModernMessageBox.Show("Giá bán niêm yết mới phải là một số tiền dương hợp lệ!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
+                giaNiemYet = (double)giaNiemYetVal;
             }
 
             DataRowView row = (DataRowView)cboSanPham.SelectedItem;
@@ -305,12 +313,12 @@ namespace LUnivers_Beaute.Views
         {
             if (_importCart.Count == 0)
             {
-                MessageBox.Show("Giỏ hàng trống!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ModernMessageBox.Show("Giỏ hàng đang trống, vui lòng thêm sản phẩm trước khi xác nhận!", "Lỗi xác nhận", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             if (cboCuaHang.SelectedItem == null || cboNhanVien.SelectedItem == null)
             {
-                MessageBox.Show("Vui lòng chọn Cửa hàng và Nhân viên!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ModernMessageBox.Show("Vui lòng chọn đầy đủ thông tin Cửa hàng và Nhân viên phụ trách!", "Lỗi xác nhận", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -344,6 +352,8 @@ namespace LUnivers_Beaute.Views
                 
                 if (result)
                 {
+                    var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                    LUnivers_Beaute.Services.LogService.LogEdit(currentUser, "Nhập kho sản phẩm", $"Tạo phiếu nhập kho '{maPhieuNhap}' trị giá {tongTien:N0}đ thành công", "📥");
                     MessageBox.Show("Tạo phiếu nhập thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
                     createPanel.Visibility = Visibility.Collapsed;
                     _importCart.Clear();
@@ -443,7 +453,31 @@ namespace LUnivers_Beaute.Views
                 MessageBox.Show("Lỗi khi in phiếu nhập: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        private void BtnExportReport_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                DataTable dt = _bus.GetAll();
+                string role = (_userRole ?? "").Trim().ToLower();
+                if (role != "admin" && !string.IsNullOrEmpty(_userMaCuaHang))
+                {
+                    if (dt != null)
+                    {
+                        var filteredRows = dt.AsEnumerable()
+                            .Where(row => row.Field<string>("MaCuaHang") == _userMaCuaHang);
+                        dt = filteredRows.Any() ? filteredRows.CopyToDataTable() : dt.Clone();
+                    }
+                }
+                ExcelExportHelper.ExportToExcel(dt, "BaoCaoNhapKho.csv");
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xuất báo cáo nhập kho: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
     }
+
 
     public class ImportItem : System.ComponentModel.INotifyPropertyChanged
     {

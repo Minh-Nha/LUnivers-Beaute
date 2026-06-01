@@ -2,6 +2,7 @@ using DAL;
 using DTO;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data;
 
 namespace BUS
 {
@@ -39,6 +40,21 @@ namespace BUS
         public List<DoanhThuNgayDTO> GetDoanhThu7NgayQua()
         {
             return _thongKeDAL.GetDoanhThu7NgayQua();
+        }
+
+        public DataTable GetTopSellingProducts()
+        {
+            return _thongKeDAL.GetTopSellingProducts();
+        }
+
+        public DataTable GetLowStockProducts()
+        {
+            return _thongKeDAL.GetLowStockProducts();
+        }
+
+        public DataTable GetDashboardOverviewStats()
+        {
+            return _thongKeDAL.GetDashboardOverviewStats();
         }
     }
 }

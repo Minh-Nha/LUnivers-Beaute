@@ -1,4 +1,5 @@
 using LUnivers_Beaute.Helpers;
+using LUnivers_Beaute.Services;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
@@ -100,21 +101,36 @@ namespace LUnivers_Beaute.Views
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(txtTenNhaCungCap.Text) || string.IsNullOrWhiteSpace(txtSoDienThoai.Text))
+                string tenNCC = txtTenNhaCungCap.Text.Trim();
+                string sdt = txtSoDienThoai.Text.Trim();
+                string diaChi = txtDiaChi.Text.Trim();
+
+                if (string.IsNullOrEmpty(tenNCC) || tenNCC.Length < 3)
                 {
-                    MessageBox.Show("Vui lòng nhập tên nhà cung cấp và số điện thoại!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ModernMessageBox.Show("Tên nhà cung cấp phải từ 3 ký tự trở lên!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (!ValidationHelper.IsPhoneNumber(sdt))
+                {
+                    ModernMessageBox.Show("Số điện thoại nhà cung cấp không hợp lệ (phải là số di động Việt Nam gồm 10 chữ số, bắt đầu bằng 03, 05, 07, 08, hoặc 09)!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 if (string.IsNullOrEmpty(txtMaNhaCungCap.Text))
                 {
-                    _bus.Insert(txtTenNhaCungCap.Text.Trim(), txtSoDienThoai.Text.Trim(), txtDiaChi.Text.Trim());
-                    MessageBox.Show("Thêm nhà cung cấp thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    _bus.Insert(tenNCC, sdt, diaChi);
+                    var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                    LogService.LogEdit(currentUser, "Thêm nhà cung cấp", $"Thêm nhà cung cấp '{tenNCC}' thành công", "🏬");
+                    ModernMessageBox.Show("Thêm nhà cung cấp thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
-                    _bus.Update(int.Parse(txtMaNhaCungCap.Text), txtTenNhaCungCap.Text.Trim(), txtSoDienThoai.Text.Trim(), txtDiaChi.Text.Trim());
-                    MessageBox.Show("Cập nhật nhà cung cấp thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    int maNCC = int.Parse(txtMaNhaCungCap.Text);
+                    _bus.Update(maNCC, tenNCC, sdt, diaChi);
+                    var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                    LogService.LogEdit(currentUser, "Cập nhật nhà cung cấp", $"Cập nhật nhà cung cấp thành công (Mã: {maNCC}, Tên mới: '{tenNCC}')", "📝");
+                    ModernMessageBox.Show("Cập nhật nhà cung cấp thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 
                 crudPanel.Visibility = Visibility.Collapsed;
@@ -124,15 +140,15 @@ namespace LUnivers_Beaute.Views
             {
                 if (ex.Message.Contains("UC_TenNCC"))
                 {
-                    MessageBox.Show("Tên nhà cung cấp này đã tồn tại, vui lòng chọn tên khác.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ModernMessageBox.Show("Tên nhà cung cấp này đã tồn tại, vui lòng chọn tên khác.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 else if (ex.Message.Contains("UC_SDT_NCC"))
                 {
-                    MessageBox.Show("Số điện thoại này đã được sử dụng cho một nhà cung cấp khác.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ModernMessageBox.Show("Số điện thoại này đã được sử dụng cho một nhà cung cấp khác.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 else
                 {
-                    MessageBox.Show(ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    ModernMessageBox.Show(ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -145,7 +161,11 @@ namespace LUnivers_Beaute.Views
                 {
                     try
                     {
-                        _bus.Delete(int.Parse(row["MaNhaCungCap"].ToString()));
+                        string tenNCC = row["TenNhaCungCap"].ToString();
+                        string maNCC = row["MaNhaCungCap"].ToString();
+                        _bus.Delete(int.Parse(maNCC));
+                        var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                        LogService.LogEdit(currentUser, "Xóa nhà cung cấp", $"Xóa nhà cung cấp '{tenNCC}' (Mã: {maNCC}) thành công", "🗑️");
                         MessageBox.Show("Xóa nhà cung cấp thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                         LoadData();
                     }
@@ -154,6 +174,19 @@ namespace LUnivers_Beaute.Views
                         MessageBox.Show("Không thể xóa nhà cung cấp: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
+            }
+        }
+
+        private void BtnExportExcel_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                DataTable dt = _bus.GetAll(txtSearch?.Text?.Trim());
+                ExcelExportHelper.ExportToExcel(dt, "DanhSachNhaCungCap.csv");
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xuất danh sách nhà cung cấp: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

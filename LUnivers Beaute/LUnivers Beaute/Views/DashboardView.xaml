@@ -29,7 +29,7 @@
                                 <TextBlock Text="💰" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <TextBlock Text="Doanh thu hôm nay" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
-                            <TextBlock Text="0đ" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock x:Name="txtDoanhThuHomNay" Text="0đ" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
                         </StackPanel>
                         <TextBlock Grid.Column="1" Text="+8.5%" FontSize="12" Foreground="#4CAF50" FontWeight="SemiBold" VerticalAlignment="Top"/>
                     </Grid>
@@ -47,7 +47,7 @@
                                 <TextBlock Text="📈" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <TextBlock Text="Doanh thu tháng" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
-                            <TextBlock Text="6.955.000đ" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock x:Name="txtDoanhThuThang" Text="6.955.000đ" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
                         </StackPanel>
                         <TextBlock Grid.Column="1" Text="-12.5%" FontSize="12" Foreground="#E74C3C" FontWeight="SemiBold" VerticalAlignment="Top"/>
                     </Grid>
@@ -65,9 +65,9 @@
                                 <TextBlock Text="🛒" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <TextBlock Text="Đơn hàng hôm nay" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
-                            <TextBlock Text="0" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock x:Name="txtDonHangHomNay" Text="0" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
                         </StackPanel>
-                        <TextBlock Grid.Column="1" Text="3 tổng" FontSize="12" Foreground="#5B9BD5" FontWeight="SemiBold" VerticalAlignment="Top"/>
+                        <TextBlock Grid.Column="1" Text="Hôm nay" FontSize="12" Foreground="#5B9BD5" FontWeight="SemiBold" VerticalAlignment="Top"/>
                     </Grid>
                 </Border>
 
@@ -83,7 +83,7 @@
                                 <TextBlock Text="👤" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <TextBlock Text="Khách hàng" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
-                            <TextBlock Text="5" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock x:Name="txtTongKhachHang" Text="5" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
                         </StackPanel>
                         <TextBlock Grid.Column="1" Text="+5 tuần này" FontSize="12" Foreground="#4CAF50" FontWeight="SemiBold" VerticalAlignment="Top"/>
                     </Grid>
@@ -190,115 +190,32 @@
                             <Button Content="⚙" Style="{StaticResource IconButton}" HorizontalAlignment="Right" Width="28" Height="28" FontSize="13"/>
                         </Grid>
 
-                        <!-- Product Item 1 -->
-                        <Border Padding="10" CornerRadius="8" Margin="0,0,0,6">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <Border Width="36" Height="36" CornerRadius="18" Background="#FFF0E6" Margin="0,0,10,0">
-                                    <TextBlock Text="💄" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="Son môi Velvet Matte Rouge" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                                    <TextBlock Text="Lancôme" FontSize="11" Foreground="{StaticResource TextMutedBrush}"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                    <TextBlock Text="950.000đ" FontSize="13" FontWeight="SemiBold" Foreground="#E8956D" HorizontalAlignment="Right"/>
-                                    <TextBlock Text="Tồn: 50" FontSize="10" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Right"/>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-
-                        <!-- Product Item 2 -->
-                        <Border Padding="10" CornerRadius="8" Margin="0,0,0,6">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <Border Width="36" Height="36" CornerRadius="18" Background="#E3F2FD" Margin="0,0,10,0">
-                                    <TextBlock Text="🧴" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="Xịt khoáng dưỡng ẩm Thermal Water" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
-                                    <TextBlock Text="La Roche-Posay" FontSize="11" Foreground="{StaticResource TextMutedBrush}"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                    <TextBlock Text="420.000đ" FontSize="13" FontWeight="SemiBold" Foreground="#E8956D" HorizontalAlignment="Right"/>
-                                    <TextBlock Text="Tồn: 85" FontSize="10" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Right"/>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-
-                        <!-- Product Item 3 -->
-                        <Border Padding="10" CornerRadius="8" Margin="0,0,0,6">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <Border Width="36" Height="36" CornerRadius="18" Background="#E8F5E9" Margin="0,0,10,0">
-                                    <TextBlock Text="✨" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="Kem dưỡng ẩm Hyaluronic Acid" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
-                                    <TextBlock Text="La Roche-Posay" FontSize="11" Foreground="{StaticResource TextMutedBrush}"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                    <TextBlock Text="800.000đ" FontSize="13" FontWeight="SemiBold" Foreground="#E8956D" HorizontalAlignment="Right"/>
-                                    <TextBlock Text="Tồn: 75" FontSize="10" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Right"/>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-
-                        <!-- Product Item 4 -->
-                        <Border Padding="10" CornerRadius="8" Margin="0,0,0,6">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <Border Width="36" Height="36" CornerRadius="18" Background="#FFF3E0" Margin="0,0,10,0">
-                                    <TextBlock Text="🧼" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="Phấn nền Teint Idole Ultra Wear" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
-                                    <TextBlock Text="Lancôme" FontSize="11" Foreground="{StaticResource TextMutedBrush}"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                    <TextBlock Text="1.450.000đ" FontSize="13" FontWeight="SemiBold" Foreground="#E8956D" HorizontalAlignment="Right"/>
-                                    <TextBlock Text="Tồn: 65" FontSize="10" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Right"/>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-
-                        <!-- Product Item 5 -->
-                        <Border Padding="10" CornerRadius="8">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <Border Width="36" Height="36" CornerRadius="18" Background="#FCE4EC" Margin="0,0,10,0">
-                                    <TextBlock Text="💎" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="Phấn má hồng Rose Gold" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                                    <TextBlock Text="Dior" FontSize="11" Foreground="{StaticResource TextMutedBrush}"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                    <TextBlock Text="1.200.000đ" FontSize="13" FontWeight="SemiBold" Foreground="#E8956D" HorizontalAlignment="Right"/>
-                                    <TextBlock Text="Tồn: 55" FontSize="10" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Right"/>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
+                        <ItemsControl x:Name="icTopSellingProducts">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Padding="10" CornerRadius="8" Margin="0,0,0,6">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Width="36" Height="36" CornerRadius="18" Background="#FFF0E6" Margin="0,0,10,0">
+                                                <TextBlock Text="✨" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding TenSanPham}" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                                <TextBlock Text="{Binding TenThuongHieu}" FontSize="11" Foreground="{StaticResource TextMutedBrush}"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Gia, StringFormat={}{0:#,##0}đ}" FontSize="13" FontWeight="SemiBold" Foreground="#E8956D" HorizontalAlignment="Right"/>
+                                                <TextBlock Text="{Binding TongTon, StringFormat='Tồn: {0}'}" FontSize="10" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Right"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </StackPanel>
                 </Border>
 
@@ -312,26 +229,32 @@
                             </Border>
                         </Grid>
 
-                        <Border Padding="14" CornerRadius="10" Background="#FFFAF8" BorderBrush="#FFF0E6" BorderThickness="1">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <Border Width="42" Height="42" CornerRadius="21" Background="#FFF0E6" Margin="0,0,12,0">
-                                    <TextBlock Text="🧴" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="Advanced Night Repair Serum" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                                    <TextBlock Text="Còn lại: 3k" FontSize="11" Foreground="{StaticResource TextMutedBrush}"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
-                                    <TextBlock Text="Còn 8" FontSize="14" FontWeight="Bold" Foreground="#E74C3C" HorizontalAlignment="Right"/>
-                                    <TextBlock Text="Cần nhập thêm" FontSize="10" Foreground="#E74C3C" HorizontalAlignment="Right"/>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
+                        <ItemsControl x:Name="icLowStockProducts">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Padding="14" CornerRadius="10" Background="#FFFAF8" BorderBrush="#FFF0E6" BorderThickness="1" Margin="0,0,0,8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Width="42" Height="42" CornerRadius="21" Background="#FFF0E6" Margin="0,0,12,0">
+                                                <TextBlock Text="⚠️" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding TenSanPham}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                                <TextBlock Text="{Binding TenCuaHang, StringFormat='Cửa hàng: {0}'}" FontSize="11" Foreground="{StaticResource TextMutedBrush}"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                                <TextBlock Text="{Binding SoLuongTon, StringFormat='Còn {0}'}" FontSize="14" FontWeight="Bold" Foreground="#E74C3C" HorizontalAlignment="Right"/>
+                                                <TextBlock Text="{Binding TinhTrang}" FontSize="10" Foreground="#E74C3C" HorizontalAlignment="Right"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </StackPanel>
                 </Border>
             </Grid>

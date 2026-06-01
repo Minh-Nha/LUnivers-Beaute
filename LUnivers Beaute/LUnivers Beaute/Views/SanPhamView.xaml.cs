@@ -331,22 +331,31 @@ namespace LUnivers_Beaute.Views
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(txtMaSanPham.Text) || string.IsNullOrWhiteSpace(txtTenSanPham.Text) || string.IsNullOrWhiteSpace(txtGiaNiemYet.Text))
+                string maSP = txtMaSanPham.Text.Trim();
+                string tenSP = txtTenSanPham.Text.Trim();
+                string rawGia = txtGiaNiemYet.Text.Replace(",", "").Replace(".", "").Trim();
+
+                if (string.IsNullOrEmpty(maSP) || maSP.Length < 3)
                 {
-                    MessageBox.Show("Vui lòng nhập đầy đủ Mã sản phẩm, Tên sản phẩm và Giá niêm yết!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ModernMessageBox.Show("Mã sản phẩm không hợp lệ (phải từ 3 ký tự trở lên)!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(tenSP) || tenSP.Length < 3)
+                {
+                    ModernMessageBox.Show("Tên sản phẩm không hợp lệ (phải từ 3 ký tự trở lên)!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 if (cboDanhMuc.SelectedValue == null || cboThuongHieu.SelectedValue == null || cboNhaCungCap.SelectedValue == null)
                 {
-                    MessageBox.Show("Vui lòng chọn Danh mục, Thương hiệu và Nhà cung cấp!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ModernMessageBox.Show("Vui lòng chọn Danh mục, Thương hiệu và Nhà cung cấp!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
-                string cleanGiaNiemYet = txtGiaNiemYet.Text.Replace(",", "").Replace(".", "").Trim();
-                if (!decimal.TryParse(cleanGiaNiemYet, out decimal giaNiemYet) || giaNiemYet <= 0)
+                if (!ValidationHelper.IsPositiveDecimal(rawGia, out decimal giaNiemYet))
                 {
-                    MessageBox.Show("Giá niêm yết không hợp lệ!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ModernMessageBox.Show("Giá niêm yết phải là một số dương hợp lệ!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -360,13 +369,17 @@ namespace LUnivers_Beaute.Views
 
                 if (!_isUpdateMode)
                 {
-                    _bus.Insert(txtMaSanPham.Text.Trim(), txtTenSanPham.Text.Trim(), maDanhMuc, maThuongHieu, maNhaCungCap, hinhAnh, donVi, giaNiemYet, trangThai);
-                    MessageBox.Show("Thêm sản phẩm thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    _bus.Insert(maSP, tenSP, maDanhMuc, maThuongHieu, maNhaCungCap, hinhAnh, donVi, giaNiemYet, trangThai);
+                    var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                    LogService.LogEdit(currentUser, "Thêm mới sản phẩm", $"Thêm sản phẩm '{tenSP}' (Mã: {maSP}) thành công", "💄");
+                    ModernMessageBox.Show("Thêm sản phẩm thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
-                    _bus.Update(txtMaSanPham.Text.Trim(), txtTenSanPham.Text.Trim(), maDanhMuc, maThuongHieu, maNhaCungCap, hinhAnh, donVi, giaNiemYet, trangThai);
-                    MessageBox.Show("Cập nhật sản phẩm thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    _bus.Update(maSP, tenSP, maDanhMuc, maThuongHieu, maNhaCungCap, hinhAnh, donVi, giaNiemYet, trangThai);
+                    var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                    LogService.LogEdit(currentUser, "Cập nhật sản phẩm", $"Cập nhật sản phẩm '{tenSP}' (Mã: {maSP}) thành công", "📝");
+                    ModernMessageBox.Show("Cập nhật sản phẩm thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                     
                     // Nếu cập nhật thành công và ảnh đã thay đổi, xóa ảnh cũ trên Cloudinary
                     if (!string.IsNullOrEmpty(_originalImageUrl) && _originalImageUrl != _uploadedImageUrl)
@@ -408,6 +421,8 @@ namespace LUnivers_Beaute.Views
                     try
                     {
                         _bus.Delete(row["MaSanPham"].ToString());
+                        var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                        LogService.LogEdit(currentUser, "Xóa sản phẩm", $"Xóa sản phẩm '{row["TenSanPham"]}' (Mã: {row["MaSanPham"]}) thành công", "🗑️");
                         MessageBox.Show("Xóa sản phẩm thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                         
                         // Nếu sản phẩm bị xóa có ảnh, xóa luôn ảnh trên Cloudinary
@@ -489,6 +504,38 @@ namespace LUnivers_Beaute.Views
                         textBox.TextChanged += TxtCurrency_TextChanged;
                     }
                 }
+            }
+        }
+
+        private void BtnExportExcel_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string timKiem = txtSearch.Text.Trim();
+                int? maDanhMuc = null;
+                if (cboFilterDanhMuc.SelectedValue != null && cboFilterDanhMuc.SelectedIndex > 0)
+                {
+                    maDanhMuc = Convert.ToInt32(cboFilterDanhMuc.SelectedValue);
+                }
+
+                int? maThuongHieu = null;
+                if (cboFilterThuongHieu.SelectedValue != null && cboFilterThuongHieu.SelectedIndex > 0)
+                {
+                    maThuongHieu = Convert.ToInt32(cboFilterThuongHieu.SelectedValue);
+                }
+
+                int? trangThai = null;
+                if (cboFilterTrangThai.SelectedItem is ComboBoxItem cbi && cbi.Tag != null)
+                {
+                    trangThai = Convert.ToInt32(cbi.Tag);
+                }
+
+                DataTable dt = _bus.GetAll(timKiem, maDanhMuc, maThuongHieu, trangThai);
+                ExcelExportHelper.ExportToExcel(dt, "DanhSachSanPham.csv");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xuất danh sách sản phẩm: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

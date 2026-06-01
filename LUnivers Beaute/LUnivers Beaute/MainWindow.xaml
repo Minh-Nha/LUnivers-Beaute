@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:views="clr-namespace:LUnivers_Beaute.Views"
         Title="L'Univers Beauté — Hệ Thống Quản Lý" 
+        Icon="LUniverBeauteLogo.ico"
         Height="800" Width="1400"
         MinHeight="700" MinWidth="1200"
         MaxHeight="{x:Static SystemParameters.MaximizedPrimaryScreenHeight}"
@@ -188,6 +189,18 @@
                                     <TextBlock Text="Cửa hàng" VerticalAlignment="Center" FontWeight="SemiBold"/>
                                 </StackPanel>
                             </RadioButton>
+                            <RadioButton x:Name="navLichSuTruyCap" Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="LichSuTruyCap" GroupName="MainNav">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="⏳" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Lịch sử truy cập" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </RadioButton>
+                            <RadioButton x:Name="navLichSuChinhSua" Style="{StaticResource NavButton}" Checked="Nav_Checked" Tag="LichSuChinhSua" GroupName="MainNav">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="📝" FontSize="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Lịch sử chỉnh sửa" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </RadioButton>
                         </StackPanel>
                     </ScrollViewer>
 
@@ -241,36 +254,116 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <!-- Search Box -->
-                        <Border Background="#F8F9FA" CornerRadius="12" Padding="16,0" MaxWidth="400" HorizontalAlignment="Left">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="🔍" FontSize="14" VerticalAlignment="Center" Margin="0,0,12,0" Opacity="0.5"/>
-                                <TextBox Grid.Column="1" Background="Transparent" BorderThickness="0"
-                                         Foreground="#2D2D2D" FontSize="14" VerticalAlignment="Center" Padding="0,12"
-                                         FontFamily="Segoe UI" CaretBrush="{StaticResource AccentPeachBrush}"/>
-                                <TextBlock Text="Tìm kiếm mọi thứ..." Foreground="#B0B0B0" FontSize="14" VerticalAlignment="Center" Grid.Column="1" IsHitTestVisible="False" Margin="2,0,0,0">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Text, ElementName=searchBox}" Value="">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
-                            </Grid>
-                        </Border>
+                        <!-- Search Box with Suggestion Popup -->
+                        <Grid x:Name="searchContainer" Grid.Column="0">
+                            <Border x:Name="searchBorder" Background="#F8F9FA" CornerRadius="12" Padding="16,0" Width="550" HorizontalAlignment="Left">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="🔍" FontSize="14" VerticalAlignment="Center" Margin="0,0,12,0" Opacity="0.5"/>
+                                    <TextBox x:Name="searchBox" Grid.Column="1" Background="Transparent" BorderThickness="0"
+                                             Foreground="#2D2D2D" FontSize="14" VerticalAlignment="Center" Padding="0,12"
+                                             FontFamily="Segoe UI" CaretBrush="{StaticResource AccentPeachBrush}"
+                                             TextChanged="SearchBox_TextChanged" GotFocus="SearchBox_GotFocus" LostFocus="SearchBox_LostFocus"/>
+                                    <TextBlock Text="Tìm nhanh chức năng... (Bán hàng, Sản phẩm, Lịch sử...)" Foreground="#B0B0B0" FontSize="13.5" VerticalAlignment="Center" Grid.Column="1" IsHitTestVisible="False" Margin="2,0,0,0">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Text, ElementName=searchBox}" Value="">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Grid>
+                            </Border>
+
+                            <Popup x:Name="popupSearch" PlacementTarget="{Binding ElementName=searchBorder}" Placement="Bottom" AllowsTransparency="True" StaysOpen="False" PopupAnimation="Fade">
+                                <Border Background="White" CornerRadius="12" BorderThickness="1" BorderBrush="#E5E7EB" Width="550" Margin="0,4,0,16" Padding="8">
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="15" ShadowDepth="4" Opacity="0.1" Color="Black"/>
+                                    </Border.Effect>
+                                    <StackPanel>
+                                        <TextBlock Text="CHỨC NĂNG HỆ THỐNG GỢI Ý" FontSize="11" FontWeight="Bold" Foreground="#9CA3AF" Margin="12,6,12,6"/>
+                                        <ListBox x:Name="lstSearchResults" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                                 SelectionChanged="LstSearchResults_SelectionChanged">
+                                            <ListBox.ItemContainerStyle>
+                                                <Style TargetType="ListBoxItem">
+                                                    <Setter Property="Padding" Value="12,10"/>
+                                                    <Setter Property="Background" Value="Transparent"/>
+                                                    <Setter Property="BorderThickness" Value="0"/>
+                                                    <Setter Property="Cursor" Value="Hand"/>
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="ListBoxItem">
+                                                                <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                                                    <ContentPresenter />
+                                                                </Border>
+                                                                <ControlTemplate.Triggers>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter TargetName="bd" Property="Background" Value="#F3E8FF"/>
+                                                                    </Trigger>
+                                                                </ControlTemplate.Triggers>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </ListBox.ItemContainerStyle>
+                                        </ListBox>
+                                        <TextBlock x:Name="txtNoResults" Text="Không tìm thấy chức năng tương ứng..." FontSize="13" Foreground="#9CA3AF" Margin="12,10" HorizontalAlignment="Center" Visibility="Collapsed"/>
+                                    </StackPanel>
+                                </Border>
+                            </Popup>
+                        </Grid>
 
                         <!-- Right Actions -->
-                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                            <!-- Notification & Cart -->
-                            <Button Style="{StaticResource IconButton}" Content="🔔" FontSize="18" Margin="4,0" Width="40" Height="40"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                            <!-- Notification Bell & Badge with Popup -->
+                            <Grid>
+                                <Button x:Name="btnBell" Style="{StaticResource IconButton}" Content="🔔" FontSize="18" Margin="4,0" Width="40" Height="40" Click="BtnBell_Click"/>
+                                <!-- Red notification dot badge -->
+                                <Border x:Name="badgeNotification" Background="#EF4444" Width="8" Height="8" CornerRadius="4" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,6,6,0" Visibility="Collapsed" IsHitTestVisible="False"/>
+                                
+                                <Popup x:Name="popupNotifications" PlacementTarget="{Binding ElementName=btnBell}" Placement="Bottom" AllowsTransparency="True" StaysOpen="False" PopupAnimation="Slide" HorizontalOffset="-310">
+                                    <Border Background="White" CornerRadius="12" BorderThickness="1" BorderBrush="#E5E7EB" Width="350" Margin="0,4,0,16" Padding="16">
+                                        <Border.Effect>
+                                            <DropShadowEffect BlurRadius="15" ShadowDepth="4" Opacity="0.1" Color="Black"/>
+                                        </Border.Effect>
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            
+                                            <!-- Title Bar -->
+                                            <Grid Grid.Row="0" Margin="0,0,0,8">
+                                                <TextBlock Text="Thông báo hoạt động mới" FontSize="14" FontWeight="Bold" Foreground="#1F2937" VerticalAlignment="Center"/>
+                                                <Button Content="Đánh dấu đã đọc" Background="Transparent" BorderThickness="0" Foreground="#6D28D9" FontSize="11" FontWeight="SemiBold" Cursor="Hand" HorizontalAlignment="Right" Click="BtnMarkRead_Click" VerticalAlignment="Center"/>
+                                            </Grid>
+                                            
+                                            <Border Grid.Row="1" Height="1" Background="#F3F4F6" Margin="0,0,0,10"/>
+                                            
+                                            <!-- Notification list content -->
+                                            <ScrollViewer Grid.Row="2" MaxHeight="250" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                                <StackPanel x:Name="pnlNotificationsList">
+                                                    <!-- Loaded dynamically -->
+                                                </StackPanel>
+                                            </ScrollViewer>
+                                            
+                                            <Border Grid.Row="3" Height="1" Background="#F3F4F6" Margin="0,10,0,10"/>
+                                            
+                                            <!-- Footer Button -->
+                                            <Button Grid.Row="3" Content="Xem tất cả lịch sử chỉnh sửa" Background="Transparent" BorderThickness="0" Foreground="#6D28D9" FontSize="12.5" FontWeight="SemiBold" Cursor="Hand" Click="BtnViewAllLogs_Click" HorizontalAlignment="Center" Margin="0,12,0,0"/>
+                                        </Grid>
+                                    </Border>
+                                </Popup>
+                            </Grid>
                             <Button Style="{StaticResource IconButton}" Content="🛒" FontSize="18" Margin="4,0" Width="40" Height="40"/>
                             <Border Width="1" Height="24" Background="#E0E0E0" Margin="12,0"/>
 

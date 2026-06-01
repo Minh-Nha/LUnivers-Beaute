@@ -1,4 +1,5 @@
 using LUnivers_Beaute.Helpers;
+using LUnivers_Beaute.Services;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
@@ -106,11 +107,15 @@ namespace LUnivers_Beaute.Views
                 if (string.IsNullOrEmpty(txtMaThuongHieu.Text))
                 {
                     _bus.Insert(txtTenThuongHieu.Text.Trim(), txtQuocGia.Text.Trim());
+                    var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                    LogService.LogEdit(currentUser, "Thêm thương hiệu", $"Thêm thương hiệu '{txtTenThuongHieu.Text.Trim()}' ({txtQuocGia.Text.Trim()}) thành công", "🏷️");
                     MessageBox.Show("Thêm thương hiệu thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
                     _bus.Update(int.Parse(txtMaThuongHieu.Text), txtTenThuongHieu.Text.Trim(), txtQuocGia.Text.Trim());
+                    var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                    LogService.LogEdit(currentUser, "Cập nhật thương hiệu", $"Cập nhật thương hiệu thành công (Mã: {txtMaThuongHieu.Text}, Tên mới: '{txtTenThuongHieu.Text.Trim()}')", "📝");
                     MessageBox.Show("Cập nhật thương hiệu thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 
@@ -138,7 +143,11 @@ namespace LUnivers_Beaute.Views
                 {
                     try
                     {
-                        _bus.Delete(int.Parse(row["MaThuongHieu"].ToString()));
+                        string tenTH = row["TenThuongHieu"].ToString();
+                        string maTH = row["MaThuongHieu"].ToString();
+                        _bus.Delete(int.Parse(maTH));
+                        var currentUser = (Application.Current.MainWindow as MainWindow)?.HoTen ?? "Nhân viên";
+                        LogService.LogEdit(currentUser, "Xóa thương hiệu", $"Xóa thương hiệu '{tenTH}' (Mã: {maTH}) thành công", "🗑️");
                         MessageBox.Show("Xóa thương hiệu thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                         LoadData();
                     }
@@ -147,6 +156,19 @@ namespace LUnivers_Beaute.Views
                         MessageBox.Show("Không thể xóa thương hiệu: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
+            }
+        }
+
+        private void BtnExportExcel_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                DataTable dt = _bus.GetAll(txtSearch?.Text?.Trim());
+                ExcelExportHelper.ExportToExcel(dt, "DanhSachThuongHieu.csv");
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xuất danh sách thương hiệu: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

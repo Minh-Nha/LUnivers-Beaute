@@ -23,7 +23,7 @@
                     <TextBlock Text="Quản lý phiếu nhập kho và chi tiết nhập" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <Button Content="📥 Xuất báo cáo" Style="{StaticResource SecondaryButton}" Padding="14,10" Margin="0,0,10,0"/>
+                    <Button x:Name="btnExportReport" Content="📥 Xuất báo cáo" Style="{StaticResource SecondaryButton}" Padding="14,10" Margin="0,0,10,0" Click="BtnExportReport_Click"/>
                     <Button Content="＋ Tạo phiếu nhập" Style="{StaticResource PrimaryButton}" Padding="14,10" Click="BtnTaoPhieuNhap_Click"/>
                 </StackPanel>
             </Grid>
@@ -36,7 +36,7 @@
                         <ColumnDefinition Width="150"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Style="{StaticResource ModernTextBox}" Margin="0,0,10,0"/>
+                    <TextBox x:Name="txtSearch" Style="{StaticResource ModernTextBox}" Tag="Tìm kiếm theo mã phiếu, người nhập..." Margin="0,0,10,0"/>
                     <DatePicker Grid.Column="1" Margin="0,0,10,0" FontSize="13" Style="{StaticResource ModernDatePicker}"/>
                     <DatePicker Grid.Column="2" Margin="0,0,10,0" FontSize="13" Style="{StaticResource ModernDatePicker}"/>
                     <Button Grid.Column="3" Content="🔍 Tìm kiếm" Style="{StaticResource PrimaryButton}" Padding="16,10"/>
