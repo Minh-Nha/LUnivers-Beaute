@@ -46,11 +46,10 @@ Dự án được xây dựng theo **Mô hình 3 Lớp (3-Tier Architecture)** g
    ```bash
    git clone https://github.com/Minh-Nha/LUnivers-Beaute.git
    ```
-2. **Thiết lập Cơ sở dữ liệu (Database):**
-   - Mở SQL Server Management Studio (SSMS).
-   - Chạy script SQL được cung cấp trong thư mục `Database/` để tạo database và các bảng.
-3. **Cấu hình Chuỗi kết nối (Connection String):**
-   - Mở file `config.json` hoặc cấu hình chuỗi kết nối trong source code (lớp DAL) để trỏ đến server SQL của bạn.
+2. **Cơ sở dữ liệu (Đã được Host trên Server):**
+   - Hiện tại hệ thống đã được kết nối sẵn với cơ sở dữ liệu trên server riêng.
+   - Bạn không cần cài đặt SQL Server local, chỉ cần có mạng Internet là chạy được ngay.
+   - *(Tùy chọn)* Nếu bạn muốn tự chạy Database ở máy cá nhân (Local): Hãy chạy script SQL trong thư mục `Database/` và sửa lại chuỗi kết nối trong file `config.json` (hoặc trong source code lớp DAL).
 4. **Chạy dự án:**
    - Mở file `.sln` bằng Visual Studio.
    - Nhấn `Start` (hoặc `F5`) để build và chạy ứng dụng.
