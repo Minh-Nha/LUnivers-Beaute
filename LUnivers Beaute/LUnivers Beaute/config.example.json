@@ -1,0 +1,19 @@
+{
+  "Cloudinary": {
+    "CloudName": "YOUR_CLOUD_NAME",
+    "ApiKey": "YOUR_API_KEY",
+    "ApiSecret": "YOUR_API_SECRET"
+  },
+  "Email": {
+    "SenderEmail": "your_email@gmail.com",
+    "AppPassword": "your_app_password"
+  },
+  "Gemini": {
+    "ApiKey": "YOUR_GEMINI_API_KEY"
+  },
+  "VietQR": {
+    "BankCode": "",
+    "AccountNumber": "",
+    "AccountName": ""
+  }
+}
